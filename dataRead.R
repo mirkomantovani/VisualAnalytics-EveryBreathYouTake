@@ -25,7 +25,7 @@ options(warn = -1)
 for (row in 1:nrow(d_urls)) {
   link <- d_urls[row,"url_name"]
   tryCatch(download.file(link,file.path("data",basename(link)), method = "libcurl"),
-           error = function(e) print(paste(file, 'did not work out')))    
+           error = function(e) print(paste(link, 'did not work out')))    
   
   }
 options(warn = oldw)
