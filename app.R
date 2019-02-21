@@ -224,7 +224,39 @@ ui <- dashboardPage(
       #           
       #           
       #         )),
-      
+      tabItem("monthly_aqi",
+              h1("WIP")),
+      tabItem("daily_aqi",
+              h1("WIP")),
+      tabItem("hourly_pollutants",
+              h1("WIP")),
+      tabItem("pollutants_map",
+              div(class="outer",
+                  # If not using custom CSS, set height of leafletOutput to a number instead of percent
+                  leafletOutput("map_controllers", width="100%", height="100%"),
+                  
+                  # Shiny versions prior to 0.11 should use class = "modal" instead.
+                  absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+                                draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                                width = 330, height = "auto",
+                                
+                                h2("Map inputs")
+                                
+                                # selectInput("color", "Color", vars),
+                                # selectInput("size", "Size", vars, selected = "adultpop"),
+                                # conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
+                                #                  # Only prompt for threshold when coloring or sizing by superzip
+                                #                  numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
+                                # ),
+                                # 
+                                # plotOutput("histCentile", height = 200),
+                                # plotOutput("scatterCollegeIncome", height = 250)
+                  ),
+                  
+                  tags$div(id="cite",
+                           'Visual Analytics, University of Illinois at Chicago 2019'
+                  )
+              )),
       # FOURTH MENU TAB
       tabItem("about",
               htmlOutput("about_out")
@@ -1179,10 +1211,22 @@ server <- function(input, output, session) {
   # }
   # })
   
+  # Create the map
+  output$map_controllers <- renderLeaflet({
+    leaflet() %>%
+      addTiles(
+        urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      ) %>%
+      setView(lng = -93.85, lat = 37.45, zoom = 4)
+  })
+  
   
   # About HTML
   output$about_out <- renderUI({
     author <- "<h1>Mirko Mantovani</h1>
+# TODO
+#insert others names and pages
     <br>
     <a href='https://mmanto2.people.uic.edu/projects/EveryBreathYouTake.htmll'>Project webpage</a>
     <br/>

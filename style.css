@@ -56,3 +56,45 @@ border-radius: 4px;
 }
 
 .recalculating {opacity: 1.0;}
+
+    /* Map */
+
+div.outer {
+    position: fixed;
+    top: 41px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+#controls {
+    background-color:rgba(66, 177, 211, 0.767);
+    padding: 0 20px 20px 20px;
+    cursor: move;
+    /* Fade out while not hovering */
+    opacity: 0.5;
+        /* Param to change for sage2 */
+
+    zoom: 0.9;
+    transition: opacity 1000ms 2ms;
+  }
+  #controls:hover {
+    /* Fade in while hovering */
+    opacity: 0.9;
+    transition-delay: 0;
+  }
+  
+  /* Position and style citation */
+  #cite {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 12px;
+  }
+  
+  /* If not using map tiles, show a white background */
+  .leaflet-container {
+    background-color: white !important;
+  }
