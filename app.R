@@ -18,9 +18,25 @@ library(colourpicker)
 library(shinyWidgets)
 
 # importing datasets
+setwd("./csv/")
 temp = list.files(pattern="*.csv")
 datasets = lapply(temp, read.csv)
 dataset <- do.call(rbind, datasets)
+setwd("../")
+
+# setwd("./rds/")
+# temp = list.files(pattern="daily.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_df <- do.call(rbind, datasets)
+# 
+# rm(datasets)
+# 
+# temp = list.files(pattern="hourly.*.Rds")
+# datasets = lapply(temp, readRDS)
+# hourly_df <- do.call(rbind, datasets)
+# setwd("../")
+
+rm(datasets)
 
 # needed for counties coordinates
 sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
@@ -823,10 +839,10 @@ server <- function(input, output, session) {
       #                               "Median" = "steelblue1")) +
       scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
   })
-  
+
   # Time series of Pollutants Percentage
   output$pollutants_time <- renderPlot({
-    s_county<-subset(dataset, State == selected_state() & County == selected_county())
+    s_county<-subset(dataset, State == selected_state() & County == selected_county() & Year > input$range[1] & Year < input$range[2])
     s_county[,14:19]<- s_county[14:19]/s_county$Days.with.AQI*100
     # df <- data.frame(
     #   
