@@ -1,7 +1,24 @@
-.js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar, .irs-from .irs-to {
+.js-irs-0 .irs-single, .irs-min .irs-max, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar, .irs-from .irs-to {
 background: #428bca00;color:white;
 }
-  
+
+.irs-min, .irs-max {
+    color: rgb(255, 255, 255);
+    font-size: 10px;
+    line-height: 1.333;
+    text-shadow: none;
+    top: 0;
+    padding: 1px 3px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+h2 {
+    font-family: "Arial";
+    color: rgb(255, 255, 255);
+  }
+
 .content-wrapper, .right-side {
 background: rgb(0, 114, 138);
 }
@@ -70,19 +87,20 @@ div.outer {
   }
 
 #controls {
-    background-color:rgba(66, 177, 211, 0.767);
+    background-color:rgba(13, 32, 37, 0.767);
+    color: #ffffff;
     padding: 0 20px 20px 20px;
     cursor: move;
     /* Fade out while not hovering */
     opacity: 0.5;
         /* Param to change for sage2 */
 
-    zoom: 0.9;
+    /*zoom: 0.9;*/
     transition: opacity 1000ms 2ms;
   }
   #controls:hover {
     /* Fade in while hovering */
-    opacity: 0.9;
+    opacity: 0.95;
     transition-delay: 0;
   }
   

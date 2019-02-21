@@ -18,12 +18,12 @@ library(colourpicker)
 library(shinyWidgets)
 
 # importing datasets
-setwd("./csv/")
-temp = list.files(pattern="*.csv")
-datasets = lapply(temp, read.csv)
-dataset <- do.call(rbind, datasets)
-setwd("../")
-
+# setwd("./csv/")
+# temp = list.files(pattern="*.csv")
+# datasets = lapply(temp, read.csv)
+# dataset <- do.call(rbind, datasets)
+# setwd("../")
+# 
 # setwd("./rds/")
 # temp = list.files(pattern="daily.*.Rds")
 # datasets = lapply(temp, readRDS)
@@ -35,14 +35,14 @@ setwd("../")
 # datasets = lapply(temp, readRDS)
 # hourly_df <- do.call(rbind, datasets)
 # setwd("../")
-
-rm(datasets)
-
-# needed for counties coordinates
-sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-
-# geojson file for counties shape
-xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+# 
+# rm(datasets)
+# 
+# # needed for counties coordinates
+# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+# 
+# # geojson file for counties shape
+# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
 
 
 
@@ -256,7 +256,19 @@ ui <- dashboardPage(
                                 draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                                 width = 330, height = "auto",
                                 
-                                h2("Map inputs")
+                                h2("Map inputs"),
+              
+                                sliderInput(inputId = "num_counties", 
+                                            sep = "",
+                                            label = "Shown Counties", 
+                                            value = 100, min = 1, max = 800,width = "90%"),
+                                sliderInput(inputId = "year_map", 
+                                            sep = "",
+                                            label = "Select Year", 
+                                            value = 2018, min = 1990, max = 2018,width = "90%"),
+                                selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%")
+                                
+                                
                                 
                                 # selectInput("color", "Color", vars),
                                 # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -1229,7 +1241,17 @@ server <- function(input, output, session) {
   
   # Create the map
   output$map_controllers <- renderLeaflet({
-    leaflet() %>%
+    
+    ccc <- factor(sample.int(5L, nrow(xy), TRUE))
+    
+    factpal <- colorFactor(topo.colors(5), ccc)
+    
+    leaflet(xy) %>%
+      addPolygons(color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
+                  opacity = 1.0, fillOpacity = 0.5,
+                  # fillColor = ~colorQuantile("YlOrRd"),
+                  highlightOptions = highlightOptions(color = "white", weight = 3,
+                                                      bringToFront = TRUE)) %>%
       addTiles(
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
@@ -1237,6 +1259,7 @@ server <- function(input, output, session) {
       setView(lng = -93.85, lat = 37.45, zoom = 4)
   })
   
+
   
   # About HTML
   output$about_out <- renderUI({
