@@ -10,9 +10,9 @@ files_with_data <- daily_files[-(1:10)]
 lapply(files_with_data, function(x) {
   df <- fread(x, select = c("State Name","county Name","Date","AQI","Category","Defining Parameter")
              ,header = T, sep = ',')
-  fileName = paste(substring(x, 6,29) , ".Rda", sep="");
-  ifelse(!dir.exists("rda"), dir.create("rda"),"")
-  fileName = paste("rda/" , fileName, sep="")
+  fileName = paste(substring(x, 6,29) , ".Rds", sep="");
+  ifelse(!dir.exists("rds"), dir.create("rds"),"")
+  fileName = paste("rds/" , fileName, sep="")
   saveRDS(df, file=fileName)
   }
 )
@@ -25,9 +25,9 @@ files <- list.files(path="data", pattern="hourly.*.csv", full.names=TRUE, recurs
 lapply(files, function(x) {
   df <- fread(x, select = c("Date Local",	"Time Local"	,"Sample Measurement","State Name",	"County Name")
                ,header = T, sep = ',')
-  fileName = paste(substring(x, 6,21) , ".Rda", sep="")
-  ifelse(!dir.exists("rda"), dir.create("rda"),"")
-  fileName = paste("rda/" , fileName, sep="")
+  fileName = paste(substring(x, 6,21) , ".Rds", sep="")
+  ifelse(!dir.exists("rds"), dir.create("rds"),"")
+  fileName = paste("rds/" , fileName, sep="")
   saveRDS(df, file=fileName)
   }
 )
