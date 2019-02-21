@@ -55,11 +55,11 @@ for(s in states){
 
 ui <- dashboardPage(
   dashboardHeader(
-    title = "Visual Analytics - Just Breathe",
-    titleWidth = 300 
+    title = "Visual Analytics - Every Breath You Take",
+    titleWidth = 370 
   ),
   dashboardSidebar(disable = FALSE, collapsed = TRUE,
-                   width = 300, 
+                   width = 370, 
                    sidebarMenu(
                      useShinyalert(),
                      menuItem("Year details for County", tabName = "pie"),
@@ -1184,9 +1184,9 @@ server <- function(input, output, session) {
   output$about_out <- renderUI({
     author <- "<h1>Mirko Mantovani</h1>
     <br>
-    <a href='https://mmanto2.people.uic.edu/projects/JustBreathe.html'>Project webpage</a>
+    <a href='https://mmanto2.people.uic.edu/projects/EveryBreathYouTake.htmll'>Project webpage</a>
     <br/>
-    <a href='https://github.com/mirkomantovani/VisualAnalytics-JustBreathe'>Github repository</a><br>"
+    <a href='https://github.com/mirkomantovani/VisualAnalytics-EveryBreathYouTake'>Github repository</a><br>"
     libraries <- "<b>Used R libraries: </b> <br><br> 
     <ul>
     <li>shiny</li>
