@@ -46,6 +46,11 @@ library(cdlTools) # convert FIPS codes into names
 # # geojson file for counties shape
 # xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
 
+# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# getting the names
+converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+xy$STATENAME<-converted_states_names
+
 
 
 ########################################### PREPROCESSING #########################################
@@ -259,15 +264,19 @@ ui <- dashboardPage(
                                 width = 330, height = "auto",
                                 
                                 h2("Map inputs"),
-              
-                                sliderInput(inputId = "num_counties", 
-                                            sep = "",
-                                            label = "Shown Counties", 
-                                            value = 100, min = 1, max = 800,width = "90%"),
-                                sliderInput(inputId = "year_map", 
-                                            sep = "",
-                                            label = "Select Year", 
-                                            value = 2018, min = 1990, max = 2018,width = "90%"),
+                                numericInput("num_counties", "Shown Counties", min=0, max=1100, value=100),
+                                numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
+                                
+                                # TO CHANGE AFTER SAGE2 PRESENTATION since it's better with slider on HD ratio display
+                                
+                                # sliderInput(inputId = "num_counties", 
+                                #             sep = "",
+                                #             label = "Shown Counties", 
+                                #             value = 100, min = 1, max = 800,width = "90%"),
+                                # sliderInput(inputId = "year_map", 
+                                #             sep = "",
+                                #             label = "Select Year", 
+                                #             value = 2018, min = 1990, max = 2018,width = "90%"),
                                 selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%")
                                 
                                 
@@ -318,7 +327,7 @@ server <- function(input, output, session) {
                       pie_text_size = 5,
                       slant_text_angle = 45,
                       point_size = 1,
-                      zoom_level = 6,
+                      zoom_level = 4,
                       tooltip_width = 100,
                       tooltip_hieght = 60,
                       tooltip_text_size = 14,
@@ -341,7 +350,7 @@ server <- function(input, output, session) {
       v$pie_text_size <<- 15
       v$slant_text_angle <<- 0
       v$point_size <<- 4
-      v$zoom_level <<- 9
+      v$zoom_level <<- 8
       v$tooltip_width <<- 180
       v$tooltip_height <<- 80
       v$tooltip_text_size <<- 28
@@ -361,7 +370,7 @@ server <- function(input, output, session) {
       v$pie_text_size = 5
       v$slant_text_angle = 45
       v$point_size = 1
-      v$zoom_level = 8
+      v$zoom_level = 4
       v$tooltip_width = 100
       v$tooltip_hieght = 60
       v$tooltip_text_size = 14
@@ -1264,41 +1273,55 @@ server <- function(input, output, session) {
   
   # Create the map
   output$map_controllers <- renderLeaflet({
-    
-    value = c((current()$Days.with.AQI-current()$Days.Ozone)/current()$Days.with.AQI*100, current()$Days.Ozone/current()$Days.with.AQI*100)
+    feature <- translate_to_column_name(input$pollutant_map)
+    # value = c((current()$Days.with.AQI-current()$Days.Ozone)/current()$Days.with.AQI*100, current()$Days.Ozone/current()$Days.with.AQI*100)
     
     
     sub<-subset(dataset, Year == input$year_map)
-      df <- data.frame(
-        
-        group = c("Percentage of pollutant"),
-        value = c(sub[[translate_to_column_name(input$pollutant_map)]]/sub$Days.with.AQI*100,1,2)
-      )
+    if(feature !="Median.AQI"){
+      sub$sel_feat<-sub[[feature]]/sub$Days.with.AQI*100
+    } else {
+      sub$sel_feat<-sub[[feature]]
+    }
+    
+    sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
+
+    df <- head(sub,input$num_counties)
+    
+  
+    
+      # df <- data.frame(
+      #   
+      #   group = c("Percentage of pollutant"),
+      #   value = c(sub[[translate_to_column_name(input$pollutant_map)]]/sub$Days.with.AQI*100,1,2)
+      # )
       
     
-    ccc <- factor(sample.int(20L, nrow(xy), TRUE))
-    
-    factpal <- colorFactor(topo.colors(20), ccc)
+    # ccc <- factor(sample.int(20L, nrow(xy), TRUE))
+    # 
+    # factpal <- colorFactor(topo.colors(20), ccc)
     
     # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
     # getting the names
-    converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+    # converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
     
-    xy$STATENAME<-converted_states_names
+    # xy$STATENAME<-converted_states_names
     
-    temp <- merge(xy, sub,
+    temp <- merge(xy, df,
                   by.x = c("STATENAME","NAME"), by.y = c("State","County"),
                   all.x = TRUE)
     
     # Create a color palette
-    mypal <- colorNumeric(palette = "viridis", domain = temp[["Median.AQI"]], na.color = "grey")
+    mypal <- colorNumeric(palette = "viridis", domain = temp$sel_feat
+                          ,na.color = "#ffffff11"
+                          )
     
     # factpal <- colorQuantile("Blues", ccc, n=20)
     # year_map, pollutant_map
     leaflet() %>%
       # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
-      addPolygons(data = xy, color = ~mypal(temp[["Median.AQI"]]), weight = 0.8, smoothFactor = 0.2,
-                  opacity = 1.0, fillOpacity = 1,
+      addPolygons(data = xy, color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
+                  opacity = 1.0, fillOpacity = 1,#opacity will be a param
                   # fillColor = ~colorQuantile("YlOrRd"),
                   highlightOptions = highlightOptions(color = "white", weight = 3,
                                                       bringToFront = TRUE)) %>%
@@ -1306,8 +1329,8 @@ server <- function(input, output, session) {
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lng = -93.85, lat = 37.45, zoom = 4) %>%
-      addLegend(position = "bottomleft", pal = mypal, values = temp[["Median.AQI"]],
+      setView(lng = -93.85, lat = 37.45, zoom = zoom_level()) %>%
+      addLegend(position = "bottomright", pal = mypal, values = temp$sel_feat,
                 title = "Legend",
                 opacity = 1)
   })

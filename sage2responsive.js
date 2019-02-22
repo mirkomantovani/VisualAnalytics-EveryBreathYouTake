@@ -52,6 +52,14 @@ $(document).on("shiny:connected", function (e) {
         // SECOND SLIDER
         nozoomslider = document.getElementById("nozoomslider");
         nozoomslider.style.zoom = "40%";
+        
+        //CONTROLS for map
+        controls = document.getElementById("controls");
+        controls.style.zoom = "300%";
+
+        //map LEGEND ZOOM
+        // document.getElementsByClassName("leaflet-control")[0].style.zoom = "300%";
+
 
         //DROPDOWN MENU NO ZOOM for problem in sage color picker
         //  drop = nozoomslider.getElementsByClassName("dropdown-shinyWidgets");

@@ -64,6 +64,7 @@ padding: 6px 12px;
 .selectize-input, .selectize-control.single .selectize-input.input-active {
 background: rgb(59, 236, 220);
 cursor: text;
+font-size: 20px;
 display: inline-block;
 }
 
@@ -100,8 +101,12 @@ div.outer {
   }
   #controls:hover {
     /* Fade in while hovering */
-    opacity: 0.95;
+    opacity: 0.97;
     transition-delay: 0;
+  }
+
+  .leaflet-control {
+      zoom: 120%;
   }
   
   /* Position and style citation */
