@@ -16,6 +16,8 @@ library(geojson)
 library(geojsonio)
 library(colourpicker)
 library(shinyWidgets)
+library(viridis) # Color palette
+library(cdlTools) # convert FIPS codes into names
 
 # importing datasets
 # setwd("./csv/")
@@ -1238,17 +1240,65 @@ server <- function(input, output, session) {
   #     shinyalert("Oops!", paste("No data for",selected_county3(),"-",selected_state3(),"in year",input$Year), type = "error")
   # }
   # })
+  pollutants <- c("CO","NO2","Ozone","SO2","PM2.5","PM10")
+  
+  translate_to_column_name <- function(pollutant) {
+    if(pollutant == "CO"){
+      return("Days.CO")
+    } else if (pollutant == "NO2"){
+      return("Days.NO2")
+    } else if (pollutant == "Ozone"){
+      return("Days.Ozone")
+    } else if (pollutant == "SO2"){
+      return("Days.SO2")
+    } else if (pollutant == "PM2.5"){
+      return("Days.PM2.5")
+    } else if (pollutant == "PM10"){
+      return("Days.PM10")
+    } else if (pollutant == "AQI"){
+      return("Median.AQI")
+    }
+      
+    return("Days.CO")
+  }
   
   # Create the map
   output$map_controllers <- renderLeaflet({
     
-    ccc <- factor(sample.int(5L, nrow(xy), TRUE))
+    value = c((current()$Days.with.AQI-current()$Days.Ozone)/current()$Days.with.AQI*100, current()$Days.Ozone/current()$Days.with.AQI*100)
     
-    factpal <- colorFactor(topo.colors(5), ccc)
     
-    leaflet(xy) %>%
-      addPolygons(color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
-                  opacity = 1.0, fillOpacity = 0.5,
+    sub<-subset(dataset, Year == input$year_map)
+      df <- data.frame(
+        
+        group = c("Percentage of pollutant"),
+        value = c(sub[[translate_to_column_name(input$pollutant_map)]]/sub$Days.with.AQI*100,1,2)
+      )
+      
+    
+    ccc <- factor(sample.int(20L, nrow(xy), TRUE))
+    
+    factpal <- colorFactor(topo.colors(20), ccc)
+    
+    # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+    # getting the names
+    converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+    
+    xy$STATENAME<-converted_states_names
+    
+    temp <- merge(xy, sub,
+                  by.x = c("STATENAME","NAME"), by.y = c("State","County"),
+                  all.x = TRUE)
+    
+    # Create a color palette
+    mypal <- colorNumeric(palette = "viridis", domain = temp[["Median.AQI"]], na.color = "grey")
+    
+    # factpal <- colorQuantile("Blues", ccc, n=20)
+    # year_map, pollutant_map
+    leaflet() %>%
+      # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
+      addPolygons(data = xy, color = ~mypal(temp[["Median.AQI"]]), weight = 0.8, smoothFactor = 0.2,
+                  opacity = 1.0, fillOpacity = 1,
                   # fillColor = ~colorQuantile("YlOrRd"),
                   highlightOptions = highlightOptions(color = "white", weight = 3,
                                                       bringToFront = TRUE)) %>%
@@ -1256,7 +1306,10 @@ server <- function(input, output, session) {
         urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
         attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       ) %>%
-      setView(lng = -93.85, lat = 37.45, zoom = 4)
+      setView(lng = -93.85, lat = 37.45, zoom = 4) %>%
+      addLegend(position = "bottomleft", pal = mypal, values = temp[["Median.AQI"]],
+                title = "Legend",
+                opacity = 1)
   })
   
 
