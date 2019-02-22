@@ -18,6 +18,7 @@ library(colourpicker)
 library(shinyWidgets)
 library(viridis) # Color palette
 library(cdlTools) # convert FIPS codes into names
+library(htmltools) # to use htmlEscape function
 
 # importing datasets
 # setwd("./csv/")
@@ -1271,7 +1272,7 @@ server <- function(input, output, session) {
     return("Days.CO")
   }
   
-  # Create the map
+  # MAP rendering
   output$map_controllers <- renderLeaflet({
     feature <- translate_to_column_name(input$pollutant_map)
     # value = c((current()$Days.with.AQI-current()$Days.Ozone)/current()$Days.with.AQI*100, current()$Days.Ozone/current()$Days.with.AQI*100)
@@ -1280,8 +1281,10 @@ server <- function(input, output, session) {
     sub<-subset(dataset, Year == input$year_map)
     if(feature !="Median.AQI"){
       sub$sel_feat<-sub[[feature]]/sub$Days.with.AQI*100
+      suffx = "%"
     } else {
       sub$sel_feat<-sub[[feature]]
+      suffx = ""
     }
     
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
@@ -1316,12 +1319,25 @@ server <- function(input, output, session) {
                           ,na.color = "#ffffff11"
                           )
     
+    content <- paste(sep = "<br/>",
+                     "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
+                     "606 5th Ave. S",
+                     "Seattle, WA 98138"
+    )
+    
     # factpal <- colorQuantile("Blues", ccc, n=20)
     # year_map, pollutant_map
     leaflet() %>%
       # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
       addPolygons(data = xy, color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
                   opacity = 1.0, fillOpacity = 1,#opacity will be a param
+                  label = ~htmlEscape(xy$NAME),
+                  popup = ~paste(sep = "<br/>",
+                                            paste("<b><a href='https://en.wikipedia.org/wiki/",xy$NAME,"_County,_",xy$STATENAME,"' target='_blank'>",xy$NAME," on Wikipedia</a></b>"),
+                                            xy$NAME,
+                                            xy$STATENAME,
+                                            paste(signif(temp$sel_feat,3),suffx)
+                  ),
                   # fillColor = ~colorQuantile("YlOrRd"),
                   highlightOptions = highlightOptions(color = "white", weight = 3,
                                                       bringToFront = TRUE)) %>%
@@ -1332,6 +1348,9 @@ server <- function(input, output, session) {
       setView(lng = -93.85, lat = 37.45, zoom = zoom_level()) %>%
       addLegend(position = "bottomright", pal = mypal, values = temp$sel_feat,
                 title = "Legend",
+                labFormat = labelFormat(suffix = suffx,
+                                        digits = 3
+                                        ),
                 opacity = 1)
   })
   
