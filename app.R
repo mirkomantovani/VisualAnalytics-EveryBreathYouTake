@@ -38,6 +38,11 @@ library(htmltools) # to use htmlEscape function
 # datasets = lapply(temp, readRDS)
 # hourly_df <- do.call(rbind, datasets)
 # setwd("../")
+# Preprocessing of date (we will save the data preprocessed)
+# hourly_df[["Date Local"]] <- as.Date(hourly_df[["Date Local"]])
+# hourly_df$Year<-format(hourly_df[["Date Local"]],"%Y") # Get only the years
+# hourly_df$Month<-format(hourly_df[["Date Local"]],"%B")
+# hourly_df$Day<-format(hourly_df[["Date Local"]],"%d") 
 # 
 # rm(datasets)
 # 
@@ -449,6 +454,24 @@ server <- function(input, output, session) {
     
     updateSelectInput(session, inputId = "County", choices = counties_in_state)
     county <- input$County
+    
+  })
+  
+  observeEvent(priority = 10,input$H_year,{
+    year_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year)
+    months <- unique(year_sub$Month)
+    
+    updateSelectInput(session, inputId = "H_month", choices = months)
+    # county <- input$County
+    
+  })
+  
+  observeEvent(priority = 10,input$H_month,{
+    month_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year & Month == input$H_month)
+    days <- unique(month_sub$Day)
+    
+    updateSelectInput(session, inputId = "H_day", choices = days)
+    # county <- input$County
     
   })
   
