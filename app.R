@@ -57,6 +57,9 @@ xy$STATENAME<-converted_states_names
 ########################################### PREPROCESSING #########################################
 
 years<-c(1980:2018)
+H_years<-c(1990:2018) #years available for hourly data
+H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
+H_days<-c(1:31)
 states<-unique(dataset$State)
 t<-subset(dataset, State == 'Illinois')
 counties<-unique(t$County)
@@ -253,7 +256,31 @@ ui <- dashboardPage(
       tabItem("daily_aqi",
               h1("WIP")),
       tabItem("hourly_pollutants",
-              h1("WIP")),
+              fluidRow(
+                # Input county with search
+                column(2,box(title = "County Selection and customization",status = "success", width = NULL,
+                             div(column(12, 
+                                        selectInput(inputId = "H_year", "Select Year", H_years, selected = '2018',width = "200%",selectize=FALSE),
+                                        selectInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
+                                        selectInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE),
+                                        h3("State:"),
+                                        # h4(textOutput("sel_state")),
+                                        h3("County:"),
+                                        # h4(textOutput("sel_county")),
+                                        h3("Data:")
+                                        # h6(textOutput("data_years")),
+                                        # h6(textOutput("data_days"))
+                                        
+                             )
+                             
+                             ),class = "boxtozoom")
+                )
+              ),
+              # 
+              column(10,
+                     h1("WIP")
+                     # plotOutput("aqi_time", height = "85vmin")    
+              )),
       tabItem("pollutants_map",
               div(class="outer",
                   # If not using custom CSS, set height of leafletOutput to a number instead of percent
