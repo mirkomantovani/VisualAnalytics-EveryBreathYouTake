@@ -21,6 +21,7 @@ library(cdlTools) # convert FIPS codes into names
 library(htmltools) # to use htmlEscape function
 
 # importing datasets
+
 # setwd("./csv/")
 # temp = list.files(pattern="*.csv")
 # datasets = lapply(temp, read.csv)
@@ -38,11 +39,11 @@ library(htmltools) # to use htmlEscape function
 # datasets = lapply(temp, readRDS)
 # hourly_df <- do.call(rbind, datasets)
 # setwd("../")
-# Preprocessing of date (we will save the data preprocessed)
+# # Preprocessing of date (we will save the data preprocessed), long process
 # hourly_df[["Date Local"]] <- as.Date(hourly_df[["Date Local"]])
 # hourly_df$Year<-format(hourly_df[["Date Local"]],"%Y") # Get only the years
 # hourly_df$Month<-format(hourly_df[["Date Local"]],"%B")
-# hourly_df$Day<-format(hourly_df[["Date Local"]],"%d") 
+# hourly_df$Day<-format(hourly_df[["Date Local"]],"%d")
 # 
 # rm(datasets)
 # 
@@ -279,13 +280,11 @@ ui <- dashboardPage(
                              )
                              
                              ),class = "boxtozoom")
-                )
-              ),
-              # 
-              column(10,
-                     h1("WIP")
-                     # plotOutput("aqi_time", height = "85vmin")    
-              )),
+                ),
+                column(10,
+                       h1("WIP")
+                       # plotOutput("hourly_poll", height = "85vmin")
+              ))),
       tabItem("pollutants_map",
               div(class="outer",
                   # If not using custom CSS, set height of leafletOutput to a number instead of percent
@@ -1403,6 +1402,56 @@ server <- function(input, output, session) {
                                         ),
                 opacity = 1)
   })
+  
+  # Time series of Hourly Pollutants
+  # output$hourly_poll <- renderPlot({
+  #   s_county<-subset(hourly_df, State == selected_state() & County == selected_county() & Year == input$H_year & Month == input$H_month & Day == input$H_day)
+  #   s_county[,14:19]<- s_county[14:19]/s_county$Days.with.AQI*100
+  # 
+  #   ggplot(data = s_county, aes(x = Year)) +
+  #     theme(
+  #       axis.text.x = element_text(angle = 45, hjust = 1),
+  #       axis.title.y = element_text(color = input$textColor),
+  #       axis.title.x = element_blank(),
+  #       panel.border = element_blank(),
+  #       plot.background = element_rect(color = NA, fill = input$backgroundColor),
+  #       legend.background = element_rect(color = NA, fill = input$backgroundColor),
+  #       legend.key = element_rect(color = NA, fill = input$backgroundColor),
+  #       panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+  #       panel.grid.major = element_line(color = input$textColor),  
+  #       panel.grid.minor = element_line(color = input$textColor),
+  #       legend.text = element_text(size = legend_text_size(), color = input$textColor), 
+  #       legend.key.size = unit(legend_key_size(), 'line'),
+  #       axis.text = element_text(size = axis_text_size(), color = input$textColor),
+  #       axis.title = element_text(size = axis_title_size()),
+  #       legend.title = element_text(size = legend_title_size(), color = input$textColor)
+  #     ) + labs(y = "Percentage of days as main Pollutant") +
+  #     geom_line(aes(y = Days.CO, color = "CO"), size = line_size(), group = 1) + 
+  #     geom_point(aes(y = Days.CO, color = "CO"), size = line_size()*3) +
+  #     geom_line(aes(y = Days.NO2, color = "NO2"), size = line_size(), group = 2) +
+  #     geom_point(aes(y = Days.NO2, color = "NO2"), size = line_size()*3) +
+  #     geom_line(aes(y = Days.Ozone, color = "Ozone"), size = line_size(), group = 3) +
+  #     geom_point(aes(y = Days.Ozone, color = "Ozone"), size = line_size()*3) +
+  #     geom_line(aes(y = Days.SO2, color = "SO2"), size = line_size(), group = 4) +
+  #     geom_point(aes(y = Days.SO2, color = "SO2"), size = line_size()*3) +
+  #     geom_line(aes(y = Days.PM2.5, color = "PM2.5"), size = line_size(), group = 5) +
+  #     geom_point(aes(y = Days.PM2.5, color = "PM2.5"), size = line_size()*3) +
+  #     geom_line(aes(y = Days.PM10, color = "PM10"), size = line_size(), group = 6) +
+  #     geom_point(aes(y = Days.PM10, color = "PM10"), size = line_size()*3) +
+  #     labs(x = "Year", y = "Percentage of Pollutant") +
+  #     scale_x_continuous(breaks = round(seq(max(min(s_county$Year),input$range[1]), min(max(s_county$Year),input$range[2]), by = 1),1)) +
+  #     scale_y_continuous(breaks = round(seq(min(s_county[14:19]), max(s_county[14:19]), by = 10),1)) +
+  #     scale_color_manual(name = "Statistics",
+  #                        values = c("CO" = input$colorCO,
+  #                                   "NO2" = input$colorNO2,
+  #                                   "Ozone" = input$colorOZONE,
+  #                                   "SO2" = input$colorSO2,
+  #                                   "PM2.5" = input$colorPM25,
+  #                                   "PM10" = input$colorPM10))
+  #   # scale_fill_manual(values=c("#9B77D8", "#758fd6", "#68aed6","#6ed378", "#6ad197", "#66d6c4"))
+  #   
+  #   # scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
+  # })
   
 
   
