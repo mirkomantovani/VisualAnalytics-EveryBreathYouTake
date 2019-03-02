@@ -296,7 +296,7 @@ ui <- dashboardPage(
                                 width = 330, height = "auto",
                                 
                                 h2("Time and Pollutant"),
-                                numericInput("num_counties", "Shown Counties", min=0, max=1100, value=100),
+                                # numericInput("num_counties", "Shown Counties", min=0, max=1100, value=100),
                                 # TO CHANGE AFTER SAGE2 PRESENTATION since it's better with slider on HD ratio display
                                 
                                 # sliderInput(inputId = "num_counties", 
@@ -309,8 +309,12 @@ ui <- dashboardPage(
                                 #             value = 2018, min = 1990, max = 2018,width = "90%"),
                                 selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%"),
                                 materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
-                                numericInput("year_map", "Select Year", min=1990, max=2018, value=2018)
-                                
+                                numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
+                                div( id="yearly_inputs",
+                                selectInput(inputId = "D_year", "Select Year", H_years, selected = '2018',width = "200%",selectize=FALSE),
+                                selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
+                                selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE)
+                                )
                                 # selectInput("color", "Color", vars),
                                 # selectInput("size", "Size", vars, selected = "adultpop"),
                                 # conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
@@ -327,11 +331,11 @@ ui <- dashboardPage(
                                 width = 330, height = "auto",
                                 h2("Shown counties"),
                                 knobInput(
-                                  inputId = "knob",
+                                  inputId = "num_counties",
                                   label = "Select number of counties",
-                                  value = 0,
+                                  value = 100,
                                   min = 0,
-                                  max = 1000,
+                                  max = 1100,
                                   displayPrevious = TRUE, 
                                   lineCap = "round",
                                   fgColor = "#428BCA",
@@ -488,6 +492,33 @@ server <- function(input, output, session) {
     # county <- input$County
     
   })
+  
+  # observeEvent(priority = 10,input$pollutant_map,{
+  #   selected_state_data <- subset(daily_df, State == input$State)
+  #   counties_in_state <- unique(selected_state_data$County)
+  #   
+  #   updateSelectInput(session, inputId = "County", choices = counties_in_state)
+  #   county <- input$County
+  #   
+  # })
+  # 
+  # observeEvent(priority = 10,input$D_year,{
+  #   year_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year)
+  #   months <- unique(year_sub$Month)
+  #   
+  #   updateSelectInput(session, inputId = "H_month", choices = months)
+  #   # county <- input$County
+  #   
+  # })
+  # 
+  # observeEvent(priority = 10,input$D_month,{
+  #   month_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year & Month == input$H_month)
+  #   days <- unique(month_sub$Day)
+  #   
+  #   updateSelectInput(session, inputId = "H_day", choices = days)
+  #   # county <- input$County
+  #   
+  # })
   
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
@@ -1314,8 +1345,7 @@ server <- function(input, output, session) {
   #     shinyalert("Oops!", paste("No data for",selected_county3(),"-",selected_state3(),"in year",input$Year), type = "error")
   # }
   # })
-  pollutants <- c("CO","NO2","Ozone","SO2","PM2.5","PM10")
-  
+
   translate_to_column_name <- function(pollutant) {
     if(pollutant == "CO"){
       return("Days.CO")

@@ -12,15 +12,18 @@ $(document).on("shiny:connected", function (e) {
 
     // switch_daily.parentNode.getElementsByTagName('img')[0].innerText = "dio cane";
     // console.log('porco dio');
-
+    document.getElementById("yearly_inputs").hidden = true;
 
     switch_daily.onclick = function() {
         if(switch_daily.checked){
             switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Yearly Data";
             document.getElementById("year_map").parentNode.hidden = true;
+            document.getElementById("yearly_inputs").hidden = false;
+
         } else {
             switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Daily Data";
             document.getElementById("year_map").parentNode.hidden = false;
+            document.getElementById("yearly_inputs").hidden = true;
         }
     };
 
