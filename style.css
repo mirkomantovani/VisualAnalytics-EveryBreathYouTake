@@ -87,7 +87,7 @@ div.outer {
     padding: 0;
   }
 
-#controls {
+#controls, #counties_panel {
     background-color:rgba(13, 32, 37, 0.767);
     color: #ffffff;
     padding: 0 20px 20px 20px;
@@ -100,6 +100,12 @@ div.outer {
     transition: opacity 1000ms 2ms;
   }
   #controls:hover {
+    /* Fade in while hovering */
+    opacity: 0.97;
+    transition-delay: 0;
+  }
+
+  #counties_panel:hover {
     /* Fade in while hovering */
     opacity: 0.97;
     transition-delay: 0;

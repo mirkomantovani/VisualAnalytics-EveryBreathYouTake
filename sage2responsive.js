@@ -7,9 +7,29 @@ $(document).on("shiny:connected", function (e) {
     dimension[0] = window.innerWidth;
     dimension[1] = window.innerHeight;
 
+    switch_daily = document.getElementById("switch_daily");
+    // console.log(switch_daily);
+
+    // switch_daily.parentNode.getElementsByTagName('img')[0].innerText = "dio cane";
+    // console.log('porco dio');
+
+
+    switch_daily.onclick = function() {
+        if(switch_daily.checked){
+            switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Yearly Data";
+            document.getElementById("year_map").parentNode.hidden = true;
+        } else {
+            switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Daily Data";
+            document.getElementById("year_map").parentNode.hidden = false;
+        }
+    };
+
+
     if (dimension[0] >= 2000) {  //SAGE
         //document.write("<style>.rule1 { ... }</style>");
         //document.body.style.fontSize = "500%";
+        // console.log('porco dio cane');
+
         document.body.style.zoom = "250%";  //it was 400 so the 25% should become 40%
 
         nozoom = document.getElementById("nozoom");
