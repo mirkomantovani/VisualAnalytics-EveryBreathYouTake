@@ -33,30 +33,30 @@ library(htmltools) # to use htmlEscape function
 # datasets = lapply(temp, readRDS)
 # daily_df <- do.call(rbind, datasets)
 # 
-# rm(datasets)
-# 
 # temp = list.files(pattern="hourly.*.Rds")
 # datasets = lapply(temp, readRDS)
 # hourly_df <- do.call(rbind, datasets)
 # setwd("../")
-# # Preprocessing of date (we will save the data preprocessed), long process
+# 
+
+# Preprocessing of date (we will save the data preprocessed), long process
 # hourly_df[["Date Local"]] <- as.Date(hourly_df[["Date Local"]])
 # hourly_df$Year<-format(hourly_df[["Date Local"]],"%Y") # Get only the years
 # hourly_df$Month<-format(hourly_df[["Date Local"]],"%B")
 # hourly_df$Day<-format(hourly_df[["Date Local"]],"%d")
-# 
+
 # rm(datasets)
-# 
+
 # # needed for counties coordinates
 # sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
 # 
 # # geojson file for counties shape
 # xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-
-# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# getting the names
-converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-xy$STATENAME<-converted_states_names
+# 
+# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# # getting the names
+# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+# xy$STATENAME<-converted_states_names
 
 
 
@@ -295,10 +295,8 @@ ui <- dashboardPage(
                                 draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                                 width = 330, height = "auto",
                                 
-                                h2("Map inputs"),
+                                h2("Time and Pollutant"),
                                 numericInput("num_counties", "Shown Counties", min=0, max=1100, value=100),
-                                numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
-                                
                                 # TO CHANGE AFTER SAGE2 PRESENTATION since it's better with slider on HD ratio display
                                 
                                 # sliderInput(inputId = "num_counties", 
@@ -309,9 +307,9 @@ ui <- dashboardPage(
                                 #             sep = "",
                                 #             label = "Select Year", 
                                 #             value = 2018, min = 1990, max = 2018,width = "90%"),
-                                selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%")
-                                
-                                
+                                selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%"),
+                                materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
+                                numericInput("year_map", "Select Year", min=1990, max=2018, value=2018)
                                 
                                 # selectInput("color", "Color", vars),
                                 # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -322,6 +320,23 @@ ui <- dashboardPage(
                                 # 
                                 # plotOutput("histCentile", height = 200),
                                 # plotOutput("scatterCollegeIncome", height = 250)
+                  ),
+                  
+                  absolutePanel(id = "counties_panel", class = "panel panel-default", fixed = TRUE,
+                                draggable = FALSE, top = 80, left = "auto", right = 100, bottom = "auto",
+                                width = 330, height = "auto",
+                                h2("Shown counties"),
+                                knobInput(
+                                  inputId = "knob",
+                                  label = "Select number of counties",
+                                  value = 0,
+                                  min = 0,
+                                  max = 1000,
+                                  displayPrevious = TRUE, 
+                                  lineCap = "round",
+                                  fgColor = "#428BCA",
+                                  inputColor = "#428BCA"
+                                )
                   ),
                   
                   tags$div(id="cite",
@@ -1326,29 +1341,27 @@ server <- function(input, output, session) {
     feature <- translate_to_column_name(input$pollutant_map)
     # value = c((current()$Days.with.AQI-current()$Days.Ozone)/current()$Days.with.AQI*100, current()$Days.Ozone/current()$Days.with.AQI*100)
     
-    
-    sub<-subset(dataset, Year == input$year_map)
-    if(feature !="Median.AQI"){
-      sub$sel_feat<-sub[[feature]]/sub$Days.with.AQI*100
-      suffx = "%"
-    } else {
-      sub$sel_feat<-sub[[feature]]
-      suffx = ""
+    if(!input$switch_daily){ # Yearly
+      sub<-subset(dataset, Year == input$year_map)
+      if(feature !="Median.AQI"){
+        sub$sel_feat<-sub[[feature]]/sub$Days.with.AQI*100
+        suffx = "%"
+      } else {
+        sub$sel_feat<-sub[[feature]]
+        suffx = ""
+      }
+    } else { # Daily
+      
     }
     
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
-
     df <- head(sub,input$num_counties)
-    
-  
     
       # df <- data.frame(
       #   
       #   group = c("Percentage of pollutant"),
       #   value = c(sub[[translate_to_column_name(input$pollutant_map)]]/sub$Days.with.AQI*100,1,2)
       # )
-      
-    
     # ccc <- factor(sample.int(20L, nrow(xy), TRUE))
     # 
     # factpal <- colorFactor(topo.colors(20), ccc)
