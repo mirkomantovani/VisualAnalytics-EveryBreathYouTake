@@ -22,41 +22,37 @@ library(htmltools) # to use htmlEscape function
 
 # importing datasets
 
-# setwd("./csv/")
-# temp = list.files(pattern="*.csv")
-# datasets = lapply(temp, read.csv)
-# dataset <- do.call(rbind, datasets)
-# setwd("../")
-# 
-# setwd("./rds/")
-# temp = list.files(pattern="daily.*.Rds")
-# datasets = lapply(temp, readRDS)
-# daily_df <- do.call(rbind, datasets)
-# 
-# temp = list.files(pattern="hourly.*.Rds")
-# datasets = lapply(temp, readRDS)
-# hourly_df <- do.call(rbind, datasets)
-# setwd("../")
-# 
+setwd("./csv/")
+temp = list.files(pattern="*.csv")
+datasets = lapply(temp, read.csv)
+dataset <- do.call(rbind, datasets)
+setwd("../")
 
-# Preprocessing of date (we will save the data preprocessed), long process
-# hourly_df[["Date Local"]] <- as.Date(hourly_df[["Date Local"]])
-# hourly_df$Year<-format(hourly_df[["Date Local"]],"%Y") # Get only the years
-# hourly_df$Month<-format(hourly_df[["Date Local"]],"%B")
-# hourly_df$Day<-format(hourly_df[["Date Local"]],"%d")
+setwd("./rds/")
+temp = list.files(pattern="daily_aqi.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_df <- do.call(rbind, datasets)
 
-# rm(datasets)
+temp = list.files(pattern="daily_all.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_all <- do.call(rbind, datasets)
 
-# # needed for counties coordinates
-# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-# 
-# # geojson file for counties shape
-# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-# 
-# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# # getting the names
-# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-# xy$STATENAME<-converted_states_names
+temp = list.files(pattern="hourly_all.*.Rds")
+datasets = lapply(temp, readRDS)
+hourly_df <- do.call(rbind, datasets)
+setwd("../")
+rm(datasets)
+
+# needed for counties coordinates
+sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+
+# geojson file for counties shape
+xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+
+# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# getting the names
+converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+xy$STATENAME<-converted_states_names
 
 
 
