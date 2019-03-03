@@ -524,12 +524,12 @@ server <- function(input, output, session) {
   # })
   # 
   observeEvent(priority = 10,input$H_month,{
-    month_sub <- subset(daily_all,Year == 2018 & Month == input$H_month)
+    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
     days <- unique(month_sub$Day)
-
+    
     updateSelectInput(session, inputId = "H_day", choices = days)
     # county <- input$County
-
+    
   })
 
   # observeEvent(priority = 10,input$pollutant_map,{
@@ -541,20 +541,12 @@ server <- function(input, output, session) {
   # 
   # })
 
-  # observeEvent(priority = 10,input$D_year,{
-  #   year_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year)
-  #   months <- unique(year_sub$Month)
-  # 
-  #   updateSelectInput(session, inputId = "H_month", choices = months)
-  #   # county <- input$County
-  # 
-  # })
-
   observeEvent(priority = 10,input$D_month,{
-    month_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year & Month == input$H_month)
+    month_sub <- subset(daily_all, Year == 2018 & Month == input$D_month)
     days <- unique(month_sub$Day)
+    days <- sort(days)
 
-    updateSelectInput(session, inputId = "H_day", choices = days)
+    updateSelectInput(session, inputId = "D_day", choices = days)
     # county <- input$County
 
   })
@@ -1704,7 +1696,6 @@ server <- function(input, output, session) {
     # ccc <- factor(sample.int(20L, nrow(xy), TRUE))
     #
     # factpal <- colorFactor(topo.colors(20), ccc)
-
     # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
     # getting the names
     # converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
