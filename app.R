@@ -40,7 +40,7 @@ library(reshape2)
 # 
 # 
 # 
-# temp = list.files(pattern="daily_all.*.Rds")
+# temp = list.files(pattern="daily_all_pollutants.Rds")
 # datasets = lapply(temp, readRDS)
 # daily_all <- do.call(rbind, datasets)
 # 
@@ -58,16 +58,15 @@ library(reshape2)
 # 
 # # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
 # # getting the names
-# 
 # converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
 # xy$STATENAME<-converted_states_names
-
+# 
 
 
 ########################################### PREPROCESSING #########################################
 
 years<-c(1980:2018)
-H_years<-c(1990:2018) #years available for hourly data
+H_years<-c(2018) #years available for hourly data
 H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
 H_days<-c(1:31)
 states<-unique(dataset$State)
@@ -290,9 +289,13 @@ ui <- dashboardPage(
                                colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),
                                colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),
                                colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),
-                               colourInput("colorSO2_hp", h5("Select color SO2"), value = "#5610a8"),
+                               colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),
                                colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),
                                colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),
+                               colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),
+                               colourInput("colorWD_hp", h5("Select color Wind Direction"), value = "#D6BC70"),
+                               colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),
+                               
                                circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
                                tooltip = tooltipOptions(title = "Click to open")
                              ),
@@ -309,16 +312,18 @@ ui <- dashboardPage(
                                         h4(textOutput("sel_state_hp")),
                                         h3("County:"),
                                         h4(textOutput("sel_county_hp")),
-                                        selectInput(inputId = "H_year", "Select Year", H_years, selected = '2018',width = "200%",selectize=FALSE),
-                                        selectInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
+										                    h3("Year:"),
+										                    h4(textOutput("year_hp")),
+	                    									selectInput(inputId = "H_year", "Select Year", H_years, selected = 'January',width = "200%",selectize=FALSE),
+  										                  selectInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
                                         selectInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE)
                                         # selectInput(inputId = "pollutant_chart", "Select Pollutant", c(pollutants), multiple = TRUE, selected = 'AQI',width = "100%")
                              ),class = "boxtozoom")
                 ))
                 ,
-                column(10,plotOutput("hourly_poll",height = "85vmin"),checkboxGroupButtons(
-                  inputId = "pollutant_hourly", label = h5("Pollutant types"), # moved in main input panel
-                  choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
+                column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
+                  inputId = "hourly_data", label = h5("Hourly Data"), # moved in main input panel 
+                  choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Wind Direction","Temperature"), 
                   justified = TRUE, status = "primary", selected = "white",
                   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                 ))
@@ -513,18 +518,18 @@ server <- function(input, output, session) {
     county <- input$County
 
   })
+  
+  observeEvent(priority = 10,input$H_year,{
+    year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
+    months <- unique(year_sub$Month)
 
-  # observeEvent(priority = 10,input$H_year,{
-  #   year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
-  #   months <- unique(year_sub$Month)
-  # 
-  #   updateSelectInput(session, inputId = "H_month", choices = months)
-  #   # county <- input$County
-  # 
-  # })
-  # 
+    updateSelectInput(session, inputId = "H_month", choices = months)
+    # county <- input$County
+
+  })
+  
   observeEvent(priority = 10,input$H_month,{
-    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
+    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Month == input$H_month)
     days <- unique(month_sub$Day)
     
     updateSelectInput(session, inputId = "H_day", choices = days)
@@ -954,8 +959,11 @@ server <- function(input, output, session) {
   output$sel_county_hp <- renderText({
     selected_county_hp()
   })
-
-    output$data_years <- renderText({
+  output$year_hp <- renderText({ 
+    "2018"
+  })
+  
+    output$data_years <- renderText({ 
     paste(nrow(subset(dataset, State == selected_state() & County == selected_county())),"years of data available")
   })
 
@@ -1757,10 +1765,10 @@ server <- function(input, output, session) {
                                         ),
                 opacity = 1)
   })
-
-  # Time series of Hourly Pollutants
-  output$hourly_poll <- renderPlot({
-    s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Year == input$H_year & hourly_df$Month == input$H_month & hourly_df$Day == input$H_day)
+  
+  # Time series of Hourly Data
+  output$hourly_data <- renderPlot({
+    s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Month == input$H_month & hourly_df$Day == input$H_day)
     if(length(s_county$`Time Local`) > 0 ){
     gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
       theme(
@@ -1779,42 +1787,59 @@ server <- function(input, output, session) {
         axis.text = element_text(size = axis_text_size(), color = input$textColor_hp),
         axis.title = element_text(size = axis_title_size()),
         legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)
-      )+labs(x = "Hours", y = "Measurement of Pollutant") +
+      )+labs(x = "Hours", y = "Measurement of Hourly Data") + 
       scale_color_manual(name = "Measurements",
                          values = c("CO" = input$colorCO_hp,
                                     "NO2" = input$colorNO2_hp,
                                     "Ozone" = input$colorOZONE_hp,
                                     "SO2" = input$colorSO2_hp,
                                     "PM2.5" = input$colorPM25_hp,
-                                    "PM10" = input$colorPM10_hp))
-      if ("CO" %in% input$pollutant_hourly){
+                                    "PM10" = input$colorPM10_hp,
+                                    "Wind Speed" = input$colorWS_hp,
+                                    "Wind Direction" = input$colorWD_hp,
+                                    "Temperature" = input$colorTemp_hp
+                                    ))
+      if ("Temperature" %in% input$hourly_data){
+        gl <- gl + geom_line(aes(y = s_county$`Temperature`, color = "Temperature"), size = line_size(), group = 1) +
+          geom_point(aes(y = s_county$`Temperature`, color = "Temperature"), size = line_size()*3) 
+      }
+    
+      if ("Wind Speed" %in% input$hourly_data){
+        gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 1) +
+          geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3) 
+      }
+      if ("Wind Direction" %in% input$hourly_data){
+        gl <- gl + geom_line(aes(y = s_county$`Wind Direction`, color = "Wind Direction"), size = line_size(), group = 1) +
+          geom_point(aes(y = s_county$`Wind Direction`, color = "Wind Direction"), size = line_size()*3) 
+      }
+      if ("CO" %in% input$hourly_data){
         gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
-        geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
+        geom_point(aes(y = CO, color = "CO"), size = line_size()*3) 
       }
-      if ("NO2" %in% input$pollutant_hourly){
+      if ("NO2" %in% input$hourly_data){
         gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
-        geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
-      }
-      if ("Ozone" %in% input$pollutant_hourly){
+        geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3) 
+      }    
+      if ("Ozone" %in% input$hourly_data){
         gl <- gl+geom_line(aes(y = Ozone, color = "Ozone"), size = line_size(), group = 3) +
-        geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3)
+        geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3) 
       }
-      if ("SO2" %in% input$pollutant_hourly){
+      if ("SO2" %in% input$hourly_data){
         gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
-        geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3)
+        geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3) 
       }
-      if ("PM2.5" %in% input$pollutant_hourly){
-        gl <- gl + geom_line(aes(y = PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
-        geom_point(aes(y = PM2.5, color = "PM2.5"), size = line_size()*3)
+      if ("PM2.5" %in% input$hourly_data){
+        gl <- gl + geom_line(aes(y = PM2.5, color = "PM2.5"), size = line_size(), group = 5)+ 
+        geom_point(aes(y = PM2.5, color = "PM2.5"), size = line_size()*3) 
       }
-      if ("PM10" %in% input$pollutant_hourly){
+      if ("PM10" %in% input$hourly_data){
         gl <- gl + geom_line(aes(y = PM10, color = "PM10"), size = line_size(), group = 6) +
-        geom_point(aes(y = PM10, color = "PM10"), size = line_size()*3)
-      }
-      gl
+        geom_point(aes(y = PM10, color = "PM10"), size = line_size()*3) 
+      } 
+      gl     
     # scale_x_continuous(breaks = round(seq(max(min(s_county$`Time Local`),1), min(max(s_county$`Time Local`),24), by = 1),1)) +
-    # scale_y_continuous(breaks = round(seq(min(s_county[4:9]), max(s_county[4:9]), by = 10),1))
-
+    # scale_y_continuous(breaks = round(seq(min(s_county[4:9]), max(s_county[4:9]), by = 10),1)) 
+    
     }
     # Signaling missing data
     else {
