@@ -528,8 +528,6 @@ server <- function(input, output, session) {
     days <- unique(month_sub$Day)
     
     updateSelectInput(session, inputId = "H_day", choices = days)
-    # county <- input$County
-    
   })
 
   # observeEvent(priority = 10,input$pollutant_map,{
@@ -547,7 +545,14 @@ server <- function(input, output, session) {
     days <- sort(days)
 
     updateSelectInput(session, inputId = "D_day", choices = days)
-    # county <- input$County
+  })
+  
+  observeEvent(priority = 10,input$switch_daily,{
+    if(input$switch_daily){
+      updateSelectInput(session, inputId = "pollutant_map", choices = pollutants)
+    } else {
+      updateSelectInput(session, inputId = "pollutant_map", choices = c(pollutants,"AQI"))
+    }
 
   })
 
