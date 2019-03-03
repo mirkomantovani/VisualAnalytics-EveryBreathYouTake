@@ -351,7 +351,6 @@ ui <- dashboardPage(
                                 materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
                                 numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
                                 div( id="yearly_inputs",
-                                selectInput(inputId = "D_year", "Select Year", H_years, selected = '2018',width = "200%",selectize=FALSE),
                                 selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
                                 selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE)
                                 )
@@ -515,17 +514,17 @@ server <- function(input, output, session) {
 
   })
 
-  observeEvent(priority = 10,input$H_year,{
-    year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
-    months <- unique(year_sub$Month)
-
-    updateSelectInput(session, inputId = "H_month", choices = months)
-    # county <- input$County
-
-  })
-
+  # observeEvent(priority = 10,input$H_year,{
+  #   year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
+  #   months <- unique(year_sub$Month)
+  # 
+  #   updateSelectInput(session, inputId = "H_month", choices = months)
+  #   # county <- input$County
+  # 
+  # })
+  # 
   observeEvent(priority = 10,input$H_month,{
-    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
+    month_sub <- subset(daily_all,Year == 2018 & Month == input$H_month)
     days <- unique(month_sub$Day)
 
     updateSelectInput(session, inputId = "H_day", choices = days)
@@ -536,29 +535,29 @@ server <- function(input, output, session) {
   # observeEvent(priority = 10,input$pollutant_map,{
   #   selected_state_data <- subset(daily_df, State == input$State)
   #   counties_in_state <- unique(selected_state_data$County)
-  #
+  # 
   #   updateSelectInput(session, inputId = "County", choices = counties_in_state)
   #   county <- input$County
-  #
+  # 
   # })
-  #
+
   # observeEvent(priority = 10,input$D_year,{
   #   year_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year)
   #   months <- unique(year_sub$Month)
-  #
+  # 
   #   updateSelectInput(session, inputId = "H_month", choices = months)
   #   # county <- input$County
-  #
+  # 
   # })
-  #
-  # observeEvent(priority = 10,input$D_month,{
-  #   month_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year & Month == input$H_month)
-  #   days <- unique(month_sub$Day)
-  #
-  #   updateSelectInput(session, inputId = "H_day", choices = days)
-  #   # county <- input$County
-  #
-  # })
+
+  observeEvent(priority = 10,input$D_month,{
+    month_sub <- subset(hourly_df, `State Name` == input$State & Year == input$H_year & Month == input$H_month)
+    days <- unique(month_sub$Day)
+
+    updateSelectInput(session, inputId = "H_day", choices = days)
+    # county <- input$County
+
+  })
 
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
@@ -1689,7 +1688,9 @@ server <- function(input, output, session) {
         suffx = ""
       }
     } else { # Daily
-
+      sub<-subset(daily_all, Month == input$D_month & Day == input$D_day)
+      sub$sel_feat<-sub[[input$pollutant_map]]
+      suffx = "ppm"
     }
 
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
@@ -1710,20 +1711,27 @@ server <- function(input, output, session) {
 
     # xy$STATENAME<-converted_states_names
 
+    if(!input$switch_daily){ # Yearly
     temp <- merge(xy, df,
                   by.x = c("STATENAME","NAME"), by.y = c("State","County"),
                   all.x = TRUE)
+    } else { # Daily
+      temp <- merge(xy, df,
+                    by.x = c("STATENAME","NAME"), by.y = c("State Name","County Name"),
+                    all.x = TRUE)
+    }
+
 
     # Create a color palette
     mypal <- colorNumeric(palette = "viridis", domain = temp$sel_feat
                           ,na.color = "#ffffff11"
                           )
 
-    content <- paste(sep = "<br/>",
-                     "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
-                     "606 5th Ave. S",
-                     "Seattle, WA 98138"
-    )
+    # content <- paste(sep = "<br/>",
+    #                  "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
+    #                  "606 5th Ave. S",
+    #                  "Seattle, WA 98138"
+    # )
 
     # factpal <- colorQuantile("Blues", ccc, n=20)
     # year_map, pollutant_map
