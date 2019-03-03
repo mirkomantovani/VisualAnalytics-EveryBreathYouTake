@@ -19,40 +19,42 @@ library(shinyWidgets)
 library(viridis) # Color palette
 library(cdlTools) # convert FIPS codes into names
 library(htmltools) # to use htmlEscape function
-
+library(plotly)
+library(RColorBrewer)
 # importing datasets
 
-setwd("./csv/")
-temp = list.files(pattern="*.csv")
-datasets = lapply(temp, read.csv)
-dataset <- do.call(rbind, datasets)
-setwd("../")
-
-setwd("./rds/")
-temp = list.files(pattern="daily_aqi.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_df <- do.call(rbind, datasets)
-
-temp = list.files(pattern="daily_all.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_all <- do.call(rbind, datasets)
-
-temp = list.files(pattern="hourly_all.*.Rds")
-datasets = lapply(temp, readRDS)
-hourly_df <- do.call(rbind, datasets)
-setwd("../")
-rm(datasets)
-
-# needed for counties coordinates
-sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-
-# geojson file for counties shape
-xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-
-# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# getting the names
-converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-xy$STATENAME<-converted_states_names
+# setwd("./csv/")
+# temp = list.files(pattern="*.csv")
+# datasets = lapply(temp, read.csv)
+# dataset <- do.call(rbind, datasets)
+# setwd("../")
+# 
+# setwd("./rds/")
+# temp = list.files(pattern="daily_aqi.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_df <- do.call(rbind, datasets)
+# daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
+# 
+# temp = list.files(pattern="daily_all.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_all <- do.call(rbind, datasets)
+# 
+# temp = list.files(pattern="hourly_all.*.Rds")
+# datasets = lapply(temp, readRDS)
+# hourly_df <- do.call(rbind, datasets)
+# setwd("../")
+# rm(datasets)
+# 
+# # needed for counties coordinates
+# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+# 
+# # geojson file for counties shape
+# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+# 
+# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# # getting the names
+# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+# xy$STATENAME<-converted_states_names
 
 
 
@@ -256,7 +258,23 @@ ui <- dashboardPage(
       tabItem("monthly_aqi",
               h1("WIP")),
       tabItem("daily_aqi",
-              h1("WIP")),
+              fluidRow(
+                # 2 tabs, (line plot, bar chart, table)
+                column(10,
+                       tabsetPanel(
+                         tabPanel("AQI Time Series",
+                                  plotlyOutput("daily_aqi_line", height = "85vmin")
+                         ),
+                         tabPanel("Bar chart",
+                                  plotOutput("daily_bar", height = "60vmin")
+                         ),
+                         tabPanel("Table",
+                                  div(DT::dataTableOutput("daily_aqi_table"), style = "font-size:100%")
+                         )
+                       )
+                )
+              )
+      ),
       tabItem("hourly_pollutants",
               fluidRow(
                 # Input county with search
@@ -1053,6 +1071,246 @@ server <- function(input, output, session) {
                  labelOptions = labelOptions(textsize = marker_text_size())
                  )
   })
+  
+  
+  # Daily AQI for selected year - PART C
+  output$daily_aqi_line <- renderPlotly({
+    # df<-subset(dataset, State == selected_state() & County == selected_county() & Year > input$range[1] & Year < input$range[2])
+    # ggplot(data = df, aes(x = Year)) +
+    #   theme(
+    #     axis.text.x = element_text(angle = 45, hjust = 1),
+    #     axis.title.x = element_blank(),
+    #     axis.title.y = element_text(color = input$textColor),
+    #     panel.border = element_blank(),
+    #     plot.background = element_rect(color = NA, fill = input$backgroundColor),
+    #     legend.background = element_rect(color = NA, fill = input$backgroundColor),
+    #     legend.key = element_rect(color = NA, fill = input$backgroundColor),
+    #     panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+    #     panel.grid.major = element_line(color = input$textColor),
+    #     panel.grid.minor = element_line(color = input$textColor),
+    #     legend.text = element_text(size = legend_text_size(), color = input$textColor),
+    #     legend.key.size = unit(legend_key_size(), 'line'),
+    #     axis.text = element_text(size = axis_text_size(), color = input$textColor),
+    #     axis.title = element_text(size = axis_title_size()),
+    #     legend.title = element_text(size = legend_title_size(), color = input$textColor)
+    #   ) +
+    #   geom_line(aes(y = Max.AQI, color = "Max"), size = line_size(), group = 1) +
+    #   geom_point(aes(y = Max.AQI, color = "Max"), size = line_size()*3) +
+    #   geom_line(aes(y = X90th.Percentile.AQI, color = "90th Percentile"), size = line_size(), group = 3) +
+    #   geom_point(aes(y = X90th.Percentile.AQI, color = "90th Percentile"), size = line_size()*3) +
+    #   geom_line(aes(y = Median.AQI, color = "Median"), size = line_size(), group = 2) +
+    #   geom_point(aes(y = Median.AQI, color = "Median"), size = line_size()*3) +
+    #   labs(x = "Year", y = "Air Quality Index") +
+    #   scale_x_continuous(breaks = round(seq(max(min(df$Year),input$range[1]), min(max(df$Year),input$range[2]), by = 1),1)) +
+    #   # scale_color_manual(name = "Statistics",
+    #   #                    values = c("Max" = "firebrick1",
+    #   #                               "90th Percentile" = "firebrick4",
+    #   #                               "Median" = "steelblue1")) +
+    #   scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
+    
+
+    a <- subset(daily_df,date>= paste(input$Year,"-01-01",sep="") & date<= paste(input$Year,"-12-31",sep="") & county==input$County & state==input$State)
+    a = a[order(as.Date(a$date, format="%Y-%d-%m")),]
+    myColors <- brewer.pal(6,"Set1")
+    names(myColors) <- c("Ozone","SO2","PM10","PM2.5","NO2","CO")
+    colScale <- scale_colour_manual(name = "Major pollutant",values = myColors)
+    if(length(a$category)==0)
+      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+      else{
+    p <- ggplot(a, aes(x = date, y = aqi)) +  labs(x = "Year", y = "Air Quality Index") +   
+      geom_line(aes()) + geom_point(aes(color=pollutant)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_x_date(
+        date_minor_breaks = "1 month") + theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(color = input$textColor),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor),
+          panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor),
+          panel.grid.minor = element_line(color = input$textColor),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor)
+        )#labels = date_format("%m-%Y")
+    
+    # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
+
+    
+    p <- ggplotly(p)
+    p
+      }
+    
+  })
+  
+  #Stacked bar chart - PART C
+  output$daily_bar <- renderPlot({
+      
+      p1 <- subset(daily_df,date>= paste(input$Year,"-01-01",sep="") & date<= paste(input$Year,"-12-31",sep="") & county==input$County & state==input$State)
+      if(length(p1$category)==0)
+      {
+        shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+        emp <- data.frame()
+        ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(color = input$textColor),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor),
+          panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor),
+          panel.grid.minor = element_line(color = input$textColor),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor)
+        )
+      }
+      else{
+      
+      df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
+      names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+      months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+      for(i in 1:12)
+      {
+        #get monthly data
+        if(i<10)
+        {
+          month = paste("0",i,sep="")
+        }
+        else
+        {
+          month = paste("",i,sep="")
+        }
+        
+        p2 <- subset(p1,format.Date(date, "%m")==month)
+        df_row = c(months[i],0,0,0,0,0,0,0)
+        
+        t1 <- nrow(subset(p2,category=="Good"))
+        t2 <- nrow(subset(p2,category=="Moderate"))
+        
+        t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
+        t4 <- nrow(subset(p2,category=="Unhealthy"))
+        t5 <- nrow(subset(p2,category=="Very Unhealthy"))
+        t6 <- nrow(subset(p2,category=="Hazardous"))
+        t7 <- nrow(subset(p2,category=="Unknown"))
+        
+        df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
+        print(df_row)
+        names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+        df <- rbind(df,df_row)
+      }
+      
+      DF1 <- melt(df, id.var="Month")
+
+      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010","#C0C0C0"))+
+        theme(
+          text = element_text(size=12)
+        ) + colScale + labs(x = "Month", y = "Number of days") +
+        theme(
+          axis.title.x = element_text(color = "black"),
+          axis.title.y = element_text(color = "black"),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = "#bcdae0"),
+          legend.background = element_rect(color = NA, fill = "#bcdae0"),
+          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
+          panel.grid.major = element_line(color = "black"),
+          panel.grid.minor = element_line(color = "black"),
+          legend.text = element_text(size = legend_text_size()),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(),color = "black"),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size())
+        )
+      p
+      }
+      
+      # df <- data.frame(
+      #   
+      #   group = c("Good", "Moderate", "Unhealthy for Sensitive Groups", "Very Unhealthy", "Hazardous"),
+      #   value = c(current()$Good.Days, current()$Moderate.Days, 
+      #             current()$Unhealthy.for.Sensitive.Groups.Days,
+      #             current()$Very.Unhealthy.Days,
+      #             current()$Hazardous.Days)
+      # )
+      # 
+      # df$group <- factor(df$group, levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups", "Very Unhealthy", "Hazardous"))
+      # 
+      # 
+      # bar <-ggplot(data=df, aes(x=group, y=value, fill = group)) + scale_fill_brewer(palette="Greys") +
+      #   geom_bar(stat="identity") + coord_flip() + 
+      #   theme(
+      #     text = element_text(size=12),
+      #     legend.position="none"
+      #   )+ 
+      #   xlab("AQI level") + ylab("Days count")+
+      #   theme(
+      #     axis.title.x = element_text(color = "black"),
+      #     axis.title.y = element_blank(),
+      #     panel.border = element_blank(),
+      #     plot.background = element_rect(color = NA, fill = "#bcdae0"),
+      #     legend.background = element_rect(color = NA, fill = "#bcdae0"),
+      #     panel.background = element_rect(fill = "#bcdae0", color  =  NA),
+      #     panel.grid.major = element_line(color = "black"),  
+      #     panel.grid.minor = element_line(color = "black"),
+      #     legend.text = element_text(size = legend_text_size()), 
+      #     legend.key.size = unit(legend_key_size(), 'line'),
+      #     axis.text = element_text(size = axis_text_size(),color = "black"),
+      #     axis.title = element_text(size = axis_title_size()),
+      #     legend.title = element_text(size = legend_title_size())
+      #   )
+      # bar
+
+  })
+
+  # table of daily aqi
+  output$daily_aqi_table <- DT::renderDataTable({
+    p1 <- subset(daily_df,date>= paste(input$Year,"-01-01",sep="") & date<= paste(input$Year,"-12-31",sep="") & county==input$County & state==input$State)
+    if(length(p1$category)==0)
+      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+    else{
+    df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
+    names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+    months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+    for(i in 1:12)
+    {
+      #get monthly data
+      if(i<10)
+      {
+        month = paste("0",i,sep="")
+      }
+      else
+      {
+        month = paste("",i,sep="")
+      }
+      p2 <- subset(p1,format.Date(date, "%m")==month)
+      df_row = c(months[i],0,0,0,0,0,0,0)
+      
+      t1 <- nrow(subset(p2,category=="Good"))
+      t2 <- nrow(subset(p2,category=="Moderate"))
+
+      t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
+      t4 <- nrow(subset(p2,category=="Unhealthy"))
+      t5 <- nrow(subset(p2,category=="Very Unhealthy"))
+      t6 <- nrow(subset(p2,category=="Hazardous"))
+      t7 <- nrow(subset(p2,category=="Unknown"))
+      
+      df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
+      print(df_row)
+      names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+      df <- rbind(df,df_row)
+    }
+    df}
+                                          },options = list(searching = FALSE,paging = FALSE,
+                                                           dom = 't'))
+  
+  
   
   # 3 Counties on LeafLet Map
   # output$map_counties <- renderLeaflet({
