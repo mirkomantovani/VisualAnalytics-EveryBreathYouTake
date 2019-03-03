@@ -25,42 +25,42 @@ library(reshape2)
 
 # importing datasets
 
-# setwd("./csv/")
-# temp = list.files(pattern="*.csv")
-# datasets = lapply(temp, read.csv)
-# dataset <- do.call(rbind, datasets)
-# setwd("../")
-# 
-# setwd("./rds/")
-# temp = list.files(pattern="daily_aqi.*.Rds")
-# datasets = lapply(temp, readRDS)
-# daily_df <- do.call(rbind, datasets)
-# daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
-# names(daily_df) <- c("state","county","date","aqi","category","pollutant")
-# 
-# 
-# 
-# temp = list.files(pattern="daily_all_pollutants.Rds")
-# datasets = lapply(temp, readRDS)
-# daily_all <- do.call(rbind, datasets)
-# 
-# temp = list.files(pattern="hourly_all.*.Rds")
-# datasets = lapply(temp, readRDS)
-# hourly_df <- do.call(rbind, datasets)
-# setwd("../")
-# rm(datasets)
-# 
-# # needed for counties coordinates
-# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-# 
-# # geojson file for counties shape
-# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-# 
-# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# # getting the names
-# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-# xy$STATENAME<-converted_states_names
-# 
+setwd("./csv/")
+temp = list.files(pattern="*.csv")
+datasets = lapply(temp, read.csv)
+dataset <- do.call(rbind, datasets)
+setwd("../")
+
+setwd("./rds/")
+temp = list.files(pattern="daily_aqi.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_df <- do.call(rbind, datasets)
+daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
+names(daily_df) <- c("state","county","date","aqi","category","pollutant")
+
+
+
+temp = list.files(pattern="daily_all_pollutants.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_all <- do.call(rbind, datasets)
+
+temp = list.files(pattern="hourly_all.*.Rds")
+datasets = lapply(temp, readRDS)
+hourly_df <- do.call(rbind, datasets)
+setwd("../")
+rm(datasets)
+
+# needed for counties coordinates
+sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+
+# geojson file for counties shape
+xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+
+# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# getting the names
+converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+xy$STATENAME<-converted_states_names
+
 
 
 ########################################### PREPROCESSING #########################################
@@ -529,7 +529,7 @@ server <- function(input, output, session) {
   })
   
   observeEvent(priority = 10,input$H_month,{
-    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Month == input$H_month)
+    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
     days <- unique(month_sub$Day)
     
     updateSelectInput(session, inputId = "H_day", choices = days)
