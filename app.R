@@ -21,40 +21,43 @@ library(cdlTools) # convert FIPS codes into names
 library(htmltools) # to use htmlEscape function
 library(plotly)
 library(RColorBrewer)
+library(reshape2)
+
 # importing datasets
 
-# setwd("./csv/")
-# temp = list.files(pattern="*.csv")
-# datasets = lapply(temp, read.csv)
-# dataset <- do.call(rbind, datasets)
-# setwd("../")
-# 
-# setwd("./rds/")
-# temp = list.files(pattern="daily_aqi.*.Rds")
-# datasets = lapply(temp, readRDS)
-# daily_df <- do.call(rbind, datasets)
-# daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
-# 
-# temp = list.files(pattern="daily_all.*.Rds")
-# datasets = lapply(temp, readRDS)
-# daily_all <- do.call(rbind, datasets)
-# 
-# temp = list.files(pattern="hourly_all.*.Rds")
-# datasets = lapply(temp, readRDS)
-# hourly_df <- do.call(rbind, datasets)
-# setwd("../")
-# rm(datasets)
+setwd("./csv/")
+temp = list.files(pattern="*.csv")
+datasets = lapply(temp, read.csv)
+dataset <- do.call(rbind, datasets)
+setwd("../")
+
+setwd("./rds/")
+temp = list.files(pattern="daily_aqi.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_df <- do.call(rbind, datasets)
+daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
+names(daily_df) <- c("state","county","date","aqi","category","pollutant")
+
+temp = list.files(pattern="daily_all.*.Rds")
+datasets = lapply(temp, readRDS)
+daily_all <- do.call(rbind, datasets)
+
+temp = list.files(pattern="hourly_all.*.Rds")
+datasets = lapply(temp, readRDS)
+hourly_df <- do.call(rbind, datasets)
+setwd("../")
+rm(datasets)
 # 
 # # needed for counties coordinates
-# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
 # 
 # # geojson file for counties shape
-# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
 # 
 # # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
 # # getting the names
-# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-# xy$STATENAME<-converted_states_names
+converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+xy$STATENAME<-converted_states_names
 
 
 
@@ -1111,9 +1114,6 @@ server <- function(input, output, session) {
 
     a <- subset(daily_df,date>= paste(input$Year,"-01-01",sep="") & date<= paste(input$Year,"-12-31",sep="") & county==input$County & state==input$State)
     a = a[order(as.Date(a$date, format="%Y-%d-%m")),]
-    myColors <- brewer.pal(6,"Set1")
-    names(myColors) <- c("Ozone","SO2","PM10","PM2.5","NO2","CO")
-    colScale <- scale_colour_manual(name = "Major pollutant",values = myColors)
     if(length(a$category)==0)
       shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
       else{
@@ -1212,7 +1212,7 @@ server <- function(input, output, session) {
       p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010","#C0C0C0"))+
         theme(
           text = element_text(size=12)
-        ) + colScale + labs(x = "Month", y = "Number of days") +
+        ) + labs(x = "Month", y = "Number of days") +
         theme(
           axis.title.x = element_text(color = "black"),
           axis.title.y = element_text(color = "black"),
