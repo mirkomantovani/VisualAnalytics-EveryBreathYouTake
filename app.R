@@ -25,42 +25,42 @@ library(reshape2)
 
 # importing datasets
 
-setwd("./csv/")
-temp = list.files(pattern="*.csv")
-datasets = lapply(temp, read.csv)
-dataset <- do.call(rbind, datasets)
-setwd("../")
-
-setwd("./rds/")
-temp = list.files(pattern="daily_aqi.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_df <- do.call(rbind, datasets)
-daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
-names(daily_df) <- c("state","county","date","aqi","category","pollutant")
-
-
-
-temp = list.files(pattern="daily_all.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_all <- do.call(rbind, datasets)
-
-temp = list.files(pattern="hourly_all.*.Rds")
-datasets = lapply(temp, readRDS)
-hourly_df <- do.call(rbind, datasets)
-setwd("../")
-rm(datasets)
-
-# needed for counties coordinates
-sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-
-# geojson file for counties shape
-xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-
-# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# getting the names
-
-converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-xy$STATENAME<-converted_states_names
+# setwd("./csv/")
+# temp = list.files(pattern="*.csv")
+# datasets = lapply(temp, read.csv)
+# dataset <- do.call(rbind, datasets)
+# setwd("../")
+# 
+# setwd("./rds/")
+# temp = list.files(pattern="daily_aqi.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_df <- do.call(rbind, datasets)
+# daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
+# names(daily_df) <- c("state","county","date","aqi","category","pollutant")
+# 
+# 
+# 
+# temp = list.files(pattern="daily_all.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_all <- do.call(rbind, datasets)
+# 
+# temp = list.files(pattern="hourly_all.*.Rds")
+# datasets = lapply(temp, readRDS)
+# hourly_df <- do.call(rbind, datasets)
+# setwd("../")
+# rm(datasets)
+# 
+# # needed for counties coordinates
+# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+# 
+# # geojson file for counties shape
+# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+# 
+# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# # getting the names
+# 
+# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+# xy$STATENAME<-converted_states_names
 
 
 
@@ -1659,7 +1659,21 @@ server <- function(input, output, session) {
 
     return("Days.CO")
   }
-
+  
+  # Mirko
+  # !Important
+  # The round county numbers updates continously invalidating the input for as many times as the there are
+  # in the difference between the starting point and the final point, recalculating so many times and
+  # make the app unusable. I will try to use a reactive value to compute the county number input based on
+  # the round number picker and use debounce (or throttle) to delay the execution for a number of ms needed
+  # for the user to choose the right number
+  
+  delayes_num_counties <- reactive({
+    input$num_counties
+  })
+  
+  delayes_num_counties_debounced <- delayes_num_counties %>% debounce(300)
+  
   # MAP rendering
   output$map_controllers <- renderLeaflet({
     feature <- translate_to_column_name(input$pollutant_map)
@@ -1679,7 +1693,7 @@ server <- function(input, output, session) {
     }
 
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
-    df <- head(sub,input$num_counties)
+    df <- head(sub,delayes_num_counties_debounced())
 
       # df <- data.frame(
       #
