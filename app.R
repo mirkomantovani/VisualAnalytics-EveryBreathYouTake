@@ -38,8 +38,6 @@ daily_df <- do.call(rbind, datasets)
 daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
 names(daily_df) <- c("state","county","date","aqi","category","pollutant")
 
-
-
 temp = list.files(pattern="daily_all_pollutants.*.Rds")
 datasets = lapply(temp, readRDS)
 daily_all <- do.call(rbind, datasets)
@@ -314,9 +312,9 @@ ui <- dashboardPage(
                                         h4(textOutput("sel_county_hp")),
 										                    h3("Year:"),
 										                    h4(textOutput("year_hp")),
-	                    									selectInput(inputId = "H_year", "Select Year", H_years, selected = 'January',width = "200%",selectize=FALSE),
-  										                  selectInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
-                                        selectInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE)
+										selectizeInput(inputId = "H_year", "Select Year", H_years, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+										selectizeInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+										selectizeInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
                                         # selectInput(inputId = "pollutant_chart", "Select Pollutant", c(pollutants), multiple = TRUE, selected = 'AQI',width = "100%")
                              ),class = "boxtozoom")
                 ))
@@ -356,8 +354,8 @@ ui <- dashboardPage(
                                 materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
                                 numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
                                 div( id="yearly_inputs",
-                                selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "200%",selectize=FALSE),
-                                selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "200%",selectize=FALSE)
+                                selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "100%"),
+                                selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "100%")
                                 )
                                 # selectInput("color", "Color", vars),
                                 # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -371,7 +369,7 @@ ui <- dashboardPage(
                   ),
 
                   absolutePanel(id = "counties_panel", class = "panel panel-default", fixed = TRUE,
-                                draggable = FALSE, top = 80, left = "auto", right = 100, bottom = "auto",
+                                draggable = FALSE, top = "auto", left = "auto", right = 40, bottom = 20,
                                 width = 330, height = "auto",
                                 h2("Shown counties"),
                                 knobInput(
