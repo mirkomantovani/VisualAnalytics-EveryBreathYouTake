@@ -8,3 +8,5 @@ Instruction on how to deploy the application on the server
 4) Now you can change any of the files in this folder or copy files to this destination using a scp command or tool like filezilla. 
    For help on how to use scp. refer this link 
    http://www.hypexr.org/linux_scp_help.php
+   Run the below command in the directory where the file is located.
+   E.g scp app.R g4@shiny.evl.uic.edu:/srv/shiny-server/g4/EveryBreathYouTake
