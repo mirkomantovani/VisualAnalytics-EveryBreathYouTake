@@ -25,39 +25,39 @@ library(reshape2)
 
 # importing datasets
 
-setwd("./csv/")
-temp = list.files(pattern="*.csv")
-datasets = lapply(temp, read.csv)
-dataset <- do.call(rbind, datasets)
-setwd("../")
-
-setwd("./rds/")
-temp = list.files(pattern="daily_aqi.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_df <- do.call(rbind, datasets)
-daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
-names(daily_df) <- c("state","county","date","aqi","category","pollutant")
-
-temp = list.files(pattern="daily_all_pollutants.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_all <- do.call(rbind, datasets)
-
-temp = list.files(pattern="hourly_all.*.Rds")
-datasets = lapply(temp, readRDS)
-hourly_df <- do.call(rbind, datasets)
-setwd("../")
-rm(datasets)
-
-# needed for counties coordinates
-sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-
-# geojson file for counties shape
-xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-
-# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# getting the names
-converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-xy$STATENAME<-converted_states_names
+# setwd("./csv/")
+# temp = list.files(pattern="*.csv")
+# datasets = lapply(temp, read.csv)
+# dataset <- do.call(rbind, datasets)
+# setwd("../")
+# 
+# setwd("./rds/")
+# temp = list.files(pattern="daily_aqi.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_df <- do.call(rbind, datasets)
+# daily_df$Date <- as.Date(daily_df$Date) #conversion can be avoided if ashwani splits date in rds file
+# names(daily_df) <- c("state","county","date","aqi","category","pollutant")
+# 
+# temp = list.files(pattern="daily_all_pollutants.*.Rds")
+# datasets = lapply(temp, readRDS)
+# daily_all <- do.call(rbind, datasets)
+# 
+# temp = list.files(pattern="hourly_all.*.Rds")
+# datasets = lapply(temp, readRDS)
+# hourly_df <- do.call(rbind, datasets)
+# setwd("../")
+# rm(datasets)
+# 
+# # needed for counties coordinates
+# sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+# 
+# # geojson file for counties shape
+# xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+# 
+# # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# # getting the names
+# converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+# xy$STATENAME<-converted_states_names
 
 
 
@@ -1850,11 +1850,9 @@ server <- function(input, output, session) {
 
   # About HTML
   output$about_out <- renderUI({
-    author <- "<h1>Mirko Mantovani</h1>
-# TODO
-#insert others names and pages
+    author <- "<h1>Mirko Mantovani - Ashwani Khemani - Abhishek Vasudevan</h1>
     <br>
-    <a href='https://mmanto2.people.uic.edu/projects/EveryBreathYouTake.htmll'>Project webpage</a>
+    <a href='https://mirkomantovani.com/projects/EveryBreathYouTake.html'>Project webpage</a>
     <br/>
     <a href='https://github.com/mirkomantovani/VisualAnalytics-EveryBreathYouTake'>Github repository</a><br>"
     libraries <- "<b>Used R libraries: </b> <br><br>
@@ -1872,7 +1870,12 @@ server <- function(input, output, session) {
     <li>geojson</li>
     <li>geojsonio</li>
     <li>colourpicker</li>
-    <li>shinyWidgets</li>
+    <li>viridis</li>
+    <li>cdlTools</li>
+    <li>htmltools</li>
+    <li>plotly</li>
+    <li>RColorBrewer</li>
+    <li>reshape2</li>
 
     </ul><br>"
     data <- "<b>Dataset Source:</b></br> <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
