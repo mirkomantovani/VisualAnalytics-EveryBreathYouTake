@@ -220,45 +220,6 @@ ui <- dashboardPage(
             )
     ),
     
-    # THIRD MENU TAB
-    # tabItem("compare",
-    #         fluidRow(
-    #           # Input county with search
-    #           column(2,box(title = "Counties Selection",status = "success", width = NULL,
-    #                        div(column(12,
-    #                                   dropdownButton(
-    #                                     tags$h3("Select inputs to visualize"),
-    #                                     selectInput(inputId = "Statistic", h5("Select AQI statistic"), statistics, selected = 'Median',width = "200%"),
-    #                                     selectInput(inputId = "Pollutant", h5("Select pollutant"), pollutants, selected = 'CO',width = "200%"),
-    #                                     # selectInput(inputId = "State", "Select pollutant", pollutants, selected = 'CO',width = "200%"),
-    #                                     circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
-    #                                     tooltip = tooltipOptions(title = "Click to open")
-    #                                   ),
-    #                                   fluidRow(selectizeInput("SelCounty1", label = h4("Search County 1"), sort(all_counties), selected = NULL, multiple = FALSE,options = NULL)),
-    #                                   fluidRow(selectizeInput("SelCounty2", label = h4("Search County 2"), sort(all_counties), selected = NULL, multiple = FALSE,options = NULL)),
-    #                                   fluidRow(selectizeInput("SelCounty3", label = h4("Search County 3"), sort(all_counties), selected = NULL, multiple = FALSE,options = NULL))
-    #                        ),class = "boxtozoom")
-    #           ),
-    #           box(title = "Counties location",status = "success", width = NULL,
-    #               leafletOutput("map_counties"))
-    #           ),
-    #           column(10,
-    #                  tabsetPanel(
-    #                    tabPanel("AQI Time Series",
-    #                             plotOutput("aqi_time_comp", height = "85vmin")
-    #                    ),
-    #                    tabPanel("Pollutants Percentage Time Series",
-    #                             plotOutput("pollutants_time_comp", height = "85vmin")
-    #                    ),
-    #
-    #                    tabPanel("Days as main pollutant in specific year",
-    #                             plotOutput("pollutants_bar_comp", height = "85vmin")
-    #                    )
-    #                  )
-    #           )
-    #
-    #
-    #         )),
     tabItem("monthly_aqi",
             h1("WIP")),
     tabItem("daily_aqi",
@@ -340,17 +301,6 @@ ui <- dashboardPage(
                               width = 330, height = "auto",
                               
                               h2("Time and Pollutant"),
-                              # numericInput("num_counties", "Shown Counties", min=0, max=1100, value=100),
-                              # TO CHANGE AFTER SAGE2 PRESENTATION since it's better with slider on HD ratio display
-                              
-                              # sliderInput(inputId = "num_counties",
-                              #             sep = "",
-                              #             label = "Shown Counties",
-                              #             value = 100, min = 1, max = 800,width = "90%"),
-                              # sliderInput(inputId = "year_map",
-                              #             sep = "",
-                              #             label = "Select Year",
-                              #             value = 2018, min = 1990, max = 2018,width = "90%"),
                               selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%"),
                               materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
                               numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
@@ -358,15 +308,6 @@ ui <- dashboardPage(
                                    selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "100%"),
                                    selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "100%")
                               )
-                              # selectInput("color", "Color", vars),
-                              # selectInput("size", "Size", vars, selected = "adultpop"),
-                              # conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-                              #                  # Only prompt for threshold when coloring or sizing by superzip
-                              #                  numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-                              # ),
-                              #
-                              # plotOutput("histCentile", height = 200),
-                              # plotOutput("scatterCollegeIncome", height = 250)
                 ),
                 
                 absolutePanel(id = "counties_panel", class = "panel panel-default", fixed = TRUE,
@@ -1072,9 +1013,6 @@ server <- function(input, output, session) {
                                     "SO2" = input$colorSO2,
                                     "PM2.5" = input$colorPM25,
                                     "PM10" = input$colorPM10))
-    # scale_fill_manual(values=c("#9B77D8", "#758fd6", "#68aed6","#6ed378", "#6ad197", "#66d6c4"))
-    
-    # scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
   })
   
   # table of pollutants
@@ -1099,11 +1037,7 @@ server <- function(input, output, session) {
     longit <- longit[longit!=0] # Eliminating 0 values
     longit <- longit[!is.na(longit)] # Eliminating NAs
     computed_lng <- mean(longit)
-    
-    # xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-    
-    # nyc <- xy[xy$STATE == 36, ]
-    
+  
     leaflet(xy) %>%
       addTiles() %>%
       addPolygons(color = "#962121", weight = 0.8, smoothFactor = 0.2,
@@ -1121,38 +1055,6 @@ server <- function(input, output, session) {
   
   # Daily AQI for selected year - PART C
   output$daily_aqi_line <- renderPlotly({
-    # df<-subset(dataset, State == selected_state() & County == selected_county() & Year > input$range[1] & Year < input$range[2])
-    # ggplot(data = df, aes(x = Year)) +
-    #   theme(
-    #     axis.text.x = element_text(angle = 45, hjust = 1),
-    #     axis.title.x = element_blank(),
-    #     axis.title.y = element_text(color = input$textColor),
-    #     panel.border = element_blank(),
-    #     plot.background = element_rect(color = NA, fill = input$backgroundColor),
-    #     legend.background = element_rect(color = NA, fill = input$backgroundColor),
-    #     legend.key = element_rect(color = NA, fill = input$backgroundColor),
-    #     panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-    #     panel.grid.major = element_line(color = input$textColor),
-    #     panel.grid.minor = element_line(color = input$textColor),
-    #     legend.text = element_text(size = legend_text_size(), color = input$textColor),
-    #     legend.key.size = unit(legend_key_size(), 'line'),
-    #     axis.text = element_text(size = axis_text_size(), color = input$textColor),
-    #     axis.title = element_text(size = axis_title_size()),
-    #     legend.title = element_text(size = legend_title_size(), color = input$textColor)
-    #   ) +
-    #   geom_line(aes(y = Max.AQI, color = "Max"), size = line_size(), group = 1) +
-    #   geom_point(aes(y = Max.AQI, color = "Max"), size = line_size()*3) +
-    #   geom_line(aes(y = X90th.Percentile.AQI, color = "90th Percentile"), size = line_size(), group = 3) +
-    #   geom_point(aes(y = X90th.Percentile.AQI, color = "90th Percentile"), size = line_size()*3) +
-    #   geom_line(aes(y = Median.AQI, color = "Median"), size = line_size(), group = 2) +
-    #   geom_point(aes(y = Median.AQI, color = "Median"), size = line_size()*3) +
-    #   labs(x = "Year", y = "Air Quality Index") +
-    #   scale_x_continuous(breaks = round(seq(max(min(df$Year),input$range[1]), min(max(df$Year),input$range[2]), by = 1),1)) +
-    #   # scale_color_manual(name = "Statistics",
-    #   #                    values = c("Max" = "firebrick1",
-    #   #                               "90th Percentile" = "firebrick4",
-    #   #                               "Median" = "steelblue1")) +
-    #   scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
     
     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
     a <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
@@ -1268,42 +1170,6 @@ server <- function(input, output, session) {
       p
     }
     
-    # df <- data.frame(
-    #
-    #   group = c("Good", "Moderate", "Unhealthy for Sensitive Groups", "Very Unhealthy", "Hazardous"),
-    #   value = c(current()$Good.Days, current()$Moderate.Days,
-    #             current()$Unhealthy.for.Sensitive.Groups.Days,
-    #             current()$Very.Unhealthy.Days,
-    #             current()$Hazardous.Days)
-    # )
-    #
-    # df$group <- factor(df$group, levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups", "Very Unhealthy", "Hazardous"))
-    #
-    #
-    # bar <-ggplot(data=df, aes(x=group, y=value, fill = group)) + scale_fill_brewer(palette="Greys") +
-    #   geom_bar(stat="identity") + coord_flip() +
-    #   theme(
-    #     text = element_text(size=12),
-    #     legend.position="none"
-    #   )+
-    #   xlab("AQI level") + ylab("Days count")+
-    #   theme(
-    #     axis.title.x = element_text(color = "black"),
-    #     axis.title.y = element_blank(),
-    #     panel.border = element_blank(),
-    #     plot.background = element_rect(color = NA, fill = "#bcdae0"),
-    #     legend.background = element_rect(color = NA, fill = "#bcdae0"),
-    #     panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-    #     panel.grid.major = element_line(color = "black"),
-    #     panel.grid.minor = element_line(color = "black"),
-    #     legend.text = element_text(size = legend_text_size()),
-    #     legend.key.size = unit(legend_key_size(), 'line'),
-    #     axis.text = element_text(size = axis_text_size(),color = "black"),
-    #     axis.title = element_text(size = axis_title_size()),
-    #     legend.title = element_text(size = legend_title_size())
-    #   )
-    # bar
-    
   })
   
   # table of daily aqi
@@ -1339,296 +1205,7 @@ server <- function(input, output, session) {
       df}
   },options = list(searching = FALSE,paging = FALSE,
                    dom = 't'))
-  
-  
-  
-  # 3 Counties on LeafLet Map
-  # output$map_counties <- renderLeaflet({
-  #
-  #   # Extracting long and lat of selected county from sites
-  #   site1<-subset(sites, State.Name == selected_state1() & County.Name == selected_county1())
-  #   site2<-subset(sites, State.Name == selected_state2() & County.Name == selected_county2())
-  #   site3<-subset(sites, State.Name == selected_state3() & County.Name == selected_county3())
-  #
-  #
-  #   latit1 <- site1$Latitude
-  #   latit2 <- site2$Latitude
-  #   latit3 <- site3$Latitude
-  #
-  #   latit1 <- latit1[latit1!=0] # Eliminating 0 values
-  #   latit1 <- latit1[!is.na(latit1)] # Eliminating NAs
-  #   latit2 <- latit2[latit2!=0] # Eliminating 0 values
-  #   latit2 <- latit2[!is.na(latit2)] # Eliminating NAs
-  #   latit3 <- latit3[latit3!=0] # Eliminating 0 values
-  #   latit3 <- latit3[!is.na(latit3)] # Eliminating NAs
-  #
-  #   computed_lat1 <- mean(latit1)
-  #   computed_lat2 <- mean(latit2)
-  #   computed_lat3 <- mean(latit3)
-  #
-  #   longit1 <- site1$Longitude
-  #   longit1 <- longit1[longit1!=0] # Eliminating 0 values
-  #   longit1 <- longit1[!is.na(longit1)] # Eliminating NAs
-  #   longit2 <- site2$Longitude
-  #   longit2 <- longit2[longit2!=0] # Eliminating 0 values
-  #   longit2 <- longit2[!is.na(longit2)] # Eliminating NAs
-  #   longit3 <- site3$Longitude
-  #   longit3 <- longit3[longit3!=0] # Eliminating 0 values
-  #   longit3 <- longit3[!is.na(longit3)] # Eliminating NAs
-  #
-  #   computed_lng1 <- mean(longit1)
-  #   computed_lng2 <- mean(longit2)
-  #   computed_lng3 <- mean(longit3)
-  #
-  #   mean_lng <- mean(computed_lng1,computed_lng2,computed_lng3)
-  #   mean_lat <- mean(computed_lat1,computed_lat2,computed_lat3)
-  #
-  #
-  #   # xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-  #
-  #   # nyc <- xy[xy$STATE == 36, ]
-  #
-  #   leaflet(xy) %>%
-  #     addTiles() %>%
-  #     addPolygons(color = "#962121", weight = 0.8, smoothFactor = 0.2,
-  #                 opacity = 1.0, fillOpacity = 0.1,
-  #                 # fillColor = ~colorQuantile("YlOrRd"),
-  #                 highlightOptions = highlightOptions(color = "white", weight = 3,
-  #                                                     bringToFront = TRUE)) %>%
-  #     setView(lng = -87.72265, lat = 41.8518, zoom = zoom_level()-6) %>%
-  #     addMarkers(lng = computed_lng1, lat = computed_lat1, label = paste(selected_state1(),"-",selected_county1()),
-  #                labelOptions = labelOptions(textsize = marker_text_size())
-  #     ) %>%
-  #     addMarkers(lng = computed_lng2, lat = computed_lat2, label = paste(selected_state2(),"-",selected_county2()),
-  #                labelOptions = labelOptions(textsize = marker_text_size())
-  #                ) %>%
-  #     addMarkers(lng = computed_lng3, lat = computed_lat3, label = paste(selected_state3(),"-",selected_county3()),
-  #                labelOptions = labelOptions(textsize = marker_text_size()))
-  # })
-  
-  # Time series of AQI statistics
-  # output$aqi_time_comp <- renderPlot({
-  #   df1<-subset(dataset, State == selected_state1() & County == selected_county1())
-  #   df1 <- data.frame(df1$Median.AQI,df1$Max.AQI,df1$X90th.Percentile.AQI,df1$Year)
-  #   df2<-subset(dataset, State == selected_state2() & County == selected_county2())
-  #   df2 <- data.frame(df2$Median.AQI,df2$Max.AQI,df2$X90th.Percentile.AQI,df2$Year)
-  #   df3<-subset(dataset, State == selected_state3() & County == selected_county3())
-  #   df3 <- data.frame(df3$Median.AQI,df3$Max.AQI,df3$X90th.Percentile.AQI,df3$Year)
-  #
-  #   df <- merge(df1,df2,by.x = "df1.Year",by.y = "df2.Year")
-  #   df <- merge(df,df3,by.x = "df1.Year",by.y = "df3.Year")
-  #
-  #
-  #   plot <- ggplot(data = df, aes(x = df1.Year)) +
-  #     theme(
-  #       axis.text.x = element_text(angle = 45, hjust = 1),
-  #       axis.title.x = element_blank(),
-  #       axis.title.y = element_text(color = input$textColor),
-  #       panel.border = element_blank(),
-  #       plot.background = element_rect(color = NA, fill = "#005669"),
-  #       legend.background = element_rect(color = NA, fill = "#005669"),
-  #       legend.key = element_rect(color = NA, fill = "#005669"),
-  #       panel.background = element_rect(fill = "#005669", color  =  NA),
-  #       panel.grid.major = element_line(color = "white"),
-  #       panel.grid.minor = element_line(color = "white"),
-  #       legend.text = element_text(size = legend_text_size(), color = "white"),
-  #       legend.key.size = unit(legend_key_size(), 'line'),
-  #       axis.text = element_text(size = axis_text_size(), color = "white"),
-  #       axis.title = element_text(size = axis_title_size()),
-  #       legend.title = element_text(size = legend_title_size(), color = "white")
-  #     ) + labs(x = "Year", y = "Air Quality Index")
-  #
-  #     addLines <- function(plot, xx, yy, zz) {
-  #       xx <- enquo(xx)
-  #       yy <- enquo(yy)
-  #       zz <- enquo(zz)
-  #
-  #       plot <- plot +
-  #         geom_line(aes(y = !!xx, color = paste(input$Statistic,"AQI",selected_county1(),"-",selected_state1())), size = line_size(), group = 1) +
-  #         geom_point(aes(y = !!xx, color = paste(input$Statistic,"AQI",selected_county1(),"-",selected_state1())), size = line_size()*3) +
-  #         geom_line(aes(y = !!yy, color = paste(input$Statistic,"AQI",selected_county2(),"-",selected_state2())), size = line_size(), group = 3) +
-  #         geom_point(aes(y = !!yy, color = paste(input$Statistic,"AQI",selected_county2(),"-",selected_state2())), size = line_size()*3) +
-  #         geom_line(aes(y = !!zz, color = paste(input$Statistic,"AQI",selected_county3(),"-",selected_state3())), size = line_size(), group = 2) +
-  #         geom_point(aes(y = !!zz, color = paste(input$Statistic,"AQI",selected_county3(),"-",selected_state3())), size = line_size()*3) +
-  #         scale_color_discrete(name = "Selected counties",breaks=c(paste(input$Statistic,"AQI",selected_county1(),"-",selected_state1()),
-  #                                                                  paste(input$Statistic,"AQI",selected_county2(),"-",selected_state2()),
-  #                                                                  paste(input$Statistic,"AQI",selected_county3(),"-",selected_state3())))
-  #       return(plot)
-  #     }
-  #
-  #     if(input$Statistic == "Median")
-  #       plot <- addLines(plot,df1.Median.AQI,df2.Median.AQI,df3.Median.AQI)
-  #     else if(input$Statistic == "Max")
-  #       plot <- addLines(plot,df1.Max.AQI,df2.Max.AQI,df3.Max.AQI)
-  #     else if(input$Statistic == "90th percentile")
-  #       plot <- addLines(plot,df1.X90th.Percentile.AQI,df2.X90th.Percentile.AQI,df3.X90th.Percentile.AQI)
-  #
-  #
-  #     plot
-  #
-  # })
-  
-  # Time series of AQI statistics
-  # output$pollutants_time_comp <- renderPlot({
-  #
-  #   s_county1<-subset(dataset, State == selected_state1() & County == selected_county1())
-  #   s_county1[,14:19]<- s_county1[14:19]/s_county1$Days.with.AQI*100
-  #   s_county2<-subset(dataset, State == selected_state2() & County == selected_county2())
-  #   s_county2[,14:19]<- s_county2[14:19]/s_county2$Days.with.AQI*100
-  #   s_county3<-subset(dataset, State == selected_state3() & County == selected_county3())
-  #   s_county3[,14:19]<- s_county3[14:19]/s_county3$Days.with.AQI*100
-  #
-  #
-  #   s_county1 <- merge(s_county1,s_county2,by = "Year")
-  #   s_county1 <- merge(s_county1,s_county3,by = "Year")
-  #
-  #   plot <- ggplot(data = s_county1, aes(x = Year)) +
-  #     theme(
-  #       axis.text.x = element_text(angle = 45, hjust = 1, color = "white"),
-  #       axis.title.y = element_text(color = "white"),
-  #       axis.title.x = element_blank(),
-  #       panel.border = element_blank(),
-  #       plot.background = element_rect(color = NA, fill = "#005669"),
-  #       legend.background = element_rect(color = NA, fill = "#005669"),
-  #       legend.key = element_rect(color = NA, fill = "#005669"),
-  #       panel.background = element_rect(fill = "#005669", color  =  NA),
-  #       panel.grid.major = element_line(color = "white"),
-  #       panel.grid.minor = element_line(color = "white"),
-  #       legend.text = element_text(size = legend_text_size(), color = "white"),
-  #       legend.key.size = unit(legend_key_size(), 'line'),
-  #       axis.text = element_text(size = axis_text_size(), color = "white"),
-  #       axis.title = element_text(size = axis_title_size()),
-  #       legend.title = element_text(size = legend_title_size(), color = "white")
-  #     ) + labs(y = "Percentage of days as main Pollutant")
-  #   # scale_x_continuous(breaks = round(seq(min(s_county1$df1.Year), max(s_county1$df1.Year), by = 1),1)) +
-  #
-  #   # Quosure to use input as a function to pass to aesthetics
-  #   addLines <- function(plot, xx, yy, zz) {
-  #     xx <- enquo(xx)
-  #     yy <- enquo(yy)
-  #     zz <- enquo(zz)
-  #
-  #     plot <- plot +
-  #       geom_line(aes(y = !!xx, color = paste(input$Pollutant,selected_county1(),"-",selected_state1())), size = line_size(), group = 1) +
-  #       geom_point(aes(y = !!xx, color = paste(input$Pollutant,selected_county1(),"-",selected_state1())), size = line_size()*3) +
-  #       geom_line(aes(y = !!yy, color = paste(input$Pollutant,selected_county2(),"-",selected_state2())), size = line_size(), group = 3) +
-  #       geom_point(aes(y = !!yy, color = paste(input$Pollutant,selected_county2(),"-",selected_state2())), size = line_size()*3) +
-  #       geom_line(aes(y = !!zz, color = paste(input$Pollutant,selected_county3(),"-",selected_state3())), size = line_size(), group = 2) +
-  #       geom_point(aes(y = !!zz, color = paste(input$Pollutant,selected_county3(),"-",selected_state3())), size = line_size()*3) +
-  #       scale_color_discrete(name = "Selected counties",breaks=c(paste(input$Pollutant,selected_county1(),"-",selected_state1()),
-  #                                                                paste(input$Pollutant,selected_county2(),"-",selected_state2()),
-  #                                                                paste(input$Pollutant,selected_county3(),"-",selected_state3())))
-  #     return(plot)
-  #   }
-  #
-  #   if(input$Pollutant == "CO")
-  #     plot <- addLines(plot,Days.CO.x,Days.CO.y,Days.CO)
-  #   else if(input$Pollutant == "NO2")
-  #     plot <- addLines(plot,Days.NO2.x,Days.NO2.y,Days.NO2)
-  #   else if(input$Pollutant == "Ozone")
-  #     plot <- addLines(plot,Days.Ozone.x,Days.Ozone.y,Days.Ozone)
-  #   else if(input$Pollutant == "SO2")
-  #     plot <- addLines(plot,Days.SO2.x,Days.SO2.y,Days.SO2)
-  #   else if(input$Pollutant == "PM2.5")
-  #     plot <- addLines(plot,Days.PM2.5.x,Days.PM2.5.y,Days.PM2.5)
-  #   else if(input$Pollutant == "PM10")
-  #     plot <- addLines(plot,Days.PM10.x,Days.PM10.y,Days.PM10)
-  #
-  #   plot
-  #   })
-  
-  # bar chart of pollutants comparison
-  # output$pollutants_bar_comp <- renderPlot({
-  #
-  #   df1<-subset(dataset, Year == input$Year & State == selected_state1() & County == selected_county1())
-  #   df2<-subset(dataset, Year == input$Year & State == selected_state2() & County == selected_county2())
-  #   df3<-subset(dataset, Year == input$Year & State == selected_state3() & County == selected_county3())
-  #
-  #   if(length(df1$Year)!=0 & length(df2$Year)!=0 & length(df3$Year)!=0){
-  #
-  #     df1 <- data.frame(
-  #
-  #       group = c('CO', 'NO2', 'Ozone', 'SO2','PM2.5','PM10'),
-  #       value = c(df1$Days.CO,
-  #                 df1$Days.NO2,
-  #                 df1$Days.Ozone,
-  #                 df1$Days.SO2,
-  #                 df1$Days.PM2.5,
-  #                 df1$Days.PM10),
-  #       county = c(
-  #         paste(selected_county1(),"-",selected_state1())
-  #       )
-  #
-  #     )
-  #
-  #     df2 <- data.frame(
-  #
-  #       group = c('CO', 'NO2', 'Ozone', 'SO2','PM2.5','PM10'),
-  #       value = c(df2$Days.CO,
-  #                 df2$Days.NO2,
-  #                 df2$Days.Ozone,
-  #                 df2$Days.SO2,
-  #                 df2$Days.PM2.5,
-  #                 df2$Days.PM10),
-  #       county = c(
-  #         paste(selected_county2(),"-",selected_state2())
-  #       )
-  #
-  #     )
-  #
-  #     df3 <- data.frame(
-  #
-  #       group = c('CO', 'NO2', 'Ozone', 'SO2','PM2.5','PM10'),
-  #       value = c(df3$Days.CO,
-  #                 df3$Days.NO2,
-  #                 df3$Days.Ozone,
-  #                 df3$Days.SO2,
-  #                 df3$Days.PM2.5,
-  #                 df3$Days.PM10),
-  #       county = c(
-  #         paste(selected_county3(),"-",selected_state3())
-  #       )
-  #
-  #     )
-  #
-  #     df <- rbind(df1, df2, df3)
-  #
-  #     bar <-ggplot(data=df, aes(x=group, y=value, fill = county)) +
-  #       geom_bar(stat="identity", position=position_dodge()) +
-  #       theme(
-  #         text = element_text(size=12)
-  #       ) +
-  #       ylab(paste("Days as main pollutant in",input$Year)) +
-  #       theme(
-  #         axis.text.x = element_text(angle = 45, hjust = 1, color = "white"),
-  #         axis.title.x = element_blank(),
-  #         axis.title.y = element_text(color = "white"),
-  #
-  #         panel.border = element_blank(),
-  #         plot.background = element_rect(color = NA, fill = "#005669"),
-  #         panel.background = element_rect(fill = "#005669", color  =  NA),
-  #         panel.grid.major = element_line(color = "white"),
-  #         panel.grid.minor = element_line(color = "white"),
-  #         legend.text = element_text(size = legend_text_size(), color = "white"),
-  #         legend.key.size = unit(legend_key_size(), 'line'),
-  #         axis.text = element_text(size = axis_text_size(), color = "white"),
-  #         axis.title = element_text(size = axis_title_size()),
-  #         legend.title = element_text(size = legend_title_size(), color = "white"),
-  #         legend.key = element_rect(color = NA, fill = "#005669"),
-  #         legend.background = element_rect(color = NA, fill = "#005669")
-  #       )
-  #     bar
-  #
-  # } # Signaling missing data
-  # else {
-  #   if(length(df1$Year)==0)
-  #     shinyalert("Oops!", paste("No data for",selected_county1(),"-",selected_state1(),"in year",input$Year), type = "error")
-  #   else if(length(df2$Year)==0)
-  #     shinyalert("Oops!", paste("No data for",selected_county2(),"-",selected_state2(),"in year",input$Year), type = "error")
-  #   else if(length(df3$Year)==0)
-  #     shinyalert("Oops!", paste("No data for",selected_county3(),"-",selected_state3(),"in year",input$Year), type = "error")
-  # }
-  # })
+
   
   translate_to_column_name <- function(pollutant) {
     if(pollutant == "CO"){
