@@ -26,7 +26,7 @@ daily_df$`State Code` <- NULL
 daily_df$`County Code` <- NULL
 daily_df$`Defining Site` <- NULL
 daily_df$`Number of Sites Reporting` <- NULL
-fileName = paste("fast/" , "daily_all_aqi_by_county.fst", sep="")
+fileName = paste("fst/" , "daily_all_aqi_by_county.fst", sep="")
 write.fst(daily_df, fileName)
 
 # Reading relevant information from hourly temp,wind,pollutant files, merge and save in and save in R data format
