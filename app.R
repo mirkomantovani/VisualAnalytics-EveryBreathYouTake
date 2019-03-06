@@ -26,7 +26,6 @@ library(fst)
 library(future)
 library(data.table)
 
-
 # importing datasets
 setwd("./csv/")
 temp = list.files(pattern="*.csv")
@@ -68,6 +67,8 @@ t<-subset(dataset, State == 'Illinois')
 counties<-unique(t$County)
 
 pollutants <- c("CO","NO2","Ozone","SO2","PM2.5","PM10")
+pollutants_2 <- c("PM2.5","PM10","CO","NO2","Ozone","SO2")
+
 statistics <- c("Median","Max","90th percentile")
 
 
@@ -92,13 +93,13 @@ ui <- dashboardPage(
                    width = 370,
                    sidebarMenu(
                      useShinyalert(),
-                     menuItem("Year details for County", tabName = "pie"),
                      menuItem("Yearly trends", tabName = "time"),
+                     menuItem("Year details for County", tabName = "pie"),
                      # menuItem("Compare Counties", tabName = "compare"),
-                     menuItem("Monthly AQI level", tabName = "monthly_aqi"),
+                     menuItem("Monthly AQI levels", tabName = "monthly_aqi"),
                      menuItem("Daily AQI", tabName = "daily_aqi"),
                      menuItem("Hourly Pollutants", tabName = "hourly_pollutants"),
-                     menuItem("Pollutants map", tabName = "pollutants_map"),
+                     menuItem("Pollutants Heatmap", tabName = "pollutants_map"),
                      menuItem("About", tabName = "about")
                    ),
                    # custom CSS
@@ -296,7 +297,7 @@ ui <- dashboardPage(
                               width = 330, height = "auto",
                               
                               h2("Time and Pollutant"),
-                              selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants,"AQI"), selected = 'AQI',width = "100%"),
+                              selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants_2,"AQI"), selected = 'PM2.5',width = "100%"),
                               materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
                               numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
                               div( id="yearly_inputs",
@@ -312,7 +313,7 @@ ui <- dashboardPage(
                               knobInput(
                                 inputId = "num_counties",
                                 label = "Select number of counties",
-                                value = 100,
+                                value = 1000,
                                 min = 0,
                                 max = 1100,
                                 displayPrevious = TRUE,
@@ -489,9 +490,9 @@ server <- function(input, output, session) {
   
   observeEvent(priority = 10,input$switch_daily,{
     if(input$switch_daily){
-      updateSelectInput(session, inputId = "pollutant_map", choices = pollutants)
+      updateSelectInput(session, inputId = "pollutant_map", choices = pollutants_2)
     } else {
-      updateSelectInput(session, inputId = "pollutant_map", choices = c(pollutants,"AQI"))
+      updateSelectInput(session, inputId = "pollutant_map", choices = c(pollutants_2,"AQI"))
     }
     
   })
@@ -1258,20 +1259,6 @@ server <- function(input, output, session) {
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
     df <- head(sub,delayes_num_counties_debounced())
     
-    # df <- data.frame(
-    #
-    #   group = c("Percentage of pollutant"),
-    #   value = c(sub[[translate_to_column_name(input$pollutant_map)]]/sub$Days.with.AQI*100,1,2)
-    # )
-    # ccc <- factor(sample.int(20L, nrow(xy), TRUE))
-    #
-    # factpal <- colorFactor(topo.colors(20), ccc)
-    # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-    # getting the names
-    # converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-    
-    # xy$STATENAME<-converted_states_names
-    
     if(!input$switch_daily){ # Yearly
       temp <- merge(value(f_xy), df,
                     by.x = c("STATENAME","NAME"), by.y = c("State","County"),
@@ -1288,11 +1275,6 @@ server <- function(input, output, session) {
                           ,na.color = "#ffffff11"
     )
     
-    # content <- paste(sep = "<br/>",
-    #                  "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
-    #                  "606 5th Ave. S",
-    #                  "Seattle, WA 98138"
-    # )
     
     # factpal <- colorQuantile("Blues", ccc, n=20)
     # year_map, pollutant_map
