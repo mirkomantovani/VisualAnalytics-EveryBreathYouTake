@@ -22,7 +22,7 @@ library(htmltools) # to use htmlEscape function
 library(plotly)
 library(RColorBrewer)
 library(reshape2)
-library(feather)
+library(fst)
 
 # importing datasets
 setwd("./csv/")
