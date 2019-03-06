@@ -23,6 +23,9 @@ library(plotly)
 library(RColorBrewer)
 library(reshape2)
 library(fst)
+library(future)
+library(data.table)
+
 
 # importing datasets
 setwd("./csv/")
@@ -39,14 +42,18 @@ daily_all <- read_fst("fst/daily_all_pollutants_2018.fst")
 hourly_df <- read_fst("fst/hourly_all_data_2018.fst")
 
 # needed for counties coordinates
-sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
+sites <- fread(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
 # geojson file for counties shape
-xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
 
-# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-# getting the names
-converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-xy$STATENAME<-converted_states_names
+f_xy <- future({
+  xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+  # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+  # getting the names
+  converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+  xy$STATENAME<-converted_states_names
+  xy
+}) %plan% multiprocess
+
 
 
 
@@ -1015,7 +1022,7 @@ server <- function(input, output, session) {
   output$map_county <- renderLeaflet({
     
     # Extracting long and lat of selected county from sites
-    site<-subset(sites, State.Name == selected_state() & County.Name == selected_county())
+    site<-subset(sites, sites$`State Name` == selected_state() & sites$`County Name` == selected_county())
     
     latit <- site$Latitude
     latit <- latit[latit!=0] # Eliminating 0 values
@@ -1025,8 +1032,8 @@ server <- function(input, output, session) {
     longit <- longit[longit!=0] # Eliminating 0 values
     longit <- longit[!is.na(longit)] # Eliminating NAs
     computed_lng <- mean(longit)
-  
-    leaflet(xy) %>%
+    
+    leaflet(value(f_xy)) %>%
       addTiles() %>%
       addPolygons(color = "#962121", weight = 0.8, smoothFactor = 0.2,
                   opacity = 1.0, fillOpacity = 0.1,
@@ -1192,7 +1199,7 @@ server <- function(input, output, session) {
       df}
   },options = list(searching = FALSE,paging = FALSE,
                    dom = 't'))
-
+  
   
   translate_to_column_name <- function(pollutant) {
     if(pollutant == "CO"){
@@ -1266,11 +1273,11 @@ server <- function(input, output, session) {
     # xy$STATENAME<-converted_states_names
     
     if(!input$switch_daily){ # Yearly
-      temp <- merge(xy, df,
+      temp <- merge(value(f_xy), df,
                     by.x = c("STATENAME","NAME"), by.y = c("State","County"),
                     all.x = TRUE)
     } else { # Daily
-      temp <- merge(xy, df,
+      temp <- merge(value(f_xy), df,
                     by.x = c("STATENAME","NAME"), by.y = c("State Name","County Name"),
                     all.x = TRUE)
     }
@@ -1291,13 +1298,13 @@ server <- function(input, output, session) {
     # year_map, pollutant_map
     leaflet() %>%
       # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
-      addPolygons(data = xy, color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
+      addPolygons(data = value(f_xy), color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
                   opacity = 1.0, fillOpacity = 1,#opacity will be a param
-                  label = ~htmlEscape(xy$NAME),
+                  label = ~htmlEscape(value(f_xy)$NAME),
                   popup = ~paste(sep = "<br/>",
-                                 paste("<b><a href='https://en.wikipedia.org/wiki/",xy$NAME,"_County,_",xy$STATENAME,"' target='_blank'>",xy$NAME," on Wikipedia</a></b>"),
-                                 xy$NAME,
-                                 xy$STATENAME,
+                                 paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
+                                 value(f_xy)$NAME,
+                                 value(f_xy)$STATENAME,
                                  paste(signif(temp$sel_feat,3),suffx)
                   ),
                   # fillColor = ~colorQuantile("YlOrRd"),
