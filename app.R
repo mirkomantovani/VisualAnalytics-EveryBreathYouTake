@@ -1225,6 +1225,10 @@ server <- function(input, output, session) {
     return("Days.CO")
   }
   
+  convert_to_imperial <- function(values){
+    return(values*1000000000000* 0.000000035274/35315)
+  }
+  
   # Mirko
   # !Important
   # The round county numbers updates continously invalidating the input for as many times as the there are
@@ -1256,7 +1260,21 @@ server <- function(input, output, session) {
     } else { # Daily
       sub<-subset(daily_all, Month == input$D_month & Day == input$D_day)
       sub$sel_feat<-sub[[input$pollutant_map]]
-      suffx = "ppm"
+      if(input$switch_units){
+        if(input$pollutant_map == "PM2.5" || input$pollutant_map == "PM10"){
+          sub$sel_feat <- convert_to_imperial(sub$sel_feat)
+          suffx = "e-12 oz/ft3"
+        }
+      } else {
+        if(input$pollutant_map == "PM2.5" || input$pollutant_map == "PM10"){
+          suffx = " ug/m3"
+        }
+      }
+      if(input$pollutant_map == "CO" || input$pollutant_map == "Ozone"){
+        suffx = " ppm"
+      } else if(input$pollutant_map == "SO2" || input$pollutant_map == "NO2"){
+        suffx = " ppb"
+      }
     }
     
     sub <- sub[order(sub$sel_feat,decreasing = TRUE),]
