@@ -110,7 +110,10 @@ ui <- dashboardPage(
                    div(id="nozoom",sliderInput(inputId = "Year",
                                                sep = "",
                                                label = "Select Year",
-                                               value = 2018, min = 1980, max = 2018,width = "90%"))
+                                               value = 2018, min = 1980, max = 2018,width = "90%")),
+                   materialSwitch(inputId = "switch_units", label = "Switch to Imperial units", status = "primary")
+                   
+                   
   ),
   dashboardBody(tags$head(
     # Include custom JS

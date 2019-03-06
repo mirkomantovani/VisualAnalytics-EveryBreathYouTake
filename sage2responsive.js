@@ -8,10 +8,7 @@ $(document).on("shiny:connected", function (e) {
     dimension[1] = window.innerHeight;
 
     switch_daily = document.getElementById("switch_daily");
-    // console.log(switch_daily);
 
-    // switch_daily.parentNode.getElementsByTagName('img')[0].innerText = "dio cane";
-    // console.log('porco dio');
     document.getElementById("yearly_inputs").hidden = true;
 
     switch_daily.onclick = function() {
@@ -24,6 +21,18 @@ $(document).on("shiny:connected", function (e) {
             switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Daily Data";
             document.getElementById("year_map").parentNode.hidden = false;
             document.getElementById("yearly_inputs").hidden = true;
+        }
+    };
+
+    switch_units = document.getElementById("switch_units");
+
+    // document.getElementById("yearly_inputs").hidden = true;
+
+    switch_units.onclick = function() {
+        if(switch_units.checked){
+            switch_units.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Metric units";
+        } else {
+            switch_units.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Imperial units";
         }
     };
 
