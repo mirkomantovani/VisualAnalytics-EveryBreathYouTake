@@ -6,25 +6,42 @@ library(dplyr)
 
 daily_files <- list.files(path="data", pattern="daily_aqi_by_county.*.csv", full.names=TRUE, recursive=FALSE)
 files_with_data <- daily_files[-(1:10)]
-lapply(files_with_data, function(x) {
-  df <- fread(x, select = c("State Name","county Name","Date","AQI","Category","Defining Parameter")
-             ,header = T, sep = ',')
-  fileName = paste(substring(x, 6,29) , ".Rds", sep="");
-  ifelse(!dir.exists("rds"), dir.create("rds"),"")
-  fileName = paste("rds/" , fileName, sep="")
-  saveRDS(df, file=fileName)
-  }
-)
+
+print("Aggregating daily AQI data")
+
+daily_aqi = lapply(files_with_data, fread)
+daily_df <- do.call(rbind, daily_aqi)
+
+print("Aggregation of daily AQI data done ")
+
+daily_df$Date <- as.Date(daily_df$Date)
+daily_df$Year <- format(daily_df$Date, format = "%Y")
+daily_df$Month <- format(daily_df$Date, format = "%B")
+daily_df$Day <- format(daily_df$Date, format = "%d")
+daily_df$Date <- NULL
+daily_df$`State Code` <- NULL
+daily_df$`County Code` <- NULL
+daily_df$`Defining Site` <- NULL
+daily_df$`Number of Sites Reporting` <- NULL
+fileName = paste("rds/" , "daily_aqi_all_by_county.Rds", sep="")
+saveRDS(daily_df, file=fileName)
+
+
 # Reading relevant information from hourly temp,wind,pollutant files, merge and save in and save in R data format
 
-hourly_WIND_2018 <- fread("data/hourly_WIND_2018.csv", select = c("Date Local",	"Time Local"	,"Sample Measurement","State Name",	"County Name")
-            ,header = T, sep = ',')
-saveRDS(hourly_WIND_2018, file="rds/hourly_WIND_2018.Rds")
+hourly_WIND_2018 <- fread("data/hourly_WIND_2018.csv",header = T, sep = ',')
 
-hourly_TEMP_2018 <- fread("data/hourly_TEMP_2018.csv", select = c("Date Local",	"Time Local"	,"Sample Measurement","State Name",	"County Name")
-                          ,header = T, sep = ',')
+hourly_WIND_2018_param_types <-split(hourly_WIND_2018, hourly_WIND_2018$`Parameter Name`)
 
-saveRDS(hourly_TEMP_2018, file="rds/hourly_TEMP_2018.Rds")
+hourly_WIND_2018_direction <- data.frame(hourly_WIND_2018_param_types[1])
+
+names(hourly_WIND_2018_direction) <- substring(names(hourly_WIND_2018_direction),28,nchar(names(hourly_WIND_2018_direction)))
+
+hourly_WIND_2018_speed <- data.frame(hourly_WIND_2018_param_types[2])
+
+names(hourly_WIND_2018_speed) <- substring(names(hourly_WIND_2018_speed),24,nchar(names(hourly_WIND_2018_speed)))
+
+hourly_TEMP_2018 <- fread("data/hourly_TEMP_2018.csv",header = T, sep = ',')
 
 hourly_88101_2018 <- fread("data/hourly_88101_2018.csv",header = T, sep = ',')
 hourly_81102_2018 <- fread("data/hourly_81102_2018.csv",header = T, sep = ',')
@@ -33,7 +50,7 @@ hourly_44201_2018 <- fread("data/hourly_44201_2018.csv",header = T, sep = ',')
 hourly_42602_2018 <- fread("data/hourly_42602_2018.csv",header = T, sep = ',')
 hourly_42401_2018 <- fread("data/hourly_42401_2018.csv",header = T, sep = ',')
 
-print("Aggregating hourly pollutant data")
+print("Aggregating hourly data")
 
 hourly_42401_2018_group <-aggregate(hourly_42401_2018$`Sample Measurement`,by=list(hourly_42401_2018$`State Name`, hourly_42401_2018$`County Name`, hourly_42401_2018$`Date Local`,hourly_42401_2018$`Time Local`),FUN=mean)
 hourly_42101_2018_group <-aggregate(hourly_42101_2018$`Sample Measurement`,by=list(hourly_42101_2018$`State Name`, hourly_42101_2018$`County Name`, hourly_42101_2018$`Date Local`,hourly_42101_2018$`Time Local`),FUN=mean)
@@ -41,6 +58,10 @@ hourly_42602_2018_group <-aggregate(hourly_42602_2018$`Sample Measurement`,by=li
 hourly_44201_2018_group <-aggregate(hourly_44201_2018$`Sample Measurement`,by=list(hourly_44201_2018$`State Name`, hourly_44201_2018$`County Name`, hourly_44201_2018$`Date Local`,hourly_44201_2018$`Time Local`),FUN=mean)
 hourly_88101_2018_group <-aggregate(hourly_88101_2018$`Sample Measurement`,by=list(hourly_88101_2018$`State Name`, hourly_88101_2018$`County Name`, hourly_88101_2018$`Date Local`,hourly_88101_2018$`Time Local`),FUN=mean)
 hourly_81102_2018_group <-aggregate(hourly_81102_2018$`Sample Measurement`,by=list(hourly_81102_2018$`State Name`, hourly_81102_2018$`County Name`, hourly_81102_2018$`Date Local`,hourly_81102_2018$`Time Local`),FUN=mean)
+hourly_WIND_2018_direction_group <-aggregate(hourly_WIND_2018_direction$Sample.Measurement,by=list(hourly_WIND_2018_direction$State.Name, hourly_WIND_2018_direction$County.Name, hourly_WIND_2018_direction$Date.Local,hourly_WIND_2018_direction$Time.Local),FUN=mean)
+hourly_WIND_2018_speed_group <-aggregate(hourly_WIND_2018_speed$Sample.Measurement,by=list(hourly_WIND_2018_speed$State.Name, hourly_WIND_2018_speed$County.Name, hourly_WIND_2018_speed$Date.Local,hourly_WIND_2018_speed$Time.Local),FUN=mean)
+hourly_TEMP_2018_group <-aggregate(hourly_TEMP_2018$`Sample Measurement`,by=list(hourly_TEMP_2018$`State Name`, hourly_TEMP_2018$`County Name`, hourly_TEMP_2018$`Date Local`,hourly_TEMP_2018$`Time Local`),FUN=mean)
+
 
 setnames(hourly_42401_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","SO2"))
 setnames(hourly_42101_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","CO"))
@@ -48,22 +69,25 @@ setnames(hourly_42602_2018_group, old=c("Group.1","Group.2","Group.3","Group.4",
 setnames(hourly_44201_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","Ozone"))
 setnames(hourly_88101_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","PM2.5"))
 setnames(hourly_81102_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","PM10"))
+setnames(hourly_WIND_2018_direction_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","Wind Direction"))
+setnames(hourly_WIND_2018_speed_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","Wind Speed"))
+setnames(hourly_TEMP_2018_group, old=c("Group.1","Group.2","Group.3","Group.4","x"), new=c("State Name", "County Name", "Date Local","Time Local","Temperature"))
 
-print("Aggregation done for pollutant data")
+print("Aggregation done for hourly data")
 
 hourly_all_poll_2018<-Reduce(function(x,y) merge(x = x, y = y, c("State Name", "County Name", "Date Local","Time Local"),all=TRUE),
-       list(hourly_42401_2018_group, hourly_42101_2018_group,hourly_42602_2018_group,hourly_44201_2018_group,hourly_88101_2018_group,hourly_81102_2018_group))
+       list(hourly_42401_2018_group, hourly_42101_2018_group,hourly_42602_2018_group,hourly_44201_2018_group,hourly_88101_2018_group,hourly_81102_2018_group,
+              hourly_WIND_2018_direction_group,hourly_WIND_2018_speed_group,hourly_TEMP_2018_group))
 hourly_all_poll_2018$`Date Local` <- as.Date(hourly_all_poll_2018$`Date Local`)
 hourly_all_poll_2018$Year <- format(hourly_all_poll_2018$`Date Local`, format = "%Y")
 hourly_all_poll_2018$Month <- format(hourly_all_poll_2018$`Date Local`, format = "%B")
 hourly_all_poll_2018$Day <- format(hourly_all_poll_2018$`Date Local`, format = "%d")
 
-print("Reduction done for pollutant data")
+print("Reduction done for hourly data")
 
 hourly_all_poll_2018$`Date Local` <- NULL
-fileName = paste("rds/" , "hourly_all_pollutants_2018.Rds", sep="")
+fileName = paste("rds/" , "hourly_all_data_2018.Rds", sep="")
 saveRDS(hourly_all_poll_2018, file=fileName)
-
 
 # Reading relevant information from daily pollutant files, merge and save in R data format
 daily_88101_2018 <- fread("data/daily_88101_2018.csv",header = T, sep = ',')
