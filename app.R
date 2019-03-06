@@ -22,6 +22,7 @@ library(htmltools) # to use htmlEscape function
 library(plotly)
 library(RColorBrewer)
 library(reshape2)
+library(feather)
 
 # importing datasets
 
@@ -31,27 +32,15 @@ datasets = lapply(temp, read.csv)
 dataset <- do.call(rbind, datasets)
 setwd("../")
 
-
-setwd("./rds/")
-temp = list.files(pattern="daily_all_aqi.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_df <- do.call(rbind, datasets)
+daily_df <- read_feather("feather/daily_all_aqi_by_county.feather")
 names(daily_df) <- c("state","county","aqi","category","pollutant","year","month","day")
-rm(datasets)
 
-temp = list.files(pattern="daily_all_pollutants.*.Rds")
-datasets = lapply(temp, readRDS)
-daily_all <- do.call(rbind, datasets)
+daily_all <- read_feather("feather/daily_all_pollutants_2018.feather")
 
-temp = list.files(pattern="hourly_all.*.Rds")
-datasets = lapply(temp, readRDS)
-hourly_df <- do.call(rbind, datasets)
-setwd("../")
-rm(datasets)
+hourly_df <- read_feather("feather/hourly_all_data_2018.feather")
 
 # needed for counties coordinates
 sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
-
 # geojson file for counties shape
 xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
 
