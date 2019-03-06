@@ -25,19 +25,18 @@ library(reshape2)
 library(feather)
 
 # importing datasets
-
 setwd("./csv/")
 temp = list.files(pattern="*.csv")
 datasets = lapply(temp, read.csv)
 dataset <- do.call(rbind, datasets)
 setwd("../")
 
-daily_df <- read_feather("feather/daily_all_aqi_by_county.feather")
+daily_df <- read_fst("fst/daily_all_aqi_by_county.fst")
 names(daily_df) <- c("state","county","aqi","category","pollutant","year","month","day")
 
-daily_all <- read_feather("feather/daily_all_pollutants_2018.feather")
+daily_all <- read_fst("fst/daily_all_pollutants_2018.fst")
 
-hourly_df <- read_feather("feather/hourly_all_data_2018.feather")
+hourly_df <- read_fst("fst/hourly_all_data_2018.fst")
 
 # needed for counties coordinates
 sites <- read.table(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
@@ -1130,7 +1129,6 @@ server <- function(input, output, session) {
         t7 <- nrow(subset(p2,category=="Unknown"))
         
         df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
-        print(df_row)
         names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
         df <- rbind(df,df_row)
       }

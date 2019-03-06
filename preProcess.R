@@ -1,10 +1,9 @@
-
 library(data.table)
 library(dplyr)
-library(feather)
+library(fst)
 
 #Check if the folder "feather" exists in the current directory, if not creates it
-ifelse(!dir.exists("feather"), dir.create("feather"),"")
+ifelse(!dir.exists("fst"), dir.create("fst"),"")
 
 # Reading relevant information from daily county files and save in R data format
 
@@ -27,8 +26,8 @@ daily_df$`State Code` <- NULL
 daily_df$`County Code` <- NULL
 daily_df$`Defining Site` <- NULL
 daily_df$`Number of Sites Reporting` <- NULL
-fileName = paste("feather/" , "daily_all_aqi_by_county.feather", sep="")
-write_feather(daily_df, fileName)
+fileName = paste("fast/" , "daily_all_aqi_by_county.fst", sep="")
+write.fst(daily_df, fileName)
 
 # Reading relevant information from hourly temp,wind,pollutant files, merge and save in and save in R data format
 
@@ -89,8 +88,10 @@ hourly_all_poll_2018$Day <- format(hourly_all_poll_2018$`Date Local`, format = "
 print("Reduction done for hourly data")
 
 hourly_all_poll_2018$`Date Local` <- NULL
-fileName = paste("feather/" , "hourly_all_data_2018.feather", sep="")
-write_feather(hourly_all_poll_2018, fileName)
+fileName = paste("fst/" , "hourly_all_data_2018.fst", sep="")
+write.fst(hourly_all_poll_2018, fileName)
+
+
 
 # Reading relevant information from daily pollutant files, merge and save in R data format
 daily_88101_2018 <- fread("data/daily_88101_2018.csv",header = T, sep = ',')
@@ -128,5 +129,5 @@ daily_all_poll_2018$Year <- format(daily_all_poll_2018$`Date Local`, format = "%
 daily_all_poll_2018$Month <- format(daily_all_poll_2018$`Date Local`, format = "%B")
 daily_all_poll_2018$Day <- format(daily_all_poll_2018$`Date Local`, format = "%d")
 daily_all_poll_2018$`Date Local` <- NULL
-fileName = paste("feather/" , "daily_all_pollutants_2018.feather", sep="")
-write_feather(daily_all_poll_2018, fileName)
+fileName = paste("fst/" , "daily_all_pollutants_2018.fst", sep="")
+write.fst(daily_all_poll_2018, fileName)
