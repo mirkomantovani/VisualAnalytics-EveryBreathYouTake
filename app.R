@@ -93,27 +93,35 @@ ui <- dashboardPage(
                    width = 370,
                    sidebarMenu(
                      useShinyalert(),
-                     menuItem("Yearly trends", tabName = "time"),
-                     menuItem("Year details for County", tabName = "pie"),
+                     menuItem("Yearly visualizations",
+                              menuItem("Yearly trends", tabName = "time"),
+                              menuItem("Year details for County", tabName = "pie")),
+                     # menuItem("Yearly trends", tabName = "time"),
+                     # menuItem("Year details for County", tabName = "pie"),
                      # menuItem("Compare Counties", tabName = "compare"),
                      menuItem("Monthly AQI levels", tabName = "monthly_aqi"),
                      menuItem("Daily AQI", tabName = "daily_aqi"),
                      menuItem("Hourly Pollutants", tabName = "hourly_pollutants"),
                      menuItem("Pollutants Heatmap", tabName = "pollutants_map"),
+                     menuItem("Italy is the best",
+                              menuItem("Daily trends", tabName = "italy_daily"),
+                              menuItem("Hourly trends", tabName = "italy_hourly"),
+                              menuItem("Totals over 90 days?", tabName = "italy_totals")),
+                     menuItem("Inputs",
+                              selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
+                              tags$style("#County {background-color:blue;}"),
+                              selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
+                              div(id="nozoom",sliderInput(inputId = "Year",
+                                                          sep = "",
+                                                          label = "Select Year",
+                                                          value = 2018, min = 1980, max = 2018,width = "90%")),
+                              materialSwitch(inputId = "switch_units", label = "Switch to Imperial units", status = "primary"),
+                              startExpanded = TRUE),
                      menuItem("About", tabName = "about")
+                     
                    ),
                    # custom CSS
-                   includeCSS("style.css"),
-                   selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
-                   tags$style("#County {background-color:blue;}"),
-                   selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
-                   div(id="nozoom",sliderInput(inputId = "Year",
-                                               sep = "",
-                                               label = "Select Year",
-                                               value = 2018, min = 1980, max = 2018,width = "90%")),
-                   materialSwitch(inputId = "switch_units", label = "Switch to Imperial units", status = "primary")
-                   
-                   
+                   includeCSS("style.css")
   ),
   dashboardBody(tags$head(
     # Include custom JS

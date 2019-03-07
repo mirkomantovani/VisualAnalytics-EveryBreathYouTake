@@ -52,6 +52,16 @@ background: rgb(30, 83, 99);
 color: rgb(208, 208, 208);
 }
 
+/* sidebar: tab selected */
+.skin-blue .main-sidebar .sidebar .sidebar-menu .active a {
+  color: rgb(255,255,255);
+  font-size: 13px;
+  border-radius: 0px 20px 20px 0px;
+  border-style: none none solid none;
+  border-color: rgb(75,126,151);
+  border-width: 1px;
+}
+
 .form-control, .selectize-input, .selectize-control.single .selectize-input {
 background: rgb(59, 236, 220);
 color: rgb(0,0,0);
