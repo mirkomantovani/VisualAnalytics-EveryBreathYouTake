@@ -260,7 +260,6 @@ ui <- dashboardPage(
                              colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),
                              colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),
                              colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),
-                             colourInput("colorWD_hp", h5("Select color Wind Direction"), value = "#D6BC70"),
                              colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),
                              
                              circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
@@ -281,7 +280,7 @@ ui <- dashboardPage(
                                       h4(textOutput("sel_county_hp")),
                                       h3("Year:"),
                                       h4(textOutput("year_hp")),
-                                      selectizeInput(inputId = "H_year", "Select Year", H_years, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_year", "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
                                       # selectInput(inputId = "pollutant_chart", "Select Pollutant", c(pollutants), multiple = TRUE, selected = 'AQI',width = "100%")
@@ -290,8 +289,8 @@ ui <- dashboardPage(
               ,
               column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
                 inputId = "hourly_data", label = h5("Hourly Data"), # moved in main input panel 
-                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Wind Direction","Temperature"), 
-                justified = TRUE, status = "primary", selected = "white",
+                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Temperature"), 
+                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
               ))
               
@@ -1364,7 +1363,6 @@ server <- function(input, output, session) {
                                       "PM2.5" = input$colorPM25_hp,
                                       "PM10" = input$colorPM10_hp,
                                       "Wind Speed" = input$colorWS_hp,
-                                      "Wind Direction" = input$colorWD_hp,
                                       "Temperature" = input$colorTemp_hp
                            ))
       if ("Temperature" %in% input$hourly_data){
@@ -1375,10 +1373,6 @@ server <- function(input, output, session) {
       if ("Wind Speed" %in% input$hourly_data){
         gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 1) +
           geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3) 
-      }
-      if ("Wind Direction" %in% input$hourly_data){
-        gl <- gl + geom_line(aes(y = s_county$`Wind Direction`, color = "Wind Direction"), size = line_size(), group = 1) +
-          geom_point(aes(y = s_county$`Wind Direction`, color = "Wind Direction"), size = line_size()*3) 
       }
       if ("CO" %in% input$hourly_data){
         gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
