@@ -81,7 +81,12 @@ for(s in states){
   all_counties <- c(all_counties,counti)
 }
 
+############################################################ ITALY ########################################################################################
+italy_df <- read_fst("italy/daily_italy.fst")
 
+cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
+
+print("done reading data")
 ############################################### UI ################################################
 
 ui <- dashboardPage(
@@ -337,6 +342,36 @@ ui <- dashboardPage(
                          'Visual Analytics, University of Illinois at Chicago 2019'
                 )
             )),
+    tabItem("italy_daily",
+            # h1("WIP")
+            fluidRow(
+              # Input county with search
+              column(2,box(title = "City selection",status = "success", width = NULL,
+                           div(column(12,
+                                      h3("City:"),
+                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL)
+
+                                      #h4(textOutput("sel_city")) #can get rid of this line
+
+                           ),class = "boxtozoom")
+              )
+              ),
+              # 2 tabs, (line plots and table, map)
+              column(10,
+                     tabsetPanel(
+                       tabPanel("AQI Time Series",
+                                plotlyOutput("daily_aqi_line_italy", height = "85vmin")
+                       ),
+                       tabPanel("Bar chart",
+                                plotOutput("daily_bar_italy", height = "60vmin")
+                       ),
+                       tabPanel("Table",
+                                div(DT::dataTableOutput("daily_aqi_table_italy"), style = "font-size:100%")
+                       )
+              )
+            ))
+    ),
+    
     # FOURTH MENU TAB
     tabItem("about",
             htmlOutput("about_out")
@@ -457,6 +492,17 @@ server <- function(input, output, session) {
   })
   
   observeEvent(priority = 10,input$State,{
+    selected_state_data <- subset(dataset, State == input$State)
+    counties_in_state <- unique(selected_state_data$County)
+    
+    updateSelectInput(session, inputId = "County", choices = counties_in_state)
+    county <- input$County
+    
+  })
+  
+  
+  ###NEEDS MODIFICATION
+  observeEvent(priority = 10,input$location_italy,{
     selected_state_data <- subset(dataset, State == input$State)
     counties_in_state <- unique(selected_state_data$County)
     
@@ -1099,7 +1145,123 @@ server <- function(input, output, session) {
     
   })
   
+  # Daily AQI for ITALY - GRAD PART
+  output$daily_aqi_line_italy <- renderPlotly({
+    months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+    a <- subset(italy_df,city==input$CitySearch)
+    a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%y-%d-%m")
+    a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
+    if(length(a$parameter)==0)
+      shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error")
+    else{
+      p <- ggplot(a, aes(x = date, y = value)) +  labs(x = "Year", y = "Air Quality Index") +
+        geom_line(aes()) + geom_point(aes(color=parameter)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_x_date(
+          date_minor_breaks = "1 month") + theme(
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(color = input$textColor),
+            panel.border = element_blank(),
+            plot.background = element_rect(color = NA, fill = input$backgroundColor),
+            legend.background = element_rect(color = NA, fill = input$backgroundColor),
+            legend.key = element_rect(color = NA, fill = input$backgroundColor),
+            panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+            panel.grid.major = element_line(color = input$textColor),
+            panel.grid.minor = element_line(color = input$textColor),
+            legend.text = element_text(size = legend_text_size(), color = input$textColor),
+            legend.key.size = unit(legend_key_size(), 'line'),
+            axis.text = element_text(size = axis_text_size(), color = input$textColor),
+            axis.title = element_text(size = axis_title_size()),
+            legend.title = element_text(size = legend_title_size(), color = input$textColor)
+          )#labels = date_format("%m-%Y")
+      
+      # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
+      
+      
+      p <- ggplotly(p)
+      p
+    }
+    
+  })
+  
   #Stacked bar chart - PART C
+  output$daily_bar <- renderPlot({
+    
+    p1 <- subset(italy_df,county==city$CitySearch)
+    if(length(p1$parameter)==0)
+    {
+      shinyalert("Oops!", paste("No data for",input$CitySearch), type = "error")
+      emp <- data.frame()
+      ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title.x = element_blank(),
+        axis.title.y = element_text(color = input$textColor),
+        panel.border = element_blank(),
+        plot.background = element_rect(color = NA, fill = input$backgroundColor),
+        legend.background = element_rect(color = NA, fill = input$backgroundColor),
+        legend.key = element_rect(color = NA, fill = input$backgroundColor),
+        panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+        panel.grid.major = element_line(color = input$textColor),
+        panel.grid.minor = element_line(color = input$textColor),
+        legend.text = element_text(size = legend_text_size(), color = input$textColor),
+        legend.key.size = unit(legend_key_size(), 'line'),
+        axis.text = element_text(size = axis_text_size(), color = input$textColor),
+        axis.title = element_text(size = axis_title_size()),
+        legend.title = element_text(size = legend_title_size(), color = input$textColor)
+      )
+    }
+    else{
+      
+      df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
+      names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+      months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+      for(i in 1:12)
+      {
+        month1 = months[i]
+        
+        p2 <- subset(p1,month==month1)
+        df_row = c(months[i],0,0,0,0,0,0,0)
+        
+        t1 <- nrow(subset(p2,category=="Good"))
+        t2 <- nrow(subset(p2,category=="Moderate"))
+        
+        t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
+        t4 <- nrow(subset(p2,category=="Unhealthy"))
+        t5 <- nrow(subset(p2,category=="Very Unhealthy"))
+        t6 <- nrow(subset(p2,category=="Hazardous"))
+        t7 <- nrow(subset(p2,category=="Unknown"))
+        
+        df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
+        names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+        df <- rbind(df,df_row)
+      }
+      
+      DF1 <- melt(df, id.var="Month")
+      
+      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010","#C0C0C0"))+
+        theme(
+          text = element_text(size=12)
+        ) + labs(x = "Month", y = "Number of days") +
+        theme(
+          axis.title.x = element_text(color = "black"),
+          axis.title.y = element_text(color = "black"),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = "#bcdae0"),
+          legend.background = element_rect(color = NA, fill = "#bcdae0"),
+          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
+          panel.grid.major = element_line(color = "black"),
+          panel.grid.minor = element_line(color = "black"),
+          legend.text = element_text(size = legend_text_size()),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(),color = "black"),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size())
+        )
+      p
+    }
+    
+  })
+  
+  # Stacked bar chart for ITALY - GRAD PART
   output$daily_bar <- renderPlot({
     
     p1 <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
