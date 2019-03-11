@@ -204,223 +204,217 @@
 
 
 
-    <!--
-
-        <div class="row about-desc" data-aos="fade-up">
-            <div class="col-full">
-
-                <h1 class="display-2">How to run the application</h1>
-                <h2>Accessing the web application online</h2>
-                <p>
-                    Just click on the provided link to access the web application hosted on shinyapps.io from your browser. It is recommended to use a recent version of Google Chrome.
-
-                </p>
-                <h2>Hosting the web application locally</h2>
-
-                    Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
-                <br><br>
-
-                <h1 class="display-2">Functionalities</h1>
-
-                <h2>Getting started and main tab</h2>
-
-                    The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, the main panel on the right will reload the data and recreate the graphs interactively.
 
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/main.png" alt="Screen" class="responsive">
+    <div class="row about-desc" data-aos="fade-up">
+        <div class="col-full">
+
+            <h1 class="display-2">How to run the application</h1>
+            <h2>Accessing the web application online</h2>
+            <p>
+                Just click on the provided link to access the web application hosted on the EVL server from your browser. It is recommended to use a recent version of Google Chrome.
+
+            </p>
+            <h2>Hosting the web application locally</h2>
+
+            Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
+            <br><br>
+
+            <h1 class="display-2">Functionalities</h1>
+
+            <h2>Getting started and main tab</h2>
+
+            The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively.
+
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/main.png" alt="Screen" class="responsive">
+            </div>
 
-                    The main tab is divided into two main boxes, the one of the left shows AQI (Air Quality Index) levels. It consists in: a pie chart showing the percentages (sometimes estimated if there are missing data) of days with a certain level of AQI in a specific year for the selected County. Under this pie chart there is a bar chart and a table, both showing the number of days in the year with that level.
-                <br>
-                    The right box, instead, shows detected pollutants data. The first tab in this box shows a pie chart for each pollutant with the percentage of days in which that pollutant was the main cause of problems. The second tab shows a bar chart with the number of days in which they were the main pollutant in that year. Again, the table at the bottom shows the same thing as the bar chart but in a different way.
 
-                <br><br>
-                    From the sidebar you can also access other tabs with different functionalities and plots.
+            <h2>Yearly visualizations: Yearly trends</h2>
+            This first tab shows AQI and pollutants time series.
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/sidebar.png" alt="Screen" class="responsive">
+
+            The left box contains various inputs that allow interactivity with the plots. You can choose the color of the plot background, choose the county from an alphabetically ordered list of (County - State) pairs, select a range of years in which you want to concentrate.
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/range.png" alt="Screen" class="responsive">
+            </div>
 
-                <h2>Second tab: County Trends</h2>
-                    The second panel shows AQI and pollutants time series.
+            By clicking on the settings button you can also change the grid and text colors in the plots to black, if the background color is too bright. In addition, you can change the colors for the pollutants for the second plot.
 
-
-                The left box contains various inputs that allow interactivity with the plots. You can choose the color of the plot background, choose the county from an alphabetically ordered list of (County - State) pairs, select a range of years in which you want to concentrate.
-
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/range.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/colors.png" alt="Screen" class="responsive">
+            </div>
 
-                    By clicking on the settings button you can also change the grid and text colors in the plots to black, if the background color is too bright. In addition, you can change the colors for the pollutants for the second plot.
-
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/colors.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/background.png" alt="Screen" class="responsive">
+            </div>
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/background.png" alt="Screen" class="responsive">
+            <br>
+            The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with days counts.
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/table.png" alt="Screen" class="responsive">
+            </div>
 
-                <br>
-                The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with days counts.
+            The third tab is a map showing the location of the selected county on the map, and showing all the counties in the US that highlights in white when you hover over them.
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/table.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/map.png" alt="Screen" class="responsive">
+            </div>
 
-                The third tab is a map showing the location of the selected county on the map, and showing all the counties in the US that highlights in white when you hover over them.
+            <h2>Yearly visualizations: Year details for County</h2>
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/map.png" alt="Screen" class="responsive">
+            The main panel is divided into two boxes, the one of the left shows AQI (Air Quality Index) levels. It consists in: a pie chart showing the percentages (sometimes estimated if there are missing data) of days with a certain level of AQI in a specific year for the selected County. Under this pie chart there is a bar chart and a table, both showing the number of days in the year with that level.
+            <br>
+            The right box, instead, shows detected pollutants data. The first tab in this box shows a pie chart for each pollutant with the percentage of days in which that pollutant was the main cause of problems. The second tab shows a bar chart with the number of days in which they were the main pollutant in that year. Again, the table at the bottom shows the same thing as the bar chart but in a different way.
+
+            <br><br>
+            From the sidebar you can also access other tabs with different functionalities and plots.
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/sidebar.png" alt="Screen" class="responsive">
+            </div>
 
-                <h2>Third tab: Compare Counties</h2>
-                    The third panel is about comparing different counties. You can choose 3 counties among all the counties by searching on the input lists. You will see on the small map the location of these counties. By clicking on the setting button you can change the AQI statistic or pollutant that you want to focus your analysis on.
+            <h2>Monthly AQI levels</h2>
+            Text
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/statistic.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
 
-                    There are 3 subtabs in this panel. The first is an AQI statistic time series comparison. The second a percentage of days as main pollutant time series for a specific pollutant.
+            <h2>Daily AQI</h2>
+            Text
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/pollutantcomp.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
 
-                The third one focuses on a specific year, that can be selected with the slider in the sidebar, and compares all the pollutants percentage for the 3 counties at the same time with a bar chart.
+            <h2>Hourly pollutants</h2>
+            Text
 
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/barcomp.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
-                <br><br>
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
 
-                <h1 class="display-2">Data, libraries and implementation</h1>
+            <h2>Pollutants heatmap</h2>
+            Text
 
-                <h2>Data</h2>
-                <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
-    <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>
-
-                <h2>Missing data</h2>
-                    The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
-
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/alert.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
 
-                <h2>Used R libraries</h2>
-                    This is the list of R libraries used for this project:
+            <h2>Italy: daily trends</h2>
+            Text
 
-                <ul>
-    <li>shiny</li>
-    <li>shinydashboard</li>
-    <li>ggplot2</li>
-    <li>scales</li>
-    <li>shinythemes</li>
-    <li>dashboardthemes</li>
-    <li>ggthemes</li>
-    <li>shinyalert</li>
-    <li>leaflet</li>
-    <li>rgdal</li>
-    <li>geojson</li>
-    <li>geojsonio</li>
-    <li>colourpicker</li>
-    <li>shinyWidgets</li>
-
-    </ul>
-
-                <h2>Problems during the development</h2>
-                Missing data handling: A big problem was the reactivity queue execution, when I changed a state, all the reactive expressions depending on the state input were queued, the highest priority observeEvent was fired first, this, in turn, changed the counties list and the current county, but all the others reactive expressions were still run with the county input before the observeEvent changed it, this created some problems in the signaling of missing data for the selected county and year. I solved it by isolating the State input and the current Reactive Value in the reactive expression that had the task of signaling the missing data error.<br><br>
-
-                White margins in ggplot pie charts: I spent so much time trying to figure out how to eliminate or color the white margins present in the ggplot2 pie chart plots. When you change the background colors to a color different than white, you those margins are visible. My conclusions are that it's a bug in the library or I'm too stupid to figure out how a way to eliminate it.
-
-                Responsivity for SAGE2: I would say half of the time was spent on figuring out the best ways to create a user interface that is perfect for both a normal display (e.g. Full HD, retina..) and the SAGE2 display with a 3.555 ratio and the huge width resolution of 11k pixels. I managed to scale most of the elements via javascript at runtime by detecting the screen size and act upon that, but there are still a few small problems.
-
-<br><br>
-
-                <h1 class="display-2">Interesting Insights</h1>
-                <h2>Counties with highest population comparison</h2>
-                An interesting comparison is between counties with a very high population. The county with the highest population in the united states is the County of Los Angeles in California. The city of Los Angeles is also known for the constant traffic and lack of public transportation, I expected it to have a very bad air. The second is Cook county (Chicago area), the third Harris (Houston area). This ranking is not surprising and follows the same order as the cities by population except New York City is not there, and this is because the counties of New York City are very small.
-                What I expected was a very bad air quality, which releaved to be true. What I did not expect was seeing a decreasing trend. Apparently, all the big cities have been improving the air quality in the past decades. Los Angeles is clearly worse with respect to the other two counties. The counties are also very far from each other, confirming that the cause of the bad air quality is because of the big cities and not the surrounding area.
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting1.png" alt="Screen" class="responsive">
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
 
-                <h2>Main pollutant over time</h2>
-                We can also compare the number of days as main pollutant for these 3 big counties. As you can see from the image below, there are some differences but overall they are similar. We can notice that in 1980 the main pollutants were: Ozone, NO2, SO2, CO. If we look at the same counties in 2018, instead, we see similar small differences. What we notice if we compare the two different years 2018 and 1980 is that the main pollutants have changed a lot. CO and SO2 are no more the problem. Now the expanding pollutants are: PM2.5 and Ozone.
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting3.png" alt="Screen" class="responsive">
+            <h2>Italy: hourly trends</h2>
+            Text
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting4.png" alt="Screen" class="responsive">
+                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+            </div>
+
+
+
+            <h1 class="display-2">Data, libraries and implementation</h1>
+
+            <h2>Data</h2>
+            <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
+            <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>
+
+            <h2>Missing data</h2>
+            The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
+
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
+                <img src="/images/p1viz/alert.png" alt="Screen" class="responsive">
+            </div>
+
+            <h2>Used R libraries</h2>
+            This is the list of R libraries used for this project:
+
+            <ul>
+                <li>shiny</li>
+                <li>shinydashboard</li>
+                <li>ggplot2</li>
+                <li>scales</li>
+                <li>shinythemes</li>
+                <li>dashboardthemes</li>
+                <li>ggthemes</li>
+                <li>shinyalert</li>
+                <li>leaflet</li>
+                <li>rgdal</li>
+                <li>geojson</li>
+                <li>geojsonio</li>
+                <li>colourpicker</li>
+                <li>shinyWidgets</li>
+                <li>viridis</li>
+                <li>cdlTools</li>
+                <li>htmltools</li>
+                <li>plotly</li>
+                <li>RColorBrewer</li>
+                <li>reshape2</li>
+                <li>fst</li>
+                <li>future</li>
+                <li>data.table</li>
 
 
 
-                <h2>Illinois and counties around Chicago</h2>
-                To better demonstrate that the bad air quality is caused by the human impact we can compare Cook county with two bordering counties: Lake and Will, two very empty and green counties in Illinois.
-                They both are much better than Cook. Lake is slightly better than Will, probably because of the proximity of the lake.
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting2.png" alt="Screen" class="responsive">
+
+            </ul>
+
+            <h2>Problems during the development</h2>
+            Data size and slow loading problem<br><br>
+
+            
+
+            <br><br>
+
+            <h1 class="display-2">Interesting Insights</h1>
+            <h2>Interesting template</h2>
+            
+            <div class="testimonials__slide">
+                <div class="testimonials__info">
                 </div>
-
-                <h2>New York City pollutants trend</h2>
-                Looking at the New York City counties (Manhattan which is called New York county, Bronx, queens..), we can notice a difference with respect to the other big cities' counties. The PM2.5 which is the new main pollutant in the air together with Ozone, in New York City has been decreasing over the past 10 years. This does not happen in Los Angeles, Coook and Harris.
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting5.png" alt="Screen" class="responsive">
-                </div>
-
-                Another thing to notice in the New York City's counties is that in the early days, Manhattan's air quality was way worse than the other two main counties. Around 1995 it aligned with the rest of the counties, suggesting that that actions were took towards improving the air quality, maybe moving some industries outside or limiting the vehicle traffic within Manhattan.
-
-                <div class="testimonials__slide">
-                        <div class="testimonials__info">
-                        </div>
-                        <img src="/images/p1viz/interesting6.png" alt="Screen" class="responsive">
-                </div>
-
-
-
-
-
-
-
-
+                <img src="/images/p2viz/interesting1.png" alt="Screen" class="responsive">
             </div>
         </div>
+    </div>
 
--->
+
 
     <section id="articles" class="s-clients">
 
@@ -471,15 +465,18 @@
                 During this week, I did preprocessing for the hourly wind and temperature data and get them in R object format. I created a single data file for all the yearly AQI data to make the loading of the data faster in the application. I completed the creation of all the hourly line charts for pollutants, wind and temperature and allowing user to pick any of the plots for analysis.
 
 
+
                 <h1 style="font-size: 32pt">Week 3</h1>
                 <h2>Mirko</h2>
+                Changed UI sidebar. Added convert to metric input and handled conversion to metric units for pollutants map.
 
 
                 <h2>Abhishek</h2>
-                Worked on preprocessing daily and hourly data for italy (Graduate student's requirements). Started working on the UI  for displaying these data on the shiny app.
+                Worked on preprocessing daily and hourly data for italy (Graduate student's requirements). Started working on the UI for displaying these data on the shiny app.
 
                 <h2>Ashwani</h2>
                 During this week, I experimented and benchkmarked various R data objects formats to make our reading of data more efficient both in time and memory. I made use of futures to delay the load of data to the time when required. I also stated working on adding the feature of imperial units for hourly data. Hourly data plots were modified to display default plots and wind direction plot was removed.
+
 
             </div>
         </div>
