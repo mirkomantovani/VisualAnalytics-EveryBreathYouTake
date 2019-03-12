@@ -1365,7 +1365,7 @@ server <- function(input, output, session) {
         t7 <- nrow(subset(p2,category=="Unknown"))
         
         df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
-        print(df_row)
+        # print(df_row)
         names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
         df <- rbind(df,df_row)
       }
