@@ -207,472 +207,491 @@
     <section id="articles" class="s-clients">
 
 
-    <div class="row about-desc" data-aos="fade-up">
-        <div class="col-full">
-
-            <h1 class="display-2">How to run the application</h1>
-            <h2>Accessing the web application online</h2>
-            <p>
-                Just click on the provided link to access the web application hosted on the EVL server from your browser. It is recommended to use a recent version of Google Chrome.
-
-            </p>
-            <h2>Hosting the web application locally</h2>
-
-            Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
-            <br><br>
-
-            <h1 class="display-2">Functionalities</h1>
-
-            <h2>Getting started and main tab</h2>
-
-            The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively.
-
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-
-            <h2>Yearly visualizations: Yearly trends</h2>
-            This first tab shows AQI and pollutants time series.
-
-
-            The left box contains various inputs that allow interactivity with the plots. You can choose the color of the plot background, choose the county from an alphabetically ordered list of (County - State) pairs, select a range of years in which you want to concentrate.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            By clicking on the settings button you can also change the grid and text colors in the plots to black, if the background color is too bright. In addition, you can change the colors for the pollutants for the second plot.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <br>
-            The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with days counts.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            The third tab is a map showing the location of the selected county on the map, and showing all the counties in the US that highlights in white when you hover over them.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Yearly visualizations: Year details for County</h2>
-
-            The main panel is divided into two boxes, the one of the left shows AQI (Air Quality Index) levels. It consists in: a pie chart showing the percentages (sometimes estimated if there are missing data) of days with a certain level of AQI in a specific year for the selected County. Under this pie chart there is a bar chart and a table, both showing the number of days in the year with that level.
-            <br>
-            The right box, instead, shows detected pollutants data. The first tab in this box shows a pie chart for each pollutant with the percentage of days in which that pollutant was the main cause of problems. The second tab shows a bar chart with the number of days in which they were the main pollutant in that year. Again, the table at the bottom shows the same thing as the bar chart but in a different way.
-
-            <br><br>
-            From the sidebar you can also access other tabs with different functionalities and plots.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Monthly AQI levels</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Daily AQI</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Hourly pollutants</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Pollutants heatmap</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Italy: daily trends</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Italy: hourly trends</h2>
-            Text
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-
-
-            <h1 class="display-2">Data, libraries and implementation</h1>
-
-            <h2>Data</h2>
-            <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
-            <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>
-
-            <h2>Missing data</h2>
-            The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
-
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-            </div>
-
-            <h2>Used R libraries</h2>
-            This is the list of R libraries used for this project:
-
-            <ul>
-                <li>shiny</li>
-                <li>shinydashboard</li>
-                <li>ggplot2</li>
-                <li>scales</li>
-                <li>shinythemes</li>
-                <li>dashboardthemes</li>
-                <li>ggthemes</li>
-                <li>shinyalert</li>
-                <li>leaflet</li>
-                <li>rgdal</li>
-                <li>geojson</li>
-                <li>geojsonio</li>
-                <li>colourpicker</li>
-                <li>shinyWidgets</li>
-                <li>viridis</li>
-                <li>cdlTools</li>
-                <li>htmltools</li>
-                <li>plotly</li>
-                <li>RColorBrewer</li>
-                <li>reshape2</li>
-                <li>fst</li>
-                <li>future</li>
-                <li>data.table</li>
-
-
-
-
-            </ul>
-
-            <h2>Problems during the development</h2>
-            Data size and slow loading problem<br><br>
-
-            
-
-            <br><br>
-
-            <h1 class="display-2">Interesting Insights</h1>
-            <h2>Interesting template</h2>
-            
-            <div class="testimonials__slide">
-                <div class="testimonials__info">
-                </div>
-                <img src="/images/p2viz/interesting1.png" alt="Screen" class="responsive">
-            </div>
-        </div>
-    </div>
-
-
-
-    <section id="articles" class="s-clients">
-
         <div class="row about-desc" data-aos="fade-up">
             <div class="col-full">
 
-                <!-- Templates:
+                <h1 class="display-2">How to run the application</h1>
+                <h2>Accessing the web application online</h2>
+                <p>
+                    Just click on the provided link to access the web application hosted on the EVL server from your browser. It is recommended to use a recent version of Google Chrome.
+
+                </p>
+                <h2>Hosting the web application locally</h2>
+
+                Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
+                <br><br>
+
+                <h1 class="display-2">Functionalities</h1>
+
+                <h2>Getting started and main tab</h2>
+
+                The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively.
+
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+
+                <h2>Yearly visualizations: Yearly trends</h2>
+                This first tab shows AQI and pollutants time series.
+
+
+                The left box contains various inputs that allow interactivity with the plots. You can choose the color of the plot background, choose the county from an alphabetically ordered list of (County - State) pairs, select a range of years in which you want to concentrate.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                By clicking on the settings button you can also change the grid and text colors in the plots to black, if the background color is too bright. In addition, you can change the colors for the pollutants for the second plot.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <br>
+                The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with days counts.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                The third tab is a map showing the location of the selected county on the map, and showing all the counties in the US that highlights in white when you hover over them.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Yearly visualizations: Year details for County</h2>
+
+                The main panel is divided into two boxes, the one of the left shows AQI (Air Quality Index) levels. It consists in: a pie chart showing the percentages (sometimes estimated if there are missing data) of days with a certain level of AQI in a specific year for the selected County. Under this pie chart there is a bar chart and a table, both showing the number of days in the year with that level.
+                <br>
+                The right box, instead, shows detected pollutants data. The first tab in this box shows a pie chart for each pollutant with the percentage of days in which that pollutant was the main cause of problems. The second tab shows a bar chart with the number of days in which they were the main pollutant in that year. Again, the table at the bottom shows the same thing as the bar chart but in a different way.
+
+                <br><br>
+                From the sidebar you can also access other tabs with different functionalities and plots.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Monthly AQI levels</h2>
+                Text
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Daily AQI</h2>
+                Text
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Hourly pollutants</h2>
+                Text
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Pollutants heatmap</h2>
+                The interactive map allows the user to visualize a heatmap of all the counties of the US and a pollutant (or AQI). It is possible to see data for an entire year or change to daily data through the switch that can be found in one of the 2 input panels ("Time and Pollutant").
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/map1.png" alt="Screen" class="responsive">
+                </div>
+
+                <br>
+                As the rest of the application, this map is responsive and particularly, it was created for the big wall of display that we have in the classroom (11520 by 3240 pixels). In order to allow a practical user experience in terms of the touch screen wall present in the classroom, the UI has been designed to work best in this configuration that is the one applied to this version of the application:
+                <h4>Shown counties panel</h4>
+                the shown counties panel is static and positioned in the bottom right corner together with the legend. This type of circular input slider was implemented thinking about a functional touch screen use. This is why the whole panel is static and the shiny input variable behind the scene is only updated after approximately half a second since the user started interacting with it. The user can also type in a number by clicking in the displayed number using a HW keyboard.
+                <h4>Time and Pollutant panel</h4>
+                The second panel that controls the Time and Pollutant inputs is dynamic, users can drag and drop it wherever they want in the map. This is useful when the screen is very large and the users would have to move by a few steps just to reach this panel and change the input. The inputs present in this panel are: Pollutant and AQI (if yearly data), switch to yearly/daily data, choose year for yearly data, choose month and day for daily data (only the year 2018 is available).
+                <h4>Legend and units</h4>The legend shows the mapping of data range to color. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab.
+                <h4>Map interactions</h4>
+
+                The user can visualize the name of the County by hovering over any County.
+                The user can visualize the name of the State and County, as well as the precise pollutant value and a link to the wikipedia page of that County by clicking on any County.
+                <br>
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/map2.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Italy: daily trends</h2>
+                Text
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Italy: hourly trends</h2>
+                Text
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+
+
+                <h1 class="display-2">Data, libraries and implementation</h1>
+
+                <h2>Data</h2>
+                <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
+                <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>
+
+                <h2>Missing data</h2>
+                The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                </div>
+
+                <h2>Used R libraries</h2>
+                This is the list of R libraries used for this project:
+
+                <ul>
+                    <li>shiny</li>
+                    <li>shinydashboard</li>
+                    <li>ggplot2</li>
+                    <li>scales</li>
+                    <li>shinythemes</li>
+                    <li>dashboardthemes</li>
+                    <li>ggthemes</li>
+                    <li>shinyalert</li>
+                    <li>leaflet</li>
+                    <li>rgdal</li>
+                    <li>geojson</li>
+                    <li>geojsonio</li>
+                    <li>colourpicker</li>
+                    <li>shinyWidgets</li>
+                    <li>viridis</li>
+                    <li>cdlTools</li>
+                    <li>htmltools</li>
+                    <li>plotly</li>
+                    <li>RColorBrewer</li>
+                    <li>reshape2</li>
+                    <li>fst</li>
+                    <li>future</li>
+                    <li>data.table</li>
+
+
+
+
+                </ul>
+
+                <h2>Problems during the development</h2>
+                Data size and slow loading problem<br><br>
+
+
+
+                <br><br>
+
+                <h1 class="display-2">Interesting Insights</h1>
+                <h2>Interesting template</h2>
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/interesting1.png" alt="Screen" class="responsive">
+                </div>
+            </div>
+        </div>
+
+
+
+        <section id="articles" class="s-clients">
+
+            <div class="row about-desc" data-aos="fade-up">
+                <div class="col-full">
+
+                    <!-- Templates:
                      Picture:
                         <img src="/images/p2viz/pic_name.png" alt="Screen" class="responsive">
                 -->
 
-                <h1 class="display-2">Weekly Updates on progress</h1>
-                <h1 style="font-size: 32pt">Week 1</h1>
-                <h2>Mirko</h2>
-                <!--                write updates here-->
-                In our first meeting we decided to use part of my project 1 <a href="JustBreathe.html" style="text-decoration: underline">Just Breathe</a> to start implementing the second project. During this week I adapted the code as base structure to work for the second project and reorganized the code (extracting css and JS from the app.js, loading the new data, created project tabs). I also implemented the map as per requirement of part C and B, and tuned the parameters to allow responsitivity for large displays.
+                    <h1 class="display-2">Weekly Updates on progress</h1>
+                    <h1 style="font-size: 32pt">Week 1</h1>
+                    <h2>Mirko</h2>
+                    <!--                write updates here-->
+                    In our first meeting we decided to use part of my project 1 <a href="JustBreathe.html" style="text-decoration: underline">Just Breathe</a> to start implementing the second project. During this week I adapted the code as base structure to work for the second project and reorganized the code (extracting css and JS from the app.js, loading the new data, created project tabs). I also implemented the map as per requirement of part C and B, and tuned the parameters to allow responsitivity for large displays.
 
 
-                <h2>Abhishek</h2>
-                <!--                write updates here-->
-                Started working on daily AQI data. Analyzed the structure of the dataset and figuring out the most efficient way to extract data with less overhead.
+                    <h2>Abhishek</h2>
+                    <!--                write updates here-->
+                    Started working on daily AQI data. Analyzed the structure of the dataset and figuring out the most efficient way to extract data with less overhead.
 
-                <h2>Ashwani</h2>
-                <!--                write updates here-->
+                    <h2>Ashwani</h2>
+                    <!--                write updates here-->
 
-                During the first week, we brainstormed about different ideas on how to read the data of large sizes. We discussed various approaches along with the pros and cons of them.I came up with script to automatically download files from the EPA website and unzip them in our local repository.I also performed preprocessing of data by storing data in r data format to reduce file sizes and loading only the columns which are required for analysis.
+                    During the first week, we brainstormed about different ideas on how to read the data of large sizes. We discussed various approaches along with the pros and cons of them.I came up with script to automatically download files from the EPA website and unzip them in our local repository.I also performed preprocessing of data by storing data in r data format to reduce file sizes and loading only the columns which are required for analysis.
 
-                <h1 style="font-size: 32pt">Week 2</h1>
-                <h2>Mirko</h2>
+                    <h1 style="font-size: 32pt">Week 2</h1>
+                    <h2>Mirko</h2>
 
-                During this week I implemented a date picker for the hourly data plot which allows the user to select Year, Month and Day for a county by showing to him only the available dates with data. I was also trying to figure out how to produce the heatmap but I got stuck because the incorrect data that we got from the source.
-
-
-                <h2>Abhishek</h2>
-                implemented the graph, bar chart and table for daily AQI statistics. Need to integrate this with the app's interface.
-
-                <h2>Ashwani</h2>
-                During this week, I worked on getting the daily data for pollutants and preprocessing it in R object format. I worked on merging the hourly and daily data for all the pollutants to make the dataset more compact and easy to use. I started working on the line charts to show the hourly data for pollutants for a particular county and a day.
-
-                <h1 style="font-size: 32pt">Alpha version</h1>
-                <h2>Mirko</h2>
-                Completed A part: The map UI was improved allowing the user to switch back and forth between the daily heatmap and yearly visualizations. When the daily heatmap is selected, the Month and Day input for the year 2018 are shown, the pollutants choice is also modified and AQI is removed from the dropdown list because of the lack of the corresponding column in the daily data. I also decided to adopt a more user-friendly widget for the county number input, using a circular input in a fixed panel at the bottom right of the screen.
-
-                <h2>Abhishek</h2>
-                Completed daily data visualizations given in part C. Should continue improvising this by better data loading methods to make the app boot up faster.
-
-                <h2>Ashwani</h2>
-                During this week, I did preprocessing for the hourly wind and temperature data and get them in R object format. I created a single data file for all the yearly AQI data to make the loading of the data faster in the application. I completed the creation of all the hourly line charts for pollutants, wind and temperature and allowing user to pick any of the plots for analysis.
+                    During this week I implemented a date picker for the hourly data plot which allows the user to select Year, Month and Day for a county by showing to him only the available dates with data. I was also trying to figure out how to produce the heatmap but I got stuck because the incorrect data that we got from the source.
 
 
+                    <h2>Abhishek</h2>
+                    implemented the graph, bar chart and table for daily AQI statistics. Need to integrate this with the app's interface.
 
-                <h1 style="font-size: 32pt">Week 3</h1>
-                <h2>Mirko</h2>
-                Changed UI sidebar. Added convert to metric input and handled conversion to metric units for pollutants map.
+                    <h2>Ashwani</h2>
+                    During this week, I worked on getting the daily data for pollutants and preprocessing it in R object format. I worked on merging the hourly and daily data for all the pollutants to make the dataset more compact and easy to use. I started working on the line charts to show the hourly data for pollutants for a particular county and a day.
+
+                    <h1 style="font-size: 32pt">Alpha version</h1>
+                    <h2>Mirko</h2>
+                    Completed A part: The map UI was improved allowing the user to switch back and forth between the daily heatmap and yearly visualizations. When the daily heatmap is selected, the Month and Day input for the year 2018 are shown, the pollutants choice is also modified and AQI is removed from the dropdown list because of the lack of the corresponding column in the daily data. I also decided to adopt a more user-friendly widget for the county number input, using a circular input in a fixed panel at the bottom right of the screen.
+
+                    <h2>Abhishek</h2>
+                    Completed daily data visualizations given in part C. Should continue improvising this by better data loading methods to make the app boot up faster.
+
+                    <h2>Ashwani</h2>
+                    During this week, I did preprocessing for the hourly wind and temperature data and get them in R object format. I created a single data file for all the yearly AQI data to make the loading of the data faster in the application. I completed the creation of all the hourly line charts for pollutants, wind and temperature and allowing user to pick any of the plots for analysis.
 
 
-                <h2>Abhishek</h2>
-                Worked on preprocessing daily and hourly data for italy (Graduate student's requirements). Started working on the UI for displaying these data on the shiny app.
 
-                <h2>Ashwani</h2>
-                During this week, I experimented and benchkmarked various R data objects formats to make our reading of data more efficient both in time and memory. I made use of futures to delay the load of data to the time when required. I also stated working on adding the feature of imperial units for hourly data. Hourly data plots were modified to display default plots and wind direction plot was removed.
+                    <h1 style="font-size: 32pt">Week 3</h1>
+                    <h2>Mirko</h2>
+                    Changed UI sidebar. Added convert to metric input and handled conversion to metric units for pollutants map.
 
 
+                    <h2>Abhishek</h2>
+                    Worked on preprocessing daily and hourly data for italy (Graduate student's requirements). Started working on the UI for displaying these data on the shiny app.
+
+                    <h2>Ashwani</h2>
+                    During this week, I experimented and benchkmarked various R data objects formats to make our reading of data more efficient both in time and memory. I made use of futures to delay the load of data to the time when required. I also stated working on adding the feature of imperial units for hourly data. Hourly data plots were modified to display default plots and wind direction plot was removed.
+
+
+                </div>
             </div>
-        </div>
 
-    </section>
+        </section>
 
-    <style>
-        .marginauto {
+        <style>
+            .marginauto {
                             margin: 10px auto 20px;
                             display: block;
                             }
                         </style>
 
-    <!-- services
+        <!-- services
     ================================================== -->
 
-    <!-- works
+        <!-- works
     ================================================== -->
-    <section id='video' class="s-works">
+        <section id='video' class="s-works">
 
-        <div class="intro-wrap">
+            <div class="intro-wrap">
 
 
-            <div class="row section-header has-bottom-sep light-sep" data-aos="fade-up">
-                <div class="col-full">
-                    <h3 class="subhead">Video</h3>
-                    <h1 class="display-2 display-2--light">Video presentation</h1>
+                <div class="row section-header has-bottom-sep light-sep" data-aos="fade-up">
+                    <div class="col-full">
+                        <h3 class="subhead">Video</h3>
+                        <h1 class="display-2 display-2--light">Video presentation</h1>
 
-                    <!--                    <iframe width="1080" height="720" src="https://www.youtube.com/embed/LDp652kYhjw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
-
-                </div>
-            </div>
-            <div class="row works-content">
-                <div class="col-full masonry-wrap">
-                    <div class="masonry">
-
+                        <!--                    <iframe width="1080" height="720" src="https://www.youtube.com/embed/LDp652kYhjw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
 
                     </div>
                 </div>
+                <div class="row works-content">
+                    <div class="col-full masonry-wrap">
+                        <div class="masonry">
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-    </section>
-
+        </section>
 
 
-    <!-- contact
+
+        <!-- contact
     ================================================== -->
-    <section id="contact" class="s-contact">
+        <section id="contact" class="s-contact">
 
-        <div class="overlay"></div>
-        <div class="contact__line"></div>
+            <div class="overlay"></div>
+            <div class="contact__line"></div>
 
-        <div class="row section-header" data-aos="fade-up">
-            <div class="col-full">
-                <h3 class="subhead">Contact Us</h3>
-                <h1 class="display-2 display-2--light">Reach out for a new project or just say hello</h1>
+            <div class="row section-header" data-aos="fade-up">
+                <div class="col-full">
+                    <h3 class="subhead">Contact Us</h3>
+                    <h1 class="display-2 display-2--light">Reach out for a new project or just say hello</h1>
+                </div>
             </div>
-        </div>
 
-        <div class="row contact-content" data-aos="fade-up">
+            <div class="row contact-content" data-aos="fade-up">
 
-            <div class="contact-primary">
+                <div class="contact-primary">
 
-                <h3 class="h6">Send Me A Message</h3>
+                    <h3 class="h6">Send Me A Message</h3>
 
-                <form name="contactForm" id="contactForm" method="post" action="" novalidate="novalidate">
-                    <fieldset>
+                    <form name="contactForm" id="contactForm" method="post" action="" novalidate="novalidate">
+                        <fieldset>
 
-                        <div class="form-field">
-                            <input name="contactName" type="text" id="contactName" placeholder="Your Name" value="" minlength="2" required="" aria-required="true" class="full-width">
-                        </div>
-                        <div class="form-field">
-                            <input name="contactEmail" type="email" id="contactEmail" placeholder="Your Email" value="" required="" aria-required="true" class="full-width">
-                        </div>
-                        <div class="form-field">
-                            <input name="contactSubject" type="text" id="contactSubject" placeholder="Subject" value="" class="full-width">
-                        </div>
-                        <div class="form-field">
-                            <textarea name="contactMessage" id="contactMessage" placeholder="Your Message" rows="10" cols="50" required="" aria-required="true" class="full-width"></textarea>
-                        </div>
-                        <div class="form-field">
-                            <button class="full-width btn--primary">Submit</button>
-                            <div class="submit-loader">
-                                <div class="text-loader">Sending...</div>
-                                <div class="s-loader">
-                                    <div class="bounce1"></div>
-                                    <div class="bounce2"></div>
-                                    <div class="bounce3"></div>
+                            <div class="form-field">
+                                <input name="contactName" type="text" id="contactName" placeholder="Your Name" value="" minlength="2" required="" aria-required="true" class="full-width">
+                            </div>
+                            <div class="form-field">
+                                <input name="contactEmail" type="email" id="contactEmail" placeholder="Your Email" value="" required="" aria-required="true" class="full-width">
+                            </div>
+                            <div class="form-field">
+                                <input name="contactSubject" type="text" id="contactSubject" placeholder="Subject" value="" class="full-width">
+                            </div>
+                            <div class="form-field">
+                                <textarea name="contactMessage" id="contactMessage" placeholder="Your Message" rows="10" cols="50" required="" aria-required="true" class="full-width"></textarea>
+                            </div>
+                            <div class="form-field">
+                                <button class="full-width btn--primary">Submit</button>
+                                <div class="submit-loader">
+                                    <div class="text-loader">Sending...</div>
+                                    <div class="s-loader">
+                                        <div class="bounce1"></div>
+                                        <div class="bounce2"></div>
+                                        <div class="bounce3"></div>
+                                    </div>
                                 </div>
                             </div>
+
+                        </fieldset>
+                    </form>
+
+                    <!-- contact-warning -->
+                    <div class="message-warning">
+                        Something went wrong. Please try again.
+                    </div>
+
+                    <!-- contact-success -->
+                    <div class="message-success">
+                        Your message was sent, thank you!<br>
+                    </div>
+
+                </div> <!-- end contact-primary -->
+
+                <div class="contact-secondary">
+                    <div class="contact-info">
+
+                        <h3 class="h6 hide-on-fullwidth">Contact Info</h3>
+
+                        <div class="cinfo">
+                            <h5>Where I live</h5>
+                            <p>
+                                Bussero, MI<br>
+                                20060 Italy
+                            </p>
                         </div>
 
-                    </fieldset>
-                </form>
+                        <div class="cinfo">
+                            <h5>Email Me At</h5>
+                            <p>
+                                mrk23 at hotmail dot it<br>
 
-                <!-- contact-warning -->
-                <div class="message-warning">
-                    Something went wrong. Please try again.
-                </div>
+                            </p>
+                        </div>
 
-                <!-- contact-success -->
-                <div class="message-success">
-                    Your message was sent, thank you!<br>
-                </div>
+                        <div class="cinfo">
+                            <h5>Call Me At</h5>
+                            <p>
 
-            </div> <!-- end contact-primary -->
+                                Mobile: <br>
 
-            <div class="contact-secondary">
-                <div class="contact-info">
+                            </p>
+                        </div>
 
-                    <h3 class="h6 hide-on-fullwidth">Contact Info</h3>
+                        <ul class="contact-social">
+                            <li>
+                                <a href="https://www.facebook.com/mrkmantovani"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/mirkomantovani/"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://www.instagram.com/mirkomantovani/"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://play.google.com/store/apps/developer?id=Mirko+Mantovani"><i class="fa fa-android" aria-hidden="true"></i></a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/mirkomantovani"><i class="fa fa-github" aria-hidden="true"></i></a>
+                            </li>
+                        </ul> <!-- end contact-social -->
 
-                    <div class="cinfo">
-                        <h5>Where I live</h5>
-                        <p>
-                            Bussero, MI<br>
-                            20060 Italy
-                        </p>
-                    </div>
+                    </div> <!-- end contact-info -->
+                </div> <!-- end contact-secondary -->
 
-                    <div class="cinfo">
-                        <h5>Email Me At</h5>
-                        <p>
-                            mrk23 at hotmail dot it<br>
+            </div> <!-- end contact-content -->
 
-                        </p>
-                    </div>
-
-                    <div class="cinfo">
-                        <h5>Call Me At</h5>
-                        <p>
-
-                            Mobile: <br>
-
-                        </p>
-                    </div>
-
-                    <ul class="contact-social">
-                        <li>
-                            <a href="https://www.facebook.com/mrkmantovani"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://www.linkedin.com/in/mirkomantovani/"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://www.instagram.com/mirkomantovani/"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://play.google.com/store/apps/developer?id=Mirko+Mantovani"><i class="fa fa-android" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://github.com/mirkomantovani"><i class="fa fa-github" aria-hidden="true"></i></a>
-                        </li>
-                    </ul> <!-- end contact-social -->
-
-                </div> <!-- end contact-info -->
-            </div> <!-- end contact-secondary -->
-
-        </div> <!-- end contact-content -->
-
-    </section> <!-- end s-contact -->
+        </section> <!-- end s-contact -->
 
 
-    <!-- footer
+        <!-- footer
     ================================================== -->
-    <footer>
+        <footer>
 
-        <div class="row footer-main">
+            <div class="row footer-main">
 
-            <div class="col-six tab-full left footer-desc">
+                <div class="col-six tab-full left footer-desc">
 
-                <div class="footer-logo"></div>
-                Portfolio of Mirko Mantovani
-            </div>
-
-            <div class="col-six tab-full right footer-subscribe">
-
-                <h4>Get Notified</h4>
-                <p></p>
-
-                <div class="subscribe-form">
-                    <form id="mc-form" class="group" novalidate="true">
-                        <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required="">
-                        <input type="submit" name="subscribe" value="Subscribe">
-                        <label for="mc-email" class="subscribe-message"></label>
-                    </form>
+                    <div class="footer-logo"></div>
+                    Portfolio of Mirko Mantovani
                 </div>
 
-            </div>
+                <div class="col-six tab-full right footer-subscribe">
 
-        </div> <!-- end footer-main -->
+                    <h4>Get Notified</h4>
+                    <p></p>
 
-        <div class="row footer-bottom">
-            <!--
+                    <div class="subscribe-form">
+                        <form id="mc-form" class="group" novalidate="true">
+                            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required="">
+                            <input type="submit" name="subscribe" value="Subscribe">
+                            <label for="mc-email" class="subscribe-message"></label>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div> <!-- end footer-main -->
+
+            <div class="row footer-bottom">
+                <!--
             <div class="col-twelve">
                 <div class="copyright">
                     <span>© Copyright Glint 2017</span>
@@ -685,68 +704,68 @@
             </div>
 -->
 
-        </div> <!-- end footer-bottom -->
+            </div> <!-- end footer-bottom -->
 
-    </footer> <!-- end footer -->
+        </footer> <!-- end footer -->
 
 
-    <!-- photoswipe background
+        <!-- photoswipe background
     ================================================== -->
-    <div aria-hidden="true" class="pswp" role="dialog" tabindex="-1">
+        <div aria-hidden="true" class="pswp" role="dialog" tabindex="-1">
 
-        <div class="pswp__bg"></div>
-        <div class="pswp__scroll-wrap">
+            <div class="pswp__bg"></div>
+            <div class="pswp__scroll-wrap">
 
-            <div class="pswp__container">
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-            </div>
+                <div class="pswp__container">
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                    <div class="pswp__item"></div>
+                </div>
 
-            <div class="pswp__ui pswp__ui--hidden">
-                <div class="pswp__top-bar">
-                    <div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-                    <div class="pswp__preloader">
-                        <div class="pswp__preloader__icn">
-                            <div class="pswp__preloader__cut">
-                                <div class="pswp__preloader__donut"></div>
+                <div class="pswp__ui pswp__ui--hidden">
+                    <div class="pswp__top-bar">
+                        <div class="pswp__counter"></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button> <button class="pswp__button pswp__button--share" title="Share"></button> <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button> <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                        <div class="pswp__preloader">
+                            <div class="pswp__preloader__icn">
+                                <div class="pswp__preloader__cut">
+                                    <div class="pswp__preloader__donut"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                        <div class="pswp__share-tooltip"></div>
+                    </div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+                    <div class="pswp__caption">
+                        <div class="pswp__caption__center"></div>
+                    </div>
                 </div>
-                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                    <div class="pswp__share-tooltip"></div>
-                </div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button> <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
-                <div class="pswp__caption">
-                    <div class="pswp__caption__center"></div>
-                </div>
+
             </div>
 
-        </div>
-
-    </div> <!-- end photoSwipe background -->
+        </div> <!-- end photoSwipe background -->
 
 
-    <!-- preloader
+        <!-- preloader
     ================================================== -->
-    <div id="preloader">
-        <div id="loader">
-            <div class="line-scale-pulse-out">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
+        <div id="preloader">
+            <div id="loader">
+                <div class="line-scale-pulse-out">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
             </div>
         </div>
-    </div>
 
 
-    <!-- Java Script
+        <!-- Java Script
     ================================================== -->
-    <script src="/js/jquery-3.2.1.min.js"></script>
-    <script src="/js/plugins.js"></script>
-    <script src="/js/main.js"></script>
+        <script src="/js/jquery-3.2.1.min.js"></script>
+        <script src="/js/plugins.js"></script>
+        <script src="/js/main.js"></script>
 
 
 </body>
