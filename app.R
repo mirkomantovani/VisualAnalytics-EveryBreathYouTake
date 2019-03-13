@@ -91,11 +91,19 @@ print("done reading data")
 
 ui <- dashboardPage(
   dashboardHeader(
-    title = "Visual Analytics - Every Breath You Take",
-    titleWidth = 370
+    # FOR PRESENTATION
+    # title = "Visual Analytics - Every Breath You Take",
+    # titleWidth = 370
+    title = "Every Breath You Take",
+    titleWidth = 250
   ),
-  dashboardSidebar(disable = FALSE, collapsed = TRUE,
-                   width = 370,
+  dashboardSidebar(
+    # FOR PRESENTATION
+                   disable = FALSE, 
+                   # collapsed = TRUE,
+                   # width = 370,
+                   collapsed = FALSE,
+                   width = 250,
                    sidebarMenu(
                      useShinyalert(),
                      menuItem("Yearly visualizations",
@@ -104,11 +112,11 @@ ui <- dashboardPage(
                      # menuItem("Yearly trends", tabName = "time"),
                      # menuItem("Year details for County", tabName = "pie"),
                      # menuItem("Compare Counties", tabName = "compare"),
-                     menuItem("Monthly AQI levels", tabName = "monthly_aqi"),
+                     # menuItem("Monthly AQI levels", tabName = "monthly_aqi"),
                      menuItem("Daily AQI", tabName = "daily_aqi"),
                      menuItem("Hourly Pollutants", tabName = "hourly_pollutants"),
                      menuItem("Pollutants Heatmap", tabName = "pollutants_map"),
-                     menuItem("Italy is the best",
+                     menuItem("Italy",
                               menuItem("Daily trends", tabName = "italy_daily"),
                               menuItem("Hourly trends", tabName = "italy_hourly"),
                               menuItem("Totals over 90 days?", tabName = "italy_totals")),
@@ -231,9 +239,6 @@ ui <- dashboardPage(
               )
             )
     ),
-    
-    tabItem("monthly_aqi",
-            h1("WIP")),
     tabItem("daily_aqi",
             fluidRow(
               # 2 tabs, (line plot, bar chart, table)
@@ -322,7 +327,7 @@ ui <- dashboardPage(
                 ),
                 
                 absolutePanel(id = "counties_panel", class = "panel panel-default", fixed = TRUE,
-                              draggable = FALSE, top = "auto", left = "auto", right = 40, bottom = 20,
+                              draggable = FALSE, top = "auto", left = "auto", right = 20, bottom = -40,
                               width = 330, height = "auto",
                               h2("Shown counties"),
                               knobInput(
@@ -335,7 +340,14 @@ ui <- dashboardPage(
                                 lineCap = "round",
                                 fgColor = "#428BCA",
                                 inputColor = "#428BCA"
-                              )
+                              ),
+                              sliderInput(inputId = "Opacity",
+                                          sep = "",
+                                          label = "Confidence level control",
+                                          step = 0.1,
+                                          value = 0, min = 0, max = 1
+                                          # ,width = "90%"
+                                          )
                 ),
                 
                 tags$div(id="cite",
@@ -403,7 +415,7 @@ server <- function(input, output, session) {
                       pie_text_size = 5,
                       slant_text_angle = 45,
                       point_size = 1,
-                      zoom_level = 4,
+                      zoom_level = 5,
                       tooltip_width = 100,
                       tooltip_hieght = 60,
                       tooltip_text_size = 14,
@@ -426,7 +438,7 @@ server <- function(input, output, session) {
       v$pie_text_size <<- 15
       v$slant_text_angle <<- 0
       v$point_size <<- 4
-      v$zoom_level <<- 8
+      v$zoom_level <<- 6
       v$tooltip_width <<- 180
       v$tooltip_height <<- 80
       v$tooltip_text_size <<- 28
@@ -446,7 +458,7 @@ server <- function(input, output, session) {
       v$pie_text_size = 5
       v$slant_text_angle = 45
       v$point_size = 1
-      v$zoom_level = 4
+      v$zoom_level = 5
       v$tooltip_width = 100
       v$tooltip_hieght = 60
       v$tooltip_text_size = 14
@@ -1461,24 +1473,41 @@ server <- function(input, output, session) {
     
     
     # Create a color palette
-    mypal <- colorNumeric(palette = "viridis", domain = temp$sel_feat
+    mypal <- colorNumeric(palette = "viridis", reverse = TRUE, domain = temp$sel_feat
                           ,na.color = "#ffffff11"
     )
     
+    pop <- if(!input$switch_daily) ~paste(sep = "<br/>",
+                                          paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
+                                          value(f_xy)$NAME,
+                                          value(f_xy)$STATENAME,
+                                          paste("Confidence level:",temp$Days.with.AQI/365*100, "%"),
+                                          paste("Days with data:",temp$Days.with.AQI),
+                                          paste(signif(temp$sel_feat,3),suffx)
+    )
+    else
+      ~paste(sep = "<br/>",
+             paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
+             value(f_xy)$NAME,
+             value(f_xy)$STATENAME,
+             paste(signif(temp$sel_feat,3),suffx)
+      )
+    
+    
+    spread <- function(num){
+      sp <- input$Opacity
+      return(if(sp < 0.4) ((num+sp)*(num+sp)-sp*sp)/(1+sp*2)-0.2+sp else ((num+sp)*(num+sp)-sp*sp)/(1+sp*2)+sp-0.2)
+    }
+
     
     # factpal <- colorQuantile("Blues", ccc, n=20)
     # year_map, pollutant_map
     leaflet() %>%
       # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
       addPolygons(data = value(f_xy), color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
-                  opacity = 1.0, fillOpacity = 1,#opacity will be a param
+                  opacity = spread(temp$Days.with.AQI/365+0.2), fillOpacity = spread(temp$Days.with.AQI/365+0.2),#opacity will be a param
                   label = ~htmlEscape(value(f_xy)$NAME),
-                  popup = ~paste(sep = "<br/>",
-                                 paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
-                                 value(f_xy)$NAME,
-                                 value(f_xy)$STATENAME,
-                                 paste(signif(temp$sel_feat,3),suffx)
-                  ),
+                  popup = pop,
                   # fillColor = ~colorQuantile("YlOrRd"),
                   highlightOptions = highlightOptions(color = "white", weight = 3,
                                                       bringToFront = TRUE)) %>%

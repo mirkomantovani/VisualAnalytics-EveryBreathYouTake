@@ -2,6 +2,12 @@
 background: #428bca00;color:white;
 }
 
+body {
+  /* margin: 0; 
+  height: 100%;  */
+  overflow: hidden}
+
+
 .irs-min, .irs-max {
     color: rgb(255, 255, 255);
     font-size: 10px;
