@@ -36,6 +36,10 @@ $(document).on("shiny:connected", function (e) {
         }
     };
 
+    //delete leaflet "ad" and move legend
+    // leaflet = document.getElementsByClassName("leaflet-control");
+    // leaflet[2].hidden = true;
+    // leaflet[1].style.marginBottom = "100px";
 
     if (dimension[0] >= 2000) {  //SAGE
         //document.write("<style>.rule1 { ... }</style>");
@@ -78,8 +82,19 @@ $(document).on("shiny:connected", function (e) {
         // FIRST SLIDER TEXT SIZE
         slider = document.getElementsByClassName("irs-grid-text");
         for (var i = 0; i < slider.length; i++) {
+            if(slider[i].parentElement.parentElement.parentElement.parentElement.id == "nozoom")
             slider[i].style.fontSize = "200%";
         }
+
+        //change panels position in map
+        document.getElementById("counties_panel").style.right = "160px";
+        document.getElementById("counties_panel").style.top = "500px";
+        document.getElementById("counties_panel").style.bottom = "auto";
+        document.getElementById("controls").style.left = "500px";
+        document.getElementById("controls").style.top = "150px";
+
+
+
 
         // SECOND SLIDER
         nozoomslider = document.getElementById("nozoomslider");
@@ -87,7 +102,7 @@ $(document).on("shiny:connected", function (e) {
         
         //CONTROLS for map
         controls = document.getElementById("controls");
-        controls.style.zoom = "300%";
+        controls.style.zoom = "150%";
 
         //map LEGEND ZOOM
         // document.getElementsByClassName("leaflet-control")[0].style.zoom = "300%";
