@@ -82,7 +82,7 @@ for(s in states){
 }
 
 ############################################################ ITALY ########################################################################################
-italy_df <- read_fst("italy/daily_italy.fst")
+italy_df <- read_fst("italy/daily_italy2.fst")
 
 cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
 
@@ -237,7 +237,7 @@ ui <- dashboardPage(
     tabItem("daily_aqi",
             fluidRow(
               # 2 tabs, (line plot, bar chart, table)
-              column(10,
+              column(12,
                      tabsetPanel(
                        tabPanel("AQI Time Series",
                                 plotlyOutput("daily_aqi_line", height = "85vmin")
@@ -350,26 +350,34 @@ ui <- dashboardPage(
                            div(column(12,
                                       h3("City:"),
                                       selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL)
-
+                                      
                                       #h4(textOutput("sel_city")) #can get rid of this line
-
+                                      
                            ),class = "boxtozoom")
               )
               ),
               # 2 tabs, (line plots and table, map)
-              column(10,
-                     tabsetPanel(
-                       tabPanel("AQI Time Series",
-                                plotlyOutput("daily_aqi_line_italy", height = "85vmin")
-                       ),
-                       tabPanel("Bar chart",
-                                plotOutput("daily_bar_italy", height = "60vmin")
-                       ),
-                       tabPanel("Table",
-                                div(DT::dataTableOutput("daily_aqi_table_italy"), style = "font-size:100%")
-                       )
-              )
-            ))
+              #   column(10,
+              #          tabsetPanel(
+              #            tabPanel("AQI Time Series",
+              #                     plotlyOutput("daily_aqi_line_italy", height = "85vmin")
+              #            ),
+              #            tabPanel("Bar chart",
+              #                     plotOutput("daily_bar_italy", height = "60vmin")
+              #            ),
+              #            tabPanel("Table",
+              #                     div(DT::dataTableOutput("daily_aqi_table_italy"), style = "font-size:100%")
+              #            )
+              #   )
+              # ),
+              column(10,plotlyOutput("daily_aqi_line_italy",height = "85vmin"),checkboxGroupButtons(
+                inputId = "daily_data_italy", label = h5("Daily Data"), # moved in main input panel 
+                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"), 
+                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
+                checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+              ))
+              
+            )
     ),
     
     # FOURTH MENU TAB
@@ -1117,7 +1125,7 @@ server <- function(input, output, session) {
       shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
     else{
       p <- ggplot(a, aes(x = date, y = aqi)) +  labs(x = "Year", y = "Air Quality Index") +
-        geom_line(aes()) + geom_point(aes(color=pollutant)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_x_date(
+        geom_line(aes()) + geom_point(aes(color=pollutant)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) +scale_x_date(
           date_minor_breaks = "1 month") + theme(
             axis.text.x = element_text(angle = 45, hjust = 1),
             axis.title.x = element_blank(),
@@ -1151,28 +1159,85 @@ server <- function(input, output, session) {
     a <- subset(italy_df,city==input$CitySearch)
     a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%y-%d-%m")
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
-    if(length(a$parameter)==0)
+    if(length(a$co)==0)
       shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error")
     else{
-      p <- ggplot(a, aes(x = date, y = value)) +  labs(x = "Year", y = "Air Quality Index") +
-        geom_line(aes()) + geom_point(aes(color=parameter)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_x_date(
-          date_minor_breaks = "1 month") + theme(
-            axis.text.x = element_text(angle = 45, hjust = 1),
-            axis.title.x = element_blank(),
-            axis.title.y = element_text(color = input$textColor),
-            panel.border = element_blank(),
-            plot.background = element_rect(color = NA, fill = input$backgroundColor),
-            legend.background = element_rect(color = NA, fill = input$backgroundColor),
-            legend.key = element_rect(color = NA, fill = input$backgroundColor),
-            panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-            panel.grid.major = element_line(color = input$textColor),
-            panel.grid.minor = element_line(color = input$textColor),
-            legend.text = element_text(size = legend_text_size(), color = input$textColor),
-            legend.key.size = unit(legend_key_size(), 'line'),
-            axis.text = element_text(size = axis_text_size(), color = input$textColor),
-            axis.title = element_text(size = axis_title_size()),
-            legend.title = element_text(size = legend_title_size(), color = input$textColor)
-          )#labels = date_format("%m-%Y")
+      # p <- ggplot(a, aes(x = date, y = value)) +  labs(x = "Year", y = "Air Quality Index") +
+      #   geom_line(aes()) + geom_point(aes(color=parameter)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) + scale_x_date(
+      #     date_minor_breaks = "1 month") + theme(
+      #       axis.text.x = element_text(angle = 45, hjust = 1),
+      #       axis.title.x = element_blank(),
+      #       axis.title.y = element_text(color = input$textColor),
+      #       panel.border = element_blank(),
+      #       plot.background = element_rect(color = NA, fill = input$backgroundColor),
+      #       legend.background = element_rect(color = NA, fill = input$backgroundColor),
+      #       legend.key = element_rect(color = NA, fill = input$backgroundColor),
+      #       panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+      #       panel.grid.major = element_line(color = input$textColor),
+      #       panel.grid.minor = element_line(color = input$textColor),
+      #       legend.text = element_text(size = legend_text_size(), color = input$textColor),
+      #       legend.key.size = unit(legend_key_size(), 'line'),
+      #       axis.text = element_text(size = axis_text_size(), color = input$textColor),
+      #       axis.title = element_text(size = axis_title_size()),
+      #       legend.title = element_text(size = legend_title_size(), color = input$textColor)
+      #     )#labels = date_format("%m-%Y")
+      # 
+      
+      p <- ggplot(data = a, aes(x = date)) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.y = element_text(color = input$textColor_hp),
+          axis.title.x = element_blank(),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor_hp),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor_hp),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor_hp),
+          panel.background = element_rect(fill = input$backgroundColor_hp, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor_hp),
+          panel.grid.minor = element_line(color = input$textColor_hp),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor_hp),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor_hp),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)
+        )+labs(x = "Hours", y = "Measurement of Hourly Data") + 
+        scale_color_manual(name = "Measurements",
+                           values = c("CO" = input$colorCO_hp,
+                                      "NO2" = input$colorNO2_hp,
+                                      "Ozone" = input$colorOZONE_hp,
+                                      "SO2" = input$colorSO2_hp,
+                                      "PM2.5" = input$colorPM25_hp,
+                                      "PM10" = input$colorPM10_hp,
+                                      "Wind Speed" = input$colorWS_hp,
+                                      "Temperature" = input$colorTemp_hp
+                           ))
+      if ("CO" %in% input$daily_data_italy){
+        p <- p + geom_line(aes(y = co, color = "CO"), size = line_size(), group = 1) +
+          geom_point(aes(y = co, color = "CO"), size = line_size()*3) 
+      }
+      if ("NO2" %in% input$daily_data_italy){
+        p <- p + geom_line(aes(y = no2, color = "NO2"), size = line_size(), group = 2) +
+          geom_point(aes(y = no2, color = "NO2"), size = line_size()*3) 
+      }    
+      if ("Ozone" %in% input$daily_data_italy){
+        p <- p+geom_line(aes(y = o3, color = "Ozone"), size = line_size(), group = 3) +
+          geom_point(aes(y = o3, color = "Ozone"), size = line_size()*3) 
+      }
+      if ("SO2" %in% input$daily_data_italy){
+        p <- p +geom_line(aes(y = so2, color = "SO2"), size = line_size(), group = 4) +
+          geom_point(aes(y = so2, color = "SO2"), size = line_size()*3) 
+      }
+      if ("PM2.5" %in% input$daily_data_italy){
+        p <- p + geom_line(aes(y = pm25, color = "PM2.5"), size = line_size(), group = 5)+ 
+          geom_point(aes(y = pm25, color = "PM2.5"), size = line_size()*3) 
+      }
+      if ("PM10" %in% input$daily_data_italy){
+        p <- p + geom_line(aes(y = pm10, color = "PM10"), size = line_size(), group = 6) +
+          geom_point(aes(y = pm10, color = "PM10"), size = line_size()*3) 
+      } 
+      
+      
+      
       
       # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
       
