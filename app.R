@@ -82,7 +82,7 @@ for(s in states){
 }
 
 ############################################################ ITALY ########################################################################################
-italy_df <- read_fst("italy/daily_italy2.fst")
+italy_df <- read_fst("italy/daily_italy.fst")
 
 cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
 
@@ -1213,27 +1213,27 @@ server <- function(input, output, session) {
                            ))
       if ("CO" %in% input$daily_data_italy){
         p <- p + geom_line(aes(y = co, color = "CO"), size = line_size(), group = 1) +
-          geom_point(aes(y = co, color = "CO"), size = line_size()*3) 
+          geom_point(aes(y = co, color = "CO"), size = line_size()*2) 
       }
       if ("NO2" %in% input$daily_data_italy){
         p <- p + geom_line(aes(y = no2, color = "NO2"), size = line_size(), group = 2) +
-          geom_point(aes(y = no2, color = "NO2"), size = line_size()*3) 
+          geom_point(aes(y = no2, color = "NO2"), size = line_size()*2) 
       }    
       if ("Ozone" %in% input$daily_data_italy){
         p <- p+geom_line(aes(y = o3, color = "Ozone"), size = line_size(), group = 3) +
-          geom_point(aes(y = o3, color = "Ozone"), size = line_size()*3) 
+          geom_point(aes(y = o3, color = "Ozone"), size = line_size()*2) 
       }
       if ("SO2" %in% input$daily_data_italy){
         p <- p +geom_line(aes(y = so2, color = "SO2"), size = line_size(), group = 4) +
-          geom_point(aes(y = so2, color = "SO2"), size = line_size()*3) 
+          geom_point(aes(y = so2, color = "SO2"), size = line_size()*2) 
       }
       if ("PM2.5" %in% input$daily_data_italy){
         p <- p + geom_line(aes(y = pm25, color = "PM2.5"), size = line_size(), group = 5)+ 
-          geom_point(aes(y = pm25, color = "PM2.5"), size = line_size()*3) 
+          geom_point(aes(y = pm25, color = "PM2.5"), size = line_size()*2) 
       }
       if ("PM10" %in% input$daily_data_italy){
         p <- p + geom_line(aes(y = pm10, color = "PM10"), size = line_size(), group = 6) +
-          geom_point(aes(y = pm10, color = "PM10"), size = line_size()*3) 
+          geom_point(aes(y = pm10, color = "PM10"), size = line_size()*2) 
       } 
       
       
