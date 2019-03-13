@@ -1521,19 +1521,23 @@ server <- function(input, output, session) {
         vals <-c(vals,"SO2" = "#A877E0")
         gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
           geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3) 
-        }
+      }
+      convert_to_imperial <- function(values){
+        return(values*1000000000000* 0.000000035274/35315)
+      }
+      
       if ("PM2.5" %in% input$hourly_data){
         if(input$switch_units){
-          hourly_df$data_conv <-hourly_df$"PM2.5"
-          hourly_df$data_conv <- convert_to_imperial(hourly_df$data_conv)
-          names(hourly_df)[names(hourly_df)=="data_conv"] <- paste("PM2.5","conv",sep="_")
+          s_county$data_conv <-s_county$"PM2.5"
+          s_county$data_conv <- convert_to_imperial(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("PM2.5","conv",sep="_")
           suffx_PM2.5 = "(e-12 oz/ft3)"
-          gl <- gl + geom_line(aes(y = PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
-          geom_point(aes(y = PM2.5, color = "PM2.5"), size = line_size()*3)
+          gl <- gl + geom_line(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size(), group = 5)+
+          geom_point(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size()*3)
         }
         else{
-          gl <- gl + geom_line(aes(y = PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
-          geom_point(aes(y = PM2.5, color = "PM2.5"), size = line_size()*3)
+          gl <- gl + geom_line(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
+          geom_point(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size()*3)
           suffx_PM2.5 = "(ug/m3)"
         }
         labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
@@ -1542,28 +1546,43 @@ server <- function(input, output, session) {
       }
       if ("PM10" %in% input$hourly_data){
         if(input$switch_units){
-          hourly_df$data_conv <-hourly_df$"PM10"
-          hourly_df$data_conv <- convert_to_imperial(hourly_df$data_conv)
-          names(hourly_df)[names(hourly_df)=="data_conv"] <- paste("PM10","conv",sep="_")
+          s_county$data_conv <-s_county$"PM10"
+          s_county$data_conv <- convert_to_imperial(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("PM10","conv",sep="_")
           suffx_PM10 = "(e-12 oz/ft3)"
-          gl <- gl + geom_line(aes(y = PM10, color = "PM10"), size = line_size(), group = 6) +
-          geom_point(aes(y = PM10, color = "PM10"), size = line_size()*3) 
+          gl <- gl + geom_line(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size(), group = 6) +
+          geom_point(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size()*3) 
         }
         else{
           suffx_PM10 = "(ug/m3)"
-          gl <- gl + geom_line(aes(y = PM10, color = "PM10"), size = line_size(), group = 6) +
-          geom_point(aes(y = PM10, color = "PM10"), size = line_size()*3) 
+          gl <- gl + geom_line(aes(y = s_county$PM10, color = "PM10"), size = line_size(), group = 6) +
+          geom_point(aes(y = s_county$PM10, color = "PM10"), size = line_size()*3) 
           
         }
         labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
         vals <-c(vals,"PM10" = "#ba1010")
         
       } 
+      convert_temp_to_imperial <- function(values){
+        return((values-32)/1.8)
+      }
       if ("Temperature" %in% input$hourly_data){
-          labs <-c(labs,"Temperature"= "hello")
+        if(input$switch_units){
+          s_county$data_conv <-s_county$"Temperature"
+          s_county$data_conv <- convert_temp_to_imperial(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
+          temp_suffx = "(Degrees Celsius)"
+          gl <- gl + geom_line(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size(), group = 7) +
+            geom_point(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size()*3)
+        }
+          else{
+            temp_suffx = "(Degrees Fahrenheit)"
+            gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
+              geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
+          }
+          labs <-c(labs,"Temperature"= paste("Temperature",temp_suffx, sep=" "))
           vals <-c(vals,"Temperature" = "#6B1F13")
-          gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
-            geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
+          
       }
       convert_wind_to_imperial <- function(values){
         return(values*0.51)
@@ -1571,19 +1590,19 @@ server <- function(input, output, session) {
       convert_wind_to_imperial
       if ("Wind Speed" %in% input$hourly_data){
         if(input$switch_units){
-          hourly_df$data_conv <-hourly_df$"Wind Speed"
-          hourly_df$data_conv <- convert_wind_to_imperial(hourly_df$data_conv)
-          names(hourly_df)[names(hourly_df)=="data_conv"] <- paste("Wind","conv",sep="_")
+          s_county$data_conv <-s_county$"Wind Speed"
+          s_county$data_conv <- convert_wind_to_imperial(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
           wind_suffx = "(m/s)"
          gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
-           geom_point(aes(y = s_county$`Wind_conv`, color = "Wind Speed"), size = line_size()*3)
+           geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
         }
         else{
           wind_suffx = "(knots)"
           gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 8) +
             geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
         }
-        labs <-c(labs,"Wind Speed" = wind_suffx)
+        labs <-c(labs,"Wind Speed" = paste("Wind Speed",wind_suffx, sep=" "))
         vals <-c(vals,"Wind Speed" = "#E3446E")
       }
       gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
