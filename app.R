@@ -60,6 +60,7 @@ f_xy <- future({
 
 years<-c(1980:2018)
 H_years<-c(2018) #years available for hourly data
+H_years_italy<-c(2018,2019)
 H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
 H_days<-c(1:31)
 states<-unique(dataset$State)
@@ -83,6 +84,7 @@ for(s in states){
 
 ############################################################ ITALY ########################################################################################
 italy_df <- read_fst("italy/daily_italy.fst")
+hourly_df_italy <- read_fst("italy/hourly_italy.fst")
 
 cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
 
@@ -365,6 +367,25 @@ ui <- dashboardPage(
             )
     ),
     
+    tabItem("italy_hourly",            
+      fluidRow(
+      # Input city with search
+      column(2,box(title = "City and date Selection ",status = "success", width = NULL,
+                   div(column(12,
+                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
+                   ),class = "boxtozoom")
+      )),
+      column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
+        inputId = "hourly_data_italy", 
+        choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"), 
+        justified = TRUE, status = "primary", selected = c("NO2","Ozone","SO2"),
+        checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+    ))
+    )),
+    
     # FOURTH MENU TAB
     tabItem("about",
             htmlOutput("about_out")
@@ -513,14 +534,29 @@ server <- function(input, output, session) {
     
   })
   
-  observeEvent(priority = 10,input$H_month,{
+  observeEvent(priority = 10,input$H_year_italy,{
+    year_sub <- subset(hourly_df_italy, `City` == selected_city_hp_italy() & Year == input$H_year_italy)
+    months <- unique(year_sub$Month)
+    updateSelectInput(session, inputId = "H_month_italy", choices = months)
+    # county <- input$County
+    
+  })
+  
+    observeEvent(priority = 10,input$H_month,{
     month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
     days <- unique(month_sub$Day)
     
     updateSelectInput(session, inputId = "H_day", choices = days)
   })
   
-  # observeEvent(priority = 10,input$pollutant_map,{
+    observeEvent(priority = 10,input$H_month_italy,{
+      month_sub <- subset(hourly_df_italy, Year == input$H_year_italy & Month == input$H_month_italy)
+      days <- unique(month_sub$Day)
+      
+      updateSelectInput(session, inputId = "H_day_italy", choices = days)
+    })
+    
+      # observeEvent(priority = 10,input$pollutant_map,{
   #   selected_state_data <- subset(daily_df, State == input$State)
   #   counties_in_state <- unique(selected_state_data$County)
   # 
@@ -562,7 +598,11 @@ server <- function(input, output, session) {
     strsplit(input$CountySearch_hp," - ")[[1]][1]
   })
   
+  selected_city_hp_italy <- reactive({
+    input$CitySearch_hp_italy
+  })
   
+
   selected_state1 <- reactive({
     strsplit(input$SelCounty1," - ")[[1]][2]
   })
@@ -1210,6 +1250,8 @@ server <- function(input, output, session) {
     
   })
   
+  
+  
   #Stacked bar chart - PART C
   output$daily_bar <- renderPlot({
     
@@ -1362,6 +1404,115 @@ server <- function(input, output, session) {
           legend.title = element_text(size = legend_title_size())
         )
       p
+    }
+    
+  })
+  
+  # Time series of Hourly Data -- ITALY GRAD PART
+  output$hourly_data_italy <- renderPlot({
+    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
+    
+    if(length(s_county_italy$`Time`) > 0 ){
+      gl <- ggplot(data = s_county_italy, aes(x = s_county_italy$`Time`)) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.y = element_text(color = "#FFFFFF"),
+          axis.title.x = element_blank(),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = "#005669"),
+          legend.background = element_rect(color = NA, fill = "#005669"),
+          legend.key = element_rect(color = NA, fill = "#005669"),
+          panel.background = element_rect(fill = "#005669", color  =  NA),
+          panel.grid.major = element_line(color = "#FFFFFF"),
+          panel.grid.minor = element_line(color = "#FFFFFF"),
+          legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
+        )+labs(x = "Hours", y = "Measurement of Hourly Data") 
+      
+      labs <-c()
+      vals <-c()
+      if ("CO" %in% input$hourly_data_italy){
+        suffx_CO = "(ppm)"
+        labs <-c(labs,"CO" = paste("CO",suffx_CO, sep=" "))
+        vals <-c(vals,c("CO" = "#c6c60f"))
+        gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
+          geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
+      }
+      if ("NO2" %in% input$hourly_data_italy){
+        suffx_NO2 = "(ppb)"
+        labs <-c(labs,"NO2" = paste("NO2",suffx_NO2, sep=" "))
+        vals <-c(vals,"NO2" = "#13c649")
+        gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
+          geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
+      }
+      if ("Ozone" %in% input$hourly_data_italy){
+        suffx_Ozone = "(ppm)"
+        labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
+        vals <-c(vals,"Ozone" = "#0fa2af")
+        gl <- gl+geom_line(aes(y = O3, color = "Ozone"), size = line_size(), group = 3) +
+          geom_point(aes(y = O3, color = "Ozone"), size = line_size()*3)
+      }
+      if ("SO2" %in% input$hourly_data_italy){
+        suffx_SO2 = "(ppb)"
+        labs <-c(labs,"SO2"=paste("SO2",suffx_SO2, sep=" "))
+        vals <-c(vals,"SO2" = "#A877E0")
+        gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
+          geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3) 
+      }
+      convert_to_imperial <- function(values){
+        return(values*1000000000000* 0.000000035274/35315)
+      }
+      
+      if ("PM2.5" %in% input$hourly_data_italy){
+        if(input$switch_units){
+          s_county_italy$data_conv <-s_county_italy$"PM2.5"
+          s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
+          names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM2.5","conv",sep="_")
+          suffx_PM2.5 = "(e-12 oz/ft3)"
+          gl <- gl + geom_line(aes(y = s_county_italy$PM2.5_conv, color = "PM2.5"), size = line_size(), group = 5)+
+            geom_point(aes(y = s_county_italy$PM2.5_conv, color = "PM2.5"), size = line_size()*3)
+        }
+        else{
+          gl <- gl + geom_line(aes(y = s_county_italy$PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
+            geom_point(aes(y = s_county_italy$PM2.5, color = "PM2.5"), size = line_size()*3)
+          suffx_PM2.5 = "(ug/m3)"
+        }
+        labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
+        vals <-c(vals,"PM2.5" = "#cc8112")
+        
+      }
+      if ("PM10" %in% input$hourly_data_italy){
+        if(input$switch_units){
+          s_county_italy$data_conv <-s_county_italy$"PM10"
+          s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
+          names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM10","conv",sep="_")
+          suffx_PM10 = "(e-12 oz/ft3)"
+          gl <- gl + geom_line(aes(y = s_county_italy$PM10_conv, color = "PM10"), size = line_size(), group = 6) +
+            geom_point(aes(y = s_county_italy$PM10_conv, color = "PM10"), size = line_size()*3) 
+        }
+        else{
+          suffx_PM10 = "(ug/m3)"
+          gl <- gl + geom_line(aes(y = s_county_italy$PM10, color = "PM10"), size = line_size(), group = 6) +
+            geom_point(aes(y = s_county_italy$PM10, color = "PM10"), size = line_size()*3) 
+          
+        }
+        labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
+        vals <-c(vals,"PM10" = "#ba1010")
+        
+      } 
+      gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
+                                    values = vals)
+      gl     
+      # scale_x_continuous(breaks = round(seq(max(min(s_county$`Time Local`),1), min(max(s_county$`Time Local`),24), by = 1),1)) +
+      # scale_y_continuous(breaks = round(seq(min(s_county[4:9]), max(s_county[4:9]), by = 10),1)) 
+      
+    }
+    # Signaling missing data
+    else {
+      shinyalert("Oops!", "No data for this County for this day", type = "error")
     }
     
   })
