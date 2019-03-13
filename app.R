@@ -248,10 +248,10 @@ ui <- dashboardPage(
                                 plotlyOutput("daily_aqi_line", height = "85vmin")
                        ),
                        tabPanel("Bar chart",
-                                plotOutput("daily_bar", height = "60vmin")
+                                plotOutput("daily_bar", height = "80vmin")
                        ),
                        tabPanel("Table",
-                                div(DT::dataTableOutput("daily_aqi_table"), style = "font-size:100%")
+                                div(DT::dataTableOutput("daily_aqi_table"), style = "font-size:130%")
                        )
                      )
               )
@@ -1210,84 +1210,6 @@ server <- function(input, output, session) {
     
   })
   
-  #Stacked bar chart - PART C
-  output$daily_bar <- renderPlot({
-    
-    p1 <- subset(italy_df,county==city$CitySearch)
-    if(length(p1$parameter)==0)
-    {
-      shinyalert("Oops!", paste("No data for",input$CitySearch), type = "error")
-      emp <- data.frame()
-      ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(color = input$textColor),
-        panel.border = element_blank(),
-        plot.background = element_rect(color = NA, fill = input$backgroundColor),
-        legend.background = element_rect(color = NA, fill = input$backgroundColor),
-        legend.key = element_rect(color = NA, fill = input$backgroundColor),
-        panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-        panel.grid.major = element_line(color = input$textColor),
-        panel.grid.minor = element_line(color = input$textColor),
-        legend.text = element_text(size = legend_text_size(), color = input$textColor),
-        legend.key.size = unit(legend_key_size(), 'line'),
-        axis.text = element_text(size = axis_text_size(), color = input$textColor),
-        axis.title = element_text(size = axis_title_size()),
-        legend.title = element_text(size = legend_title_size(), color = input$textColor)
-      )
-    }
-    else{
-      
-      df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
-      names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
-      months = c("January","February","March","April","May","June","July","August","September","October","November","December")
-      for(i in 1:12)
-      {
-        month1 = months[i]
-        
-        p2 <- subset(p1,month==month1)
-        df_row = c(months[i],0,0,0,0,0,0,0)
-        
-        t1 <- nrow(subset(p2,category=="Good"))
-        t2 <- nrow(subset(p2,category=="Moderate"))
-        
-        t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
-        t4 <- nrow(subset(p2,category=="Unhealthy"))
-        t5 <- nrow(subset(p2,category=="Very Unhealthy"))
-        t6 <- nrow(subset(p2,category=="Hazardous"))
-        t7 <- nrow(subset(p2,category=="Unknown"))
-        
-        df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
-        names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
-        df <- rbind(df,df_row)
-      }
-      
-      DF1 <- melt(df, id.var="Month")
-      
-      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010","#C0C0C0"))+
-        theme(
-          text = element_text(size=12)
-        ) + labs(x = "Month", y = "Number of days") +
-        theme(
-          axis.title.x = element_text(color = "black"),
-          axis.title.y = element_text(color = "black"),
-          panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          panel.grid.major = element_line(color = "black"),
-          panel.grid.minor = element_line(color = "black"),
-          legend.text = element_text(size = legend_text_size()),
-          legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(),color = "black"),
-          axis.title = element_text(size = axis_title_size()),
-          legend.title = element_text(size = legend_title_size())
-        )
-      p
-    }
-    
-  })
-  
   # Stacked bar chart for ITALY - GRAD PART
   output$daily_bar <- renderPlot({
     
@@ -1319,6 +1241,7 @@ server <- function(input, output, session) {
       df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
       names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
       months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+      month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
       for(i in 1:12)
       {
         month1 = months[i]
@@ -1333,7 +1256,7 @@ server <- function(input, output, session) {
         t4 <- nrow(subset(p2,category=="Unhealthy"))
         t5 <- nrow(subset(p2,category=="Very Unhealthy"))
         t6 <- nrow(subset(p2,category=="Hazardous"))
-        t7 <- nrow(subset(p2,category=="Unknown"))
+        t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
         
         df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
         names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
@@ -1342,7 +1265,7 @@ server <- function(input, output, session) {
       
       DF1 <- melt(df, id.var="Month")
       
-      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010","#C0C0C0"))+
+      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#01665e","#5ab4ac","#c7eae5","#f6e8c3","#d8b365","#8c510a","#C0C0C0"))+
         theme(
           text = element_text(size=12)
         ) + labs(x = "Month", y = "Number of days") +
@@ -1375,6 +1298,7 @@ server <- function(input, output, session) {
       df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
       names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
       months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+      month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
       for(i in 1:12)
       {
         #get monthly data
@@ -1389,7 +1313,7 @@ server <- function(input, output, session) {
         t4 <- nrow(subset(p2,category=="Unhealthy"))
         t5 <- nrow(subset(p2,category=="Very Unhealthy"))
         t6 <- nrow(subset(p2,category=="Hazardous"))
-        t7 <- nrow(subset(p2,category=="Unknown"))
+        t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
         
         df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
         # print(df_row)
