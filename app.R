@@ -1587,7 +1587,6 @@ server <- function(input, output, session) {
       convert_wind_to_imperial <- function(values){
         return(values*0.51)
       }
-      convert_wind_to_imperial
       if ("Wind Speed" %in% input$hourly_data){
         if(input$switch_units){
           s_county$data_conv <-s_county$"Wind Speed"
