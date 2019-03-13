@@ -1147,27 +1147,6 @@ server <- function(input, output, session) {
     if(length(a$co)==0)
       shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error")
     else{
-      # p <- ggplot(a, aes(x = date, y = value)) +  labs(x = "Year", y = "Air Quality Index") +
-      #   geom_line(aes()) + geom_point(aes(color=parameter)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) + scale_x_date(
-      #     date_minor_breaks = "1 month") + theme(
-      #       axis.text.x = element_text(angle = 45, hjust = 1),
-      #       axis.title.x = element_blank(),
-      #       axis.title.y = element_text(color = input$textColor),
-      #       panel.border = element_blank(),
-      #       plot.background = element_rect(color = NA, fill = input$backgroundColor),
-      #       legend.background = element_rect(color = NA, fill = input$backgroundColor),
-      #       legend.key = element_rect(color = NA, fill = input$backgroundColor),
-      #       panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-      #       panel.grid.major = element_line(color = input$textColor),
-      #       panel.grid.minor = element_line(color = input$textColor),
-      #       legend.text = element_text(size = legend_text_size(), color = input$textColor),
-      #       legend.key.size = unit(legend_key_size(), 'line'),
-      #       axis.text = element_text(size = axis_text_size(), color = input$textColor),
-      #       axis.title = element_text(size = axis_title_size()),
-      #       legend.title = element_text(size = legend_title_size(), color = input$textColor)
-      #     )#labels = date_format("%m-%Y")
-      # 
-      
       p <- ggplot(data = a, aes(x = date)) +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1187,14 +1166,12 @@ server <- function(input, output, session) {
           legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)
         )+labs(x = "Hours", y = "Measurement of Hourly Data") + 
         scale_color_manual(name = "Measurements",
-                           values = c("CO" = input$colorCO_hp,
-                                      "NO2" = input$colorNO2_hp,
-                                      "Ozone" = input$colorOZONE_hp,
-                                      "SO2" = input$colorSO2_hp,
-                                      "PM2.5" = input$colorPM25_hp,
-                                      "PM10" = input$colorPM10_hp,
-                                      "Wind Speed" = input$colorWS_hp,
-                                      "Temperature" = input$colorTemp_hp
+                           values = c("CO" = "#c6c60f",
+                                      "NO2" = "#13c649",
+                                      "Ozone" = "#0fa2af",
+                                      "SO2" = "#5610a8",
+                                      "PM2.5" = "#cc8112",
+                                      "PM10" = "#ba1010"
                            ))
       if ("CO" %in% input$daily_data_italy){
         p <- p + geom_line(aes(y = co, color = "CO"), size = line_size(), group = 1) +
@@ -1224,7 +1201,7 @@ server <- function(input, output, session) {
       
       
       
-      # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
+      #p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
       
       
       p <- ggplotly(p)
