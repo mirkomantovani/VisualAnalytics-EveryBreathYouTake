@@ -313,7 +313,7 @@ ui <- dashboardPage(
                               
                               h2("Time and Pollutant"),
                               selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants_2,"AQI"), selected = 'PM2.5',width = "100%"),
-                              materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data", status = "primary"),
+                              materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data (for 2018)", status = "primary"),
                               numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
                               div( id="yearly_inputs",
                                    selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "100%"),
@@ -1430,7 +1430,7 @@ server <- function(input, output, session) {
         t7 <- nrow(subset(p2,category=="Unknown"))
         
         df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
-        print(df_row)
+        # print(df_row)
         names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
         df <- rbind(df,df_row)
       }

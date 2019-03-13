@@ -18,7 +18,7 @@ $(document).on("shiny:connected", function (e) {
             document.getElementById("yearly_inputs").hidden = false;
 
         } else {
-            switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Daily Data";
+            switch_daily.parentNode.getElementsByTagName('span')[0].innerText = "Switch to Daily Data (for 2018)";
             document.getElementById("year_map").parentNode.hidden = false;
             document.getElementById("yearly_inputs").hidden = true;
         }
