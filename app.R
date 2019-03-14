@@ -451,6 +451,14 @@ server <- function(input, output, session) {
       v$annotate_text_size <<- 8
       v$marker_text_size <<- '60px'
       v$select_input_width <<- '200%'
+      v$width_daily = "100%"
+      v$height_daily = 1200
+      v$daily_axis_stroke = 4
+      v$daily_axis_labels = 30
+      v$daily_axis_title = 50
+      v$daily_legend_font = 30
+      v$daily_legend_size = 100
+      v$daily_point_size <- 700 #not used
     } else {
       v$axis_title_size = 14
       v$axis_text_size = 12
@@ -471,6 +479,14 @@ server <- function(input, output, session) {
       v$annotate_text_size = 4
       v$marker_text_size = '12px'
       v$select_input_width = '100%'
+      v$width_daily = "100%"
+      v$height_daily = 700
+      v$daily_axis_stroke = 3
+      v$daily_axis_labels = 10
+      v$daily_axis_title = 20
+      v$daily_legend_font = 10
+      v$daily_point_size <- 5 #not used
+      v$daily_legend_size = 30
     }
   })
 
@@ -1175,16 +1191,29 @@ server <- function(input, output, session) {
     # else
     x$date = as.Date(as.POSIXct(x$date/1000, origin="1970-01-01"))
     names(x) = c("Date","AQI","Major pollutant")
-    paste0(names(x), ": ", format(x), collapse = "<br />")
+    paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
   
   observe({
     daily_aqi_line_react %>%
       ggvis(x=~date, y=~aqi) %>%
-      layer_points(fill= ~pollutant) %>%
+      layer_points(fill= ~pollutant, size := 700) %>%
       scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
-      add_tooltip(all_values, "click") %>% 
+      add_tooltip(all_values, "click") %>%
       layer_lines()  %>%
+      set_options(width=v$width_daily,height=v$height_daily)  %>%
+      add_axis("x", title = "Month", properties = axis_props(
+        axis = list(strokeWidth = v$daily_axis_stroke),
+        labels = list(align = "left", fontSize = v$axis_text_size),
+        title = list(fontSize = v$axis_title_size)
+      )) %>%
+      add_axis("y", offset=10,title = "AQI value", properties = axis_props(
+        axis = list(strokeWidth = v$daily_axis_stroke),
+        labels = list(align = "left", fontSize = v$axis_text_size),
+        title = list(fontSize = v$axis_title_size)
+      )) %>%
+      add_legend("fill",title="", properties=legend_props(
+        labels=list(fontSize=v$daily_legend_font),symbols=list(size=v$daily_legend_size))) %>%
       bind_shiny("daily_aqi_line", "plot_ui")
   })
 
