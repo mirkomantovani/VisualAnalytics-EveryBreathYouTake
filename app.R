@@ -25,6 +25,7 @@ library(reshape2)
 library(fst)
 library(future)
 library(data.table)
+library(ggvis)
 
 # importing datasets
 setwd("./csv/")
@@ -248,7 +249,7 @@ ui <- dashboardPage(
               column(12,
                      tabsetPanel(
                        tabPanel("AQI Time Series",
-                                plotOutput("daily_aqi_line", height = "85vmin")
+                                ggvisOutput("daily_aqi_line")
                        ),
                        tabPanel("Bar chart",
                                 plotOutput("daily_bar", height = "80vmin")
@@ -1140,43 +1141,51 @@ server <- function(input, output, session) {
 
 
   # Daily AQI for selected year - PART C
-  output$daily_aqi_line <- renderPlot({
-
+  daily_aqi_line_react <- reactive({
+    
     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
     a <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
     a$month <- match(a$month,months)
     a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%Y-%d-%m")
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
     if(length(a$category)==0)
+    {
       shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
-    else{
-      p <- ggplot(a, aes(x = date, y = aqi)) +  labs(x = "Year", y = "Air Quality Index") +
-        geom_line(aes()) + geom_point(aes(color=pollutant),size = line_size()*2) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) +scale_x_date(
-          date_minor_breaks = "1 month") + theme(
-            axis.text.x = element_text(angle = 45, hjust = 1),
-            axis.title.x = element_blank(),
-            axis.title.y = element_text(color = input$textColor),
-            panel.border = element_blank(),
-            plot.background = element_rect(color = NA, fill = input$backgroundColor),
-            legend.background = element_rect(color = NA, fill = input$backgroundColor),
-            legend.key = element_rect(color = NA, fill = input$backgroundColor),
-            panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-            panel.grid.major = element_line(color = input$textColor),
-            panel.grid.minor = element_line(color = input$textColor),
-            legend.text = element_text(size = legend_text_size(), color = input$textColor),
-            legend.key.size = unit(legend_key_size(), 'line'),
-            axis.text = element_text(size = axis_text_size(), color = input$textColor),
-            axis.title = element_text(size = axis_title_size()),
-            legend.title = element_text(size = legend_title_size(), color = input$textColor)
-          )#labels = date_format("%m-%Y")
-
-      # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
-
-
-      # p <- ggplotly(p)
-      p
+      a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
+      a
     }
-
+    else{
+      print(a)
+      # a$color <- ifelse(a$pollutant == "CO", "#c6c60f", 
+      #                        ifelse(a$pollutant == "NO2", "#13c649", 
+      #                               ifelse(a$pollutant == "Ozone", "#0fa2af",ifelse(a$pollutant == "SO2", "#5610a8",ifelse(a$pollutant == "PM2.5", "#cc8112",ifelse(a$pollutant == "PM10", "#ba1010",""))))))
+      a$pollutant<-factor(a$pollutant, levels=c("Ozone","CO","NO2","PM2.5","PM10","SO2"))
+      a
+    }
+    
+  })
+  all_values <- function(x) {
+    print(x)
+    if(is.null(x)) return(NULL)
+    if(length(x$pollutant)==0) return(NULL)
+    # if(names(x)=="aqi")
+    # paste0("AQI: ",x,collapse = "<br />")
+    # else if(names(x)=="date")
+    # paste0("Date: ",as.Date(as.POSIXct(x$date/1000, origin="1970-01-01")),collapse = "<br />")
+    # else
+    x$date = as.Date(as.POSIXct(x$date/1000, origin="1970-01-01"))
+    names(x) = c("Date","AQI","Major pollutant")
+    paste0(names(x), ": ", format(x), collapse = "<br />")
+  }
+  
+  observe({
+    daily_aqi_line_react %>%
+      ggvis(x=~date, y=~aqi) %>%
+      layer_points(fill= ~pollutant) %>%
+      scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
+      add_tooltip(all_values, "click") %>% 
+      layer_lines()  %>%
+      bind_shiny("daily_aqi_line", "plot_ui")
   })
 
   # Daily AQI for ITALY - GRAD PART
