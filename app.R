@@ -247,7 +247,7 @@ ui <- dashboardPage(
               column(12,
                      tabsetPanel(
                        tabPanel("AQI Time Series",
-                                plotlyOutput("daily_aqi_line", height = "85vmin")
+                                plotOutput("daily_aqi_line", height = "85vmin")
                        ),
                        tabPanel("Bar chart",
                                 plotOutput("daily_bar", height = "80vmin")
@@ -1139,7 +1139,7 @@ server <- function(input, output, session) {
 
 
   # Daily AQI for selected year - PART C
-  output$daily_aqi_line <- renderPlotly({
+  output$daily_aqi_line <- renderPlot({
 
     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
     a <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
@@ -1150,7 +1150,7 @@ server <- function(input, output, session) {
       shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
     else{
       p <- ggplot(a, aes(x = date, y = aqi)) +  labs(x = "Year", y = "Air Quality Index") +
-        geom_line(aes()) + geom_point(aes(color=pollutant)) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) +scale_x_date(
+        geom_line(aes()) + geom_point(aes(color=pollutant),size = line_size()*2) + scale_fill_manual("AQI Category", values = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) + scale_colour_discrete(drop = FALSE) +scale_x_date(
           date_minor_breaks = "1 month") + theme(
             axis.text.x = element_text(angle = 45, hjust = 1),
             axis.title.x = element_blank(),
@@ -1172,7 +1172,7 @@ server <- function(input, output, session) {
       # p <- plot_ly(data=a,x = ~date, y = ~aqi, mode = 'lines', text = paste(""))
 
 
-      p <- ggplotly(p)
+      # p <- ggplotly(p)
       p
     }
 

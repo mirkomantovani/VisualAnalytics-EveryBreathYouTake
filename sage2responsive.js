@@ -146,3 +146,6 @@ $(window).resize(function (e) {
     dimension[1] = window.innerHeight;
     Shiny.onInputChange("dimension", dimension);
 });
+$(function() {
+  $('#daily_aqi_line').click(function(){ $('#ggvis-tooltip').hide(); });
+});
