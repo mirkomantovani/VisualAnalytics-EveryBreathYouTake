@@ -155,7 +155,7 @@ ui <- dashboardPage(
               column(6,
                      box(title = "AQI levels", width = NULL,status = "primary",
                          fluidRow(column(8,
-                                         box(title = "Percentage of AQI level", width = NULL,status = "primary",div(plotOutput("aqi_pie", height = "42vmin")))),
+                                         box(title = "Percentage of AQI level", width = NULL,status = "primary",div(plotOutput("aqi_pie", height = "40vmin")))),
                                   column(4,
                                          textOutput("missing_data"))),
                          plotOutput("aqi_bar", height = "30vmin"),
@@ -166,8 +166,8 @@ ui <- dashboardPage(
                      box(title = "Pollutants",status = "primary", width = NULL,
                          tabsetPanel(
                            tabPanel("Percentage of days as main Pollutant",
-                                    fluidRow(column(4,plotOutput("co_pie", height = "38vmin")),column(4,plotOutput("no2_pie", height = "38vmin")),column(4,plotOutput("ozone_pie", height = "38vmin"))),
-                                    fluidRow(column(4,plotOutput("so2_pie", height = "38vmin")),column(4,plotOutput("pm25_pie", height = "38vmin")),column(4,plotOutput("pm10_pie", height = "38vmin")))
+                                    fluidRow(column(4,plotOutput("co_pie", height = "35vmin")),column(4,plotOutput("no2_pie", height = "35vmin")),column(4,plotOutput("ozone_pie", height = "35vmin"))),
+                                    fluidRow(column(4,plotOutput("so2_pie", height = "35vmin")),column(4,plotOutput("pm25_pie", height = "35vmin")),column(4,plotOutput("pm10_pie", height = "35vmin")))
                            ),
                            tabPanel("Bar chart", plotOutput("pollutants_bar", height = "76vmin"))
                          ),
@@ -204,13 +204,14 @@ ui <- dashboardPage(
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
+                                      div(id="notforsage",
                                       h3("State:"),
                                       h4(textOutput("sel_state")),
                                       h3("County:"),
                                       h4(textOutput("sel_county")),
                                       h3("Data:"),
                                       h6(textOutput("data_years")),
-                                      h6(textOutput("data_days")),
+                                      h6(textOutput("data_days"))),
                                       div(id="nozoomslider",ticks = FALSE, sliderInput("range", sep = "", label = "Select Year range", min = 1980,
                                                                                        max = 2018, value = c(1980, 2018))
                                       )
@@ -1767,11 +1768,11 @@ server <- function(input, output, session) {
   # About HTML
   output$about_out <- renderUI({
     author <- "<h1>Mirko Mantovani - Ashwani Khemani - Abhishek Vasudevan</h1>
-    <br>
+    
     <a href='https://mirkomantovani.com/projects/EveryBreathYouTake.html'>Project webpage</a>
     <br/>
     <a href='https://github.com/mirkomantovani/VisualAnalytics-EveryBreathYouTake'>Github repository</a><br>"
-    libraries <- "<b>Used R libraries: </b> <br><br>
+    libraries <- "<b>Used R libraries: </b> <br>
     <ul>
     <li>shiny</li>
     <li>shinydashboard</li>
@@ -1793,7 +1794,7 @@ server <- function(input, output, session) {
     <li>RColorBrewer</li>
     <li>reshape2</li>
 
-    </ul><br>"
+    </ul>"
     data <- "<b>Dataset Source:</b></br> <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
     <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>"
     HTML(paste(author, libraries, data))
