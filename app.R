@@ -267,9 +267,9 @@ ui <- dashboardPage(
               column(2,box(title = "County and date Selection ",status = "success", width = NULL,
                            div(column(12,
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year", "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
+                                      selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_day", label = h4("Select Day"), H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
                                       # selectInput(inputId = "pollutant_chart", "Select Pollutant", c(pollutants), multiple = TRUE, selected = 'AQI',width = "100%")
                            ),class = "boxtozoom")
               ))
@@ -1171,7 +1171,6 @@ server <- function(input, output, session) {
       a
     }
     else{
-      print(a)
       # a$color <- ifelse(a$pollutant == "CO", "#c6c60f", 
       #                        ifelse(a$pollutant == "NO2", "#13c649", 
       #                               ifelse(a$pollutant == "Ozone", "#0fa2af",ifelse(a$pollutant == "SO2", "#5610a8",ifelse(a$pollutant == "PM2.5", "#cc8112",ifelse(a$pollutant == "PM10", "#ba1010",""))))))
