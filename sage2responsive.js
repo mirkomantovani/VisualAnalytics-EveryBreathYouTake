@@ -41,7 +41,7 @@ $(document).on("shiny:connected", function (e) {
     // leaflet[2].hidden = true;
     // leaflet[1].style.marginBottom = "100px";
 
-    if (dimension[0] >= 2000) {  //SAGE
+    if (dimension[0] >= 2500) {  //SAGE
         //document.write("<style>.rule1 { ... }</style>");
         //document.body.style.fontSize = "500%";
         // console.log('porco dio cane');
@@ -50,6 +50,9 @@ $(document).on("shiny:connected", function (e) {
 
         nozoom = document.getElementById("nozoom");
         nozoom.style.zoom = "40%";
+
+
+        document.getElementById("notforsage").hidden = true;
 
 
         map = document.getElementById("map_county");
