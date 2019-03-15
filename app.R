@@ -1252,6 +1252,9 @@ server <- function(input, output, session) {
       names(a) <- c("city","day","month","year","NO2","SO2","CO","PM10","PM2.5","Ozone","date")
       print(class(pollutant_input))
       b <- gather_(a, "pollutant", "value", pollutant_input)
+      is.nan.data.frame <- function(x)
+      do.call(cbind, lapply(x, is.nan))
+      b$value[is.nan(b$value)] <- 0
       print(b)
       b
     }
@@ -1260,7 +1263,7 @@ server <- function(input, output, session) {
   all_values_italy <- function(x) {
     print(x)
     if(is.null(x)) return(NULL)
-    if(length(x$pollutant)==0) return(NULL)
+    if(length(x$value)==0) return(NULL)
     # if(names(x)=="aqi")
     # paste0("AQI: ",x,collapse = "<br />")
     # else if(names(x)=="date")
@@ -1273,23 +1276,24 @@ server <- function(input, output, session) {
   observe({
     daily_aqi_line_italy_react %>%
       ggvis(x=~date, y=~value, stroke=~pollutant) %>%
-      # layer_points(fill= ~pollutant, size := 700) %>%
+      layer_points(fill= ~pollutant, size := 700) %>%
       scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
+      scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       add_tooltip(all_values_italy, "click") %>%
-      layer_lines()  %>%
-      layer_points() %>%
+      layer_lines(stroke= ~pollutant, strokeWidth := 10)  %>%
       set_options(width=v$width_daily,height=v$height_daily)  %>%
       add_axis("x", title = "Month", properties = axis_props(
-        axis = list(strokeWidth = v$daily_axis_stroke),
-        labels = list(align = "left", fontSize = v$axis_text_size),
-        title = list(fontSize = v$axis_title_size)
+        axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
+        labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
+        title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
       )) %>%
       #modify below line for imperial unit
-      add_axis("y", offset=10,title = "Pollutant value", properties = axis_props(
-        axis = list(strokeWidth = v$daily_axis_stroke),
-        labels = list(align = "left", fontSize = v$axis_text_size),
-        title = list(fontSize = v$axis_title_size)
+        add_axis("y", title_offset = 50,offset=0,title = "Pollutant value", properties = axis_props(
+        axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
+        labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
+        title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
       )) %>%
+      hide_legend('stroke')  %>% 
       add_legend("fill",title="", properties=legend_props(
         labels=list(fontSize=v$daily_legend_font),symbols=list(size=v$daily_legend_size))) %>%
       bind_shiny("daily_aqi_line_italy", "plot_ui")
@@ -1350,7 +1354,7 @@ server <- function(input, output, session) {
       
       DF1 <- melt(df, id.var="Month")
       
-      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity")+ scale_fill_manual("AQI Category", values = c("#01665e","#5ab4ac","#c7eae5","#f6e8c3","#d8b365","#8c510a","#C0C0C0"))+
+      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + geom_bar(stat="identity",position=position_fill(reverse = TRUE))+ scale_fill_manual("AQI Category", values = c("#01665e","#5ab4ac","#c7eae5","#f6e8c3","#d8b365","#8c510a","#C0C0C0"))+
         theme(
           text = element_text(size=12)
         ) + labs(x = "Month", y = "Number of days") +
