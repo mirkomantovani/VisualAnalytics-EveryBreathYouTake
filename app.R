@@ -1822,14 +1822,14 @@ server <- function(input, output, session) {
       }
       if ("Temperature" %in% input$hourly_data){
         if(input$switch_units){
-          s_county$data_conv <-s_county$"Temperature"
-            names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
             temp_suffx = "(Degrees Fahrenheit)"
             gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
               geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
             }
         else{
+          s_county$data_conv <-s_county$"Temperature"
           s_county$data_conv <- convert_temp_to_metric(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
           temp_suffx = "(Degrees Celsius)"
           gl <- gl + geom_line(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size(), group = 7) +
             geom_point(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size()*3)
@@ -1843,16 +1843,15 @@ server <- function(input, output, session) {
       }
       if ("Wind Speed" %in% input$hourly_data){
         if(input$switch_units){
-          s_county$data_conv <-s_county$"Wind Speed"
-          names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
           wind_suffx = "(knots)"
           gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 8) +
             geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
-          
         }
         else{
           wind_suffx = "(m/s)"
+          s_county$data_conv <-s_county$"Wind Speed"
           s_county$data_conv <- convert_wind_to_metric(s_county$data_conv)
+          names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
           gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
             geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
         }
