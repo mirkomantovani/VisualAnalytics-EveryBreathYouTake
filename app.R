@@ -1730,7 +1730,7 @@ server <- function(input, output, session) {
       if ("Ozone" %in% input$hourly_data){
         suffx_Ozone = "(ppm)"
         labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
-        vals <-c(vals,"Ozone" = input$colorOzone_hp)
+        vals <-c(vals,"Ozone" = input$colorOZONE_hp)
         gl <- gl+geom_line(aes(y = Ozone, color = "Ozone"), size = line_size(), group = 3) +
           geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3)
       }
