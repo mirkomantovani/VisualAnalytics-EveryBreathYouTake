@@ -152,3 +152,6 @@ $(window).resize(function (e) {
 $(function() {
   $('#daily_aqi_line').click(function(){ $('#ggvis-tooltip').hide(); });
 });
+$(function() {
+  $('#daily_aqi_line_italy').click(function(){ $('#ggvis-tooltip').hide(); });
+});
