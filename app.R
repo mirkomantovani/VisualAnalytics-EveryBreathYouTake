@@ -61,7 +61,7 @@ f_xy <- future({
 
 ########################################### PREPROCESSING #########################################
 
-years<-c(1980:2018)
+years<-c(1990:2018)
 H_years<-c(2018) #years available for hourly data
 H_years_italy<-c(2018,2019)
 H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
@@ -136,7 +136,7 @@ ui <- dashboardPage(
                div(id="nozoom",sliderInput(inputId = "Year",
                                            sep = "",
                                            label = "Select Year",
-                                           value = 2018, min = 1980, max = 2018,width = "90%")),
+                                           value = 2018, min = 1990, max = 2018,width = "90%")),
                materialSwitch(inputId = "switch_units", label = "Switch to Imperial units", status = "primary"),
                startExpanded = TRUE),
       menuItem("About", tabName = "about")
@@ -219,8 +219,8 @@ ui <- dashboardPage(
                                           h3("Data:"),
                                           h6(textOutput("data_years")),
                                           h6(textOutput("data_days"))),
-                                      div(id="nozoomslider",ticks = FALSE, sliderInput("range", sep = "", label = "Select Year range", min = 1980,
-                                                                                       max = 2018, value = c(1980, 2018))
+                                      div(id="nozoomslider",ticks = FALSE, sliderInput("range", sep = "", label = "Select Year range", min = 1990,
+                                                                                       max = 2018, value = c(1990, 2018))
                                       )
 
                            ),class = "boxtozoom")
