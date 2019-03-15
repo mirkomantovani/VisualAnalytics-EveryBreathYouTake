@@ -287,6 +287,13 @@ ui <- dashboardPage(
                                         tooltip = tooltipOptions(title = "Click to open")
                                       ),
                                       colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),
+                                      checkboxGroupButtons(
+                                        inputId = "textColor", label = h5("Text and Grid color"), # moved in main input panel
+                                        choices = c("white", "black"),
+                                        justified = TRUE, status = "primary", selected = "white",
+                                        checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+                                      ),
+                                      
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
@@ -408,7 +415,13 @@ ui <- dashboardPage(
 
                    div(column(12,
                               colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
-
+                              checkboxGroupButtons(
+                                inputId = "textColor", label = h5("Text and Grid color"), # moved in main input panel
+                                choices = c("white", "black"),
+                                justified = TRUE, status = "primary", selected = "white",
+                                checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+                              ),
+                              
                               selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
                               selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
                               selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
@@ -1804,43 +1817,44 @@ server <- function(input, output, session) {
         vals <-c(vals,"PM10" = input$colorPM10_hp)
 
       }
-      convert_temp_to_imperial <- function(values){
+      convert_temp_to_metric <- function(values){
         return((values-32)/1.8)
       }
       if ("Temperature" %in% input$hourly_data){
         if(input$switch_units){
           s_county$data_conv <-s_county$"Temperature"
-          s_county$data_conv <- convert_temp_to_imperial(s_county$data_conv)
-          names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
+            names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
+            temp_suffx = "(Degrees Fahrenheit)"
+            gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
+              geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
+            }
+        else{
+          s_county$data_conv <- convert_temp_to_metric(s_county$data_conv)
           temp_suffx = "(Degrees Celsius)"
           gl <- gl + geom_line(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size(), group = 7) +
             geom_point(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size()*3)
-        }
-        else{
-          temp_suffx = "(Degrees Fahrenheit)"
-          gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
-            geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
         }
         labs <-c(labs,"Temperature"= paste("Temperature",temp_suffx, sep=" "))
         vals <-c(vals,"Temperature" = input$colorTemp_hp)
 
       }
-      convert_wind_to_imperial <- function(values){
+      convert_wind_to_metric <- function(values){
         return(values*0.51)
       }
       if ("Wind Speed" %in% input$hourly_data){
         if(input$switch_units){
           s_county$data_conv <-s_county$"Wind Speed"
-          s_county$data_conv <- convert_wind_to_imperial(s_county$data_conv)
           names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
-          wind_suffx = "(m/s)"
-          gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
-            geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
-        }
-        else{
           wind_suffx = "(knots)"
           gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 8) +
             geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
+          
+        }
+        else{
+          wind_suffx = "(m/s)"
+          s_county$data_conv <- convert_wind_to_metric(s_county$data_conv)
+          gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
+            geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
         }
         labs <-c(labs,"Wind Speed" = paste("Wind Speed",wind_suffx, sep=" "))
         vals <-c(vals,"Wind Speed" = input$colorWS_hp)
