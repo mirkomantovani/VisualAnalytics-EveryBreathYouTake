@@ -75,6 +75,10 @@ pollutants_2 <- c("PM2.5","PM10","CO","NO2","Ozone","SO2")
 
 statistics <- c("Median","Max","90th percentile")
 
+pie_chart_backgrounds <- "white" #bcdae0  1a4756
+bar_chart_backgrounds <- "#bcdae0" #bcdae0
+pie_chart_backgrounds_first <- "#bcdae0" #bcdae0
+
 
 # All counties with state
 all_counties <- c()
@@ -169,8 +173,8 @@ ui <- dashboardPage(
                      box(title = "Pollutants",status = "primary", width = NULL,
                          tabsetPanel(
                            tabPanel("Percentage of days as main Pollutant",
-                                    fluidRow(column(4,plotOutput("co_pie", height = "35vmin")),column(4,plotOutput("no2_pie", height = "35vmin")),column(4,plotOutput("ozone_pie", height = "35vmin"))),
-                                    fluidRow(column(4,plotOutput("so2_pie", height = "35vmin")),column(4,plotOutput("pm25_pie", height = "35vmin")),column(4,plotOutput("pm10_pie", height = "35vmin")))
+                                    fluidRow(column(4,plotOutput("co_pie", height = "36vmin")),column(4,plotOutput("no2_pie", height = "36vmin")),column(4,plotOutput("ozone_pie", height = "36vmin"))),
+                                    fluidRow(column(4,plotOutput("so2_pie", height = "36vmin")),column(4,plotOutput("pm25_pie", height = "36vmin")),column(4,plotOutput("pm10_pie", height = "36vmin")))
                            ),
                            tabPanel("Bar chart", plotOutput("pollutants_bar", height = "76vmin"))
                          ),
@@ -466,10 +470,10 @@ server <- function(input, output, session) {
       v$axis_title_size <<- 40
       v$axis_text_size <<- 40
       v$margin_y <<- 40
-      v$margin_x <<- 40
-      v$legend_title_size <<- 40
-      v$legend_text_size <<- 40
-      v$legend_key_size <<- 8
+      v$margin_x <<- 122
+      v$legend_title_size <<- 20
+      v$legend_text_size <<- 20
+      v$legend_key_size <<- 5
       v$pie_text_size <<- 15
       v$slant_text_angle <<- 0
       v$point_size <<- 4
@@ -680,29 +684,31 @@ server <- function(input, output, session) {
   
   # pie chart of aqi
   output$aqi_pie <- renderPlot({
+    
+    labels <- c("% of Good Days", "% of Moderate Days", "% of Unhealthy for Sensitive Groups Days", "% of Very Unhealthy Days", "% of Hazardous Days")
     c<-subset(dataset, County == input$County & State == isolate(input$State) & Year == input$Year)
     if(length(c$State) == 1){
       
       df <- data.frame(
         
-        group = c("Percentage of Good Days", "Percentage of Moderate Days", "Percentage of Unhealthy for Sensitive Groups Days", "Percentage of Very Unhealthy Days", "Percentage of Hazardous Days"),
+        group = labels,
         value = c(isolate(current())$Good.Days/isolate(current())$Days.with.AQI*100, isolate(current())$Moderate.Days/isolate(current())$Days.with.AQI*100,
                   isolate(current())$Unhealthy.for.Sensitive.Groups.Days/isolate(current())$Days.with.AQI*100,
                   isolate(current())$Very.Unhealthy.Days/isolate(current())$Days.with.AQI*100,
                   isolate(current())$Hazardous.Days/isolate(current())$Days.with.AQI*100)
       )
       
-      df$group <- factor(df$group, levels = c("Percentage of Good Days", "Percentage of Moderate Days", "Percentage of Unhealthy for Sensitive Groups Days", "Percentage of Very Unhealthy Days", "Percentage of Hazardous Days"))
+      df$group <- factor(df$group, levels = labels)
       
       
       pie <- ggplot(df, aes(x="", y=value, fill=group)) + #theme_minimal() +
         geom_bar(width = 1, stat = "identity") + coord_polar("y", start=0) + scale_fill_brewer(palette="Greys","AQI Level") +
         theme(
           axis.title.x = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds_first),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds_first),
+          panel.background = element_rect(fill = pie_chart_backgrounds_first, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds_first, color = pie_chart_backgrounds_first),
           plot.margin=grid::unit(c(margin_y(),margin_x()+8.5,margin_y(),margin_x()+8.5), "mm"),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
@@ -748,9 +754,9 @@ server <- function(input, output, session) {
           axis.title.x = element_text(color = "black"),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
+          plot.background = element_rect(color = NA, fill = bar_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = bar_chart_backgrounds),
+          panel.background = element_rect(fill = bar_chart_backgrounds, color  =  NA),
           panel.grid.major = element_line(color = "black"),
           panel.grid.minor = element_line(color = "black"),
           legend.text = element_text(size = legend_text_size()),
@@ -788,11 +794,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+0.22,margin_x(),margin_y()+0.22,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+0.22,margin_x(),margin_y()+0.22,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = pie_chart_backgrounds),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
@@ -821,11 +827,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+1.1,margin_x(),margin_y()+1.1,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+1.1,margin_x(),margin_y()+1.1,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = pie_chart_backgrounds),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
@@ -854,11 +860,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+2.655,margin_x(),margin_y()+2.655,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+2.655,margin_x(),margin_y()+2.655,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = pie_chart_backgrounds),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
@@ -888,11 +894,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+0.23,margin_x(),margin_y()+0.23,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+0.23,margin_x(),margin_y()+0.23,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = pie_chart_backgrounds),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
@@ -921,11 +927,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+2.11,margin_x(),margin_y()+2.11,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+2.11,margin_x(),margin_y()+2.11,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = pie_chart_backgrounds),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
@@ -954,11 +960,11 @@ server <- function(input, output, session) {
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           panel.border = element_blank(),
-          plot.margin=grid::unit(c(margin_y()+1.97,margin_x(),margin_y()+1.97,margin_x()), "mm"),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          strip.background = element_rect(fill = "#bcdae0", color = "#bcdae0"),
+          # plot.margin=grid::unit(c(margin_y()+1.97,margin_x(),margin_y()+1.97,margin_x()), "mm"),
+          plot.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          legend.background = element_rect(color = NA, fill = pie_chart_backgrounds),
+          panel.background = element_rect(fill = pie_chart_backgrounds, color  =  NA),
+          strip.background = element_rect(fill = pie_chart_backgrounds, color = ),
           legend.text = element_text(size = legend_text_size()),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size()),
