@@ -65,7 +65,10 @@ years<-c(1990:2018)
 H_years<-c(2018) #years available for hourly data
 H_years_italy<-c(2018,2019)
 H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
-H_days<-c(1:31)
+
+H_days<-unique(hourly_df$Day)
+
+
 states<-unique(dataset$State)
 t<-subset(dataset, State == 'Illinois')
 counties<-unique(t$County)
@@ -299,7 +302,7 @@ ui <- dashboardPage(
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day", label = h4("Select Day"), H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
+                                      selectizeInput(inputId = "H_day", label = h4("Select Day"), H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL)
                            ),class = "boxtozoom")
               ))
               ,
@@ -592,36 +595,36 @@ server <- function(input, output, session) {
 
   })
 
-  observeEvent(priority = 10,input$H_year,{
-    year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
-    months <- unique(year_sub$Month)
+  # observeEvent(priority = 10,input$H_year,{
+  #   year_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year)
+  #   months <- unique(year_sub$Month)
+  # 
+  #   updateSelectInput(session, inputId = "H_month", choices = months)
+  #   # county <- input$County
+  # 
+  # })
 
-    updateSelectInput(session, inputId = "H_month", choices = months)
-    # county <- input$County
+  # observeEvent(priority = 10,input$H_year_italy,{
+  #   year_sub <- subset(hourly_df_italy, `City` == selected_city_hp_italy() & Year == input$H_year_italy)
+  #   months <- unique(year_sub$Month)
+  #   updateSelectInput(session, inputId = "H_month_italy", choices = months)
+  #   # county <- input$County
+  # 
+  # })
 
-  })
+  # observeEvent(priority = 10,input$H_month,{
+  #   month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
+  #   days <- unique(month_sub$Day)
+  # 
+  #   updateSelectInput(session, inputId = "H_day", choices = days)
+  # })
 
-  observeEvent(priority = 10,input$H_year_italy,{
-    year_sub <- subset(hourly_df_italy, `City` == selected_city_hp_italy() & Year == input$H_year_italy)
-    months <- unique(year_sub$Month)
-    updateSelectInput(session, inputId = "H_month_italy", choices = months)
-    # county <- input$County
-
-  })
-
-  observeEvent(priority = 10,input$H_month,{
-    month_sub <- subset(hourly_df, `State Name` == selected_state_hp() & Year == input$H_year & Month == input$H_month)
-    days <- unique(month_sub$Day)
-
-    updateSelectInput(session, inputId = "H_day", choices = days)
-  })
-
-  observeEvent(priority = 10,input$H_month_italy,{
-    month_sub <- subset(hourly_df_italy, Year == input$H_year_italy & Month == input$H_month_italy)
-    days <- unique(month_sub$Day)
-
-    updateSelectInput(session, inputId = "H_day_italy", choices = days)
-  })
+  # observeEvent(priority = 10,input$H_month_italy,{
+  #   month_sub <- subset(hourly_df_italy, Year == input$H_year_italy & Month == input$H_month_italy)
+  #   days <- unique(month_sub$Day)
+  # 
+  #   updateSelectInput(session, inputId = "H_day_italy", choices = days)
+  # })
 
   # observeEvent(priority = 10,input$pollutant_map,{
   #   selected_state_data <- subset(daily_df, State == input$State)
@@ -683,6 +686,18 @@ server <- function(input, output, session) {
     strsplit(input$CountySearch_hp," - ")[[1]][1]
   })
 
+  selected_month_hp <- reactive({
+    input$H_month
+  })
+
+  selected_year_hp <- reactive({
+    "2018"
+  })
+  
+  selected_day_hp <- reactive({
+    input$H_day
+  })
+  
   selected_city_hp_italy <- reactive({
     input$CitySearch_hp_italy
   })
@@ -1334,7 +1349,6 @@ server <- function(input, output, session) {
       is.nan.data.frame <- function(x)
       do.call(cbind, lapply(x, is.nan))
       b$value[is.nan(b$value)] <- 0
-      print(b)
       b
       }
     }
@@ -1460,7 +1474,7 @@ server <- function(input, output, session) {
 
   # Time series of Hourly Data -- ITALY GRAD PART
   output$hourly_data_italy <- renderPlot({
-    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
+    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Year == "2018" & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
 
     if(length(s_county_italy$`Time`) > 0 ){
       gl <- ggplot(data = s_county_italy, aes(x = s_county_italy$`Time`)) +
@@ -1743,7 +1757,11 @@ server <- function(input, output, session) {
 
   # Time series of Hourly Data
   output$hourly_data <- renderPlot({
-    s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Month == input$H_month & hourly_df$Day == input$H_day)
+    print(input$H_day)
+    print(input$H_month)
+    print(input$H_year)
+    
+    s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Year== selected_year_hp() & hourly_df$Month == selected_month_hp() & hourly_df$Day == selected_day_hp())
 
     if(length(s_county$`Time Local`) > 0 ){
       gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
