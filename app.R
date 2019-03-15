@@ -265,24 +265,23 @@ ui <- dashboardPage(
     ),
     tabItem("hourly_pollutants",
             fluidRow(
-              dropdownButton(	
-                tags$h3("Other colors"),	
-                colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),	
-                colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),	
-                colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),	
-                colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),	
-                colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),	
-                colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),	
-                colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),	
-                colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),	
-                
-                circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",	
-                tooltip = tooltipOptions(title = "Click to open")
-              ),
-                
               # Input county with search
               column(2,box(title = "County and date Selection ",status = "success", width = NULL,
                            div(column(12,
+                                      dropdownButton(	
+                                        tags$h3("Other colors"),	
+                                        colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),	
+                                        colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),	
+                                        colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),	
+                                        colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),	
+                                        colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),	
+                                        colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),	
+                                        colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),	
+                                        colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),	
+                                        
+                                        circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",	
+                                        tooltip = tooltipOptions(title = "Click to open")
+                                      ),
                                       colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),	
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
