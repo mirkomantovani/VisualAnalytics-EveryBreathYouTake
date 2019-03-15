@@ -69,7 +69,8 @@ H_days<-c(1:31)
 states<-unique(dataset$State)
 t<-subset(dataset, State == 'Illinois')
 counties<-unique(t$County)
-
+top12 <- c("Cook - Illinois","Hawaii - Hawaii","New York - New York","Los Angeles - California", "King - Washington","Harris - Texas","Miami - Dade-Florida",
+           "San Juan - New Mexico","Hennepin - Minnesota","Wake - North Carolina")
 pollutants <- c("CO","NO2","Ozone","SO2","PM2.5","PM10")
 pollutants_2 <- c("PM2.5","PM10","CO","NO2","Ozone","SO2")
 
@@ -210,6 +211,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
+                                      materialSwitch(inputId = "switch_top12_yearly", label = h4("Switch to Top 12 counties"), status = "primary"),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
                                       div(id="notforsage",
                                           h3("State:"),
@@ -293,12 +295,11 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      
+                                      materialSwitch(inputId = "switch_top12", label = h4("Switch to Top 12 counties"), status = "primary"),
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_day", label = h4("Select Day"), H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
-                                      # selectInput(inputId = "pollutant_chart", "Select Pollutant", c(pollutants), multiple = TRUE, selected = 'AQI',width = "100%")
                            ),class = "boxtozoom")
               ))
               ,
@@ -648,6 +649,24 @@ server <- function(input, output, session) {
 
   })
 
+  observeEvent(priority = 10,input$switch_top12,{
+    if(input$switch_top12){
+      updateSelectInput(session, inputId = "CountySearch_hp", choices = top12)
+    } else {
+      updateSelectInput(session, inputId = "CountySearch_hp", choices =  sort(all_counties))
+    }
+    
+  })
+
+  observeEvent(priority = 10,input$switch_top12_yearly,{
+    if(input$switch_top12_yearly){
+      updateSelectInput(session, inputId = "CountySearch", choices = top12)
+    } else {
+      updateSelectInput(session, inputId = "CountySearch", choices =  sort(all_counties))
+    }
+    
+  })
+  
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
   })
@@ -1867,7 +1886,7 @@ server <- function(input, output, session) {
     }
     # Signaling missing data
     else {
-      shinyalert("Oops!", "No data for this County for this day", type = "error")
+      shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error")
     }
 
   })
