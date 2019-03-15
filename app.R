@@ -277,7 +277,8 @@ ui <- dashboardPage(
                 colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),	
                 
                 circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",	
-                tooltip = tooltipOptions(title = "Click to open"),	
+                tooltip = tooltipOptions(title = "Click to open")
+              ),
                 
               # Input county with search
               column(2,box(title = "County and date Selection ",status = "success", width = NULL,
@@ -1211,7 +1212,7 @@ server <- function(input, output, session) {
     
   })
   all_values <- function(x) {
-    print(x)
+    # print(x)
     if(is.null(x)) return(NULL)
     if(length(x$pollutant)==0) return(NULL)
     # if(names(x)=="aqi")
@@ -1279,15 +1280,15 @@ server <- function(input, output, session) {
         pollutant_input <- c(pollutant_input,"PM10")
       }
       names(a) <- c("city","day","month","year","NO2","SO2","CO","PM10","PM2.5","Ozone","date")
-      print(class(pollutant_input))
+      # print(class(pollutant_input))
       b <- gather_(a, "pollutant", "value", pollutant_input)
-      print(b)
+      # print(b)
       b
     }
     
   })
   all_values_italy <- function(x) {
-    print(x)
+    # print(x)
     if(is.null(x)) return(NULL)
     if(length(x$pollutant)==0) return(NULL)
     # if(names(x)=="aqi")
