@@ -1757,10 +1757,6 @@ server <- function(input, output, session) {
 
   # Time series of Hourly Data
   output$hourly_data <- renderPlot({
-    print(input$H_day)
-    print(input$H_month)
-    print(input$H_year)
-    
     s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Year== selected_year_hp() & hourly_df$Month == selected_month_hp() & hourly_df$Day == selected_day_hp())
 
     if(length(s_county$`Time Local`) > 0 ){
