@@ -770,7 +770,7 @@ server <- function(input, output, session) {
     }
     # Signaling missing data
     else {
-      shinyalert("Oops!", "No data for this County in this Year", type = "error")
+      shinyalert("Oops!", "No data for this County in this Year", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
     }
   })
 
@@ -1114,6 +1114,7 @@ server <- function(input, output, session) {
   # Time series of AQI statistics
   output$aqi_time <- renderPlot({
     df<-subset(dataset, State == selected_state() & County == selected_county() & Year > input$range[1] & Year < input$range[2])
+    if(length(df$Year)>0){
     ggplot(data = df, aes(x = Year)) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1145,6 +1146,10 @@ server <- function(input, output, session) {
       #                               "90th Percentile" = "firebrick4",
       #                               "Median" = "steelblue1")) +
       scale_color_discrete(breaks=c("Max","90th Percentile","Median"))
+    }
+    else{
+      shinyalert("Oops!", "No data for this County for this time", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+    }
   })
 
   # Time series of Pollutants Percentage
@@ -1160,6 +1165,7 @@ server <- function(input, output, session) {
     #             s_county$Days.PM2.5/s_county$Days.with.AQI*100,
     #             s_county$Days.PM10/s_county$Days.with.AQI*100)
     # )
+    if(length(s_county$Year)>0){
     ggplot(data = s_county, aes(x = Year)) +
       theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1200,8 +1206,12 @@ server <- function(input, output, session) {
                                     "SO2" = input$colorSO2,
                                     "PM2.5" = input$colorPM25,
                                     "PM10" = input$colorPM10))
+  }
+  else{
+    shinyalert("Oops!", "No data for this County for this time", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+  }
   })
-
+  
   # table of pollutants
   output$pollutants_time_table <- DT::renderDataTable(subset(dataset, State == selected_state() & County == selected_county())[, c('Year','Days.CO', 'Days.NO2',"Days.Ozone", "Days.SO2", "Days.PM2.5", "Days.PM10")],
                                                       rownames = FALSE,
@@ -1250,7 +1260,7 @@ server <- function(input, output, session) {
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
     if(length(a$category)==0)
     {
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
       a
     }
@@ -1311,7 +1321,7 @@ server <- function(input, output, session) {
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
     if(length(a$date)==0)
     {
-      shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error")
+      shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
       a
     }
@@ -1339,7 +1349,7 @@ server <- function(input, output, session) {
       # print(class(pollutant_input))
       if(length(pollutant_input)==0)
       {
-        shinyalert("Oops! You need to choose atleast one pollutant!", type = "error")
+        shinyalert("Oops! You need to choose atleast one pollutant!", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
         a<-data.frame(date = NaN, value = NaN, pollutant= "No data")
         a
       }
@@ -1399,7 +1409,7 @@ server <- function(input, output, session) {
     p1 <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
     if(length(p1$category)==0)
     {
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       emp <- data.frame()
       ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1576,7 +1586,7 @@ server <- function(input, output, session) {
     }
     # Signaling missing data
     else {
-      shinyalert("Oops!", "No data for this County for this day", type = "error")
+      shinyalert("Oops!", "No data for this County for this day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
     }
 
   })
@@ -1585,7 +1595,7 @@ server <- function(input, output, session) {
   output$daily_aqi_table <- DT::renderDataTable({
     p1 <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
     if(length(p1$category)==0)
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error")
+      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
     else{
       df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
       names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
@@ -1900,7 +1910,7 @@ server <- function(input, output, session) {
     }
     # Signaling missing data
     else {
-      shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error")
+      shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
     }
 
   })
