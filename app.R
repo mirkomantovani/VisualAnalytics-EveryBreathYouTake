@@ -265,9 +265,24 @@ ui <- dashboardPage(
     ),
     tabItem("hourly_pollutants",
             fluidRow(
+              dropdownButton(	
+                tags$h3("Other colors"),	
+                colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),	
+                colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),	
+                colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),	
+                colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),	
+                colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),	
+                colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),	
+                colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),	
+                colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),	
+                
+                circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",	
+                tooltip = tooltipOptions(title = "Click to open"),	
+                
               # Input county with search
               column(2,box(title = "County and date Selection ",status = "success", width = NULL,
                            div(column(12,
+                                      colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),	
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
@@ -278,7 +293,7 @@ ui <- dashboardPage(
               ,
               column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
                 inputId = "hourly_data", # moved in main input panel
-                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Temperature"),
+                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Temperature"),size="lg",
                 justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
               ))
@@ -372,24 +387,38 @@ ui <- dashboardPage(
     ),
     
     tabItem("italy_hourly",
-            fluidRow(
-              # Input city with search
-              column(2,box(title = "City and date Selection ",status = "success", width = NULL,
-                           div(column(12,
-                                      selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
-                           ),class = "boxtozoom")
-              )),
-              column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
-                inputId = "hourly_data_italy",
-                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
-                justified = TRUE, status = "primary", selected = c("NO2","Ozone","SO2"),
-                checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
-              ))
-            )),
-    
+      fluidRow(
+      # Input city with search
+      column(2,box(title = "City and date Selection ",status = "success", width = NULL,
+                   dropdownButton(	
+                     tags$h3("Other colors"),	
+                     colourInput("colorCO_hp_italy", h5("Select color CO"), value = "#c6c60f"),	
+                     colourInput("colorNO2_hp_italy", h5("Select color NO2"), value = "#13c649"),	
+                     colourInput("colorOZONE_hp_italy", h5("Select color Ozone"), value = "#0fa2af"),	
+                     colourInput("colorSO2_hp_italy", h5("Select color SO2"), value = "#A877E0"),	
+                     colourInput("colorPM25_hp_italy", h5("Select color PM2.5"), value = "#cc8112"),	
+                     colourInput("colorPM10_hp_italy", h5("Select color PM10"), value = "#ba1010"),	
+                     circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",	
+                     tooltip = tooltipOptions(title = "Click to open")	
+                   ),
+                   
+                   div(column(12,
+                              colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),	
+                              
+                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
+                   ),class = "boxtozoom")
+      )),
+      column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
+        inputId = "hourly_data_italy",
+        choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
+        justified = TRUE, status = "primary", selected = c("NO2","Ozone","SO2"),size = "lg",
+        checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+    ))
+    )),
+
     # FOURTH MENU TAB
     tabItem("about",
             htmlOutput("about_out")
@@ -1385,17 +1414,17 @@ server <- function(input, output, session) {
           axis.title.y = element_text(color = "#FFFFFF"),
           axis.title.x = element_blank(),
           panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#005669"),
-          legend.background = element_rect(color = NA, fill = "#005669"),
-          legend.key = element_rect(color = NA, fill = "#005669"),
-          panel.background = element_rect(fill = "#005669", color  =  NA),
-          panel.grid.major = element_line(color = "#FFFFFF"),
-          panel.grid.minor = element_line(color = "#FFFFFF"),
-          legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),	
+          legend.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),	
+          legend.key = element_rect(color = NA, fill = input$backgroundColor_hp_italy),	
+          panel.background = element_rect(fill = input$backgroundColor_hp_italy, color  =  NA),	
+          panel.grid.major = element_line(color = input$textColor_hp_italy),	
+          panel.grid.minor = element_line(color = input$textColor_hp_italy),	
+          legend.text = element_text(size = legend_text_size(), color = input$textColor_hp_italy),	
           legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
-          axis.title = element_text(size = axis_title_size()),
-          legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
+          axis.text = element_text(size = axis_text_size(), color = input$textColor_hp_italy),	
+          axis.title = element_text(size = axis_title_size()),	
+          legend.title = element_text(size = legend_title_size(), color = input$textColor_hp_italy)	
         )+labs(x = "Hours", y = "Measurement of Hourly Data")
       
       labs <-c()
@@ -1403,28 +1432,28 @@ server <- function(input, output, session) {
       if ("CO" %in% input$hourly_data_italy){
         suffx_CO = "(ppm)"
         labs <-c(labs,"CO" = paste("CO",suffx_CO, sep=" "))
-        vals <-c(vals,c("CO" = "#c6c60f"))
+        vals <-c(vals,c("CO" = input$colorCO_hp_italy))
         gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
           geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
       }
       if ("NO2" %in% input$hourly_data_italy){
         suffx_NO2 = "(ppb)"
         labs <-c(labs,"NO2" = paste("NO2",suffx_NO2, sep=" "))
-        vals <-c(vals,"NO2" = "#13c649")
+        vals <-c(vals,"NO2" = input$colorNO2_hp_italy)
         gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
           geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
       }
       if ("Ozone" %in% input$hourly_data_italy){
         suffx_Ozone = "(ppm)"
         labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
-        vals <-c(vals,"Ozone" = "#0fa2af")
+        vals <-c(vals,"Ozone" = input$colorOZONE_hp_italy)
         gl <- gl+geom_line(aes(y = O3, color = "Ozone"), size = line_size(), group = 3) +
           geom_point(aes(y = O3, color = "Ozone"), size = line_size()*3)
       }
       if ("SO2" %in% input$hourly_data_italy){
         suffx_SO2 = "(ppb)"
         labs <-c(labs,"SO2"=paste("SO2",suffx_SO2, sep=" "))
-        vals <-c(vals,"SO2" = "#A877E0")
+        vals <-c(vals,"SO2" = input$colorSO2_hp_italy)
         gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
           geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3)
       }
@@ -1447,7 +1476,7 @@ server <- function(input, output, session) {
           suffx_PM2.5 = "(ug/m3)"
         }
         labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
-        vals <-c(vals,"PM2.5" = "#cc8112")
+        vals <-c(vals,"PM2.5" = input$colorPM25_hp_italy)
         
       }
       if ("PM10" %in% input$hourly_data_italy){
@@ -1466,7 +1495,7 @@ server <- function(input, output, session) {
           
         }
         labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
-        vals <-c(vals,"PM10" = "#ba1010")
+        vals <-c(vals,"PM10" = input$colorPM10_hp_italy)
         
       }
       gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
@@ -1665,20 +1694,20 @@ server <- function(input, output, session) {
       gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.title.y = element_text(color = input$textColor_hp),
+          axis.title.y = element_text(color = "#FFFFFF"),
           axis.title.x = element_blank(),
           panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#005669"),
-          legend.background = element_rect(color = NA, fill = "#005669"),
-          legend.key = element_rect(color = NA, fill = "#005669"),
-          panel.background = element_rect(fill = "#005669", color  =  NA),
-          panel.grid.major = element_line(color = "#FFFFFF"),
-          panel.grid.minor = element_line(color = "#FFFFFF"),
-          legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor_hp),	
+          legend.background = element_rect(color = NA, fill = input$backgroundColor_hp),	
+          legend.key = element_rect(color = NA, fill = input$backgroundColor_hp),	
+          panel.background = element_rect(fill = input$backgroundColor_hp, color  =  NA),	
+          panel.grid.major = element_line(color = input$textColor_hp),	
+          panel.grid.minor = element_line(color = input$textColor_hp),	
+          legend.text = element_text(size = legend_text_size(), color = input$textColor_hp),	
           legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
-          axis.title = element_text(size = axis_title_size()),
-          legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
+          axis.text = element_text(size = axis_text_size(), color = input$textColor_hp),	
+          axis.title = element_text(size = axis_title_size()),	
+          legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)	
         )+labs(x = "Hours", y = "Measurement of Hourly Data")
       
       labs <-c()
@@ -1686,28 +1715,28 @@ server <- function(input, output, session) {
       if ("CO" %in% input$hourly_data){
         suffx_CO = "(ppm)"
         labs <-c(labs,"CO" = paste("CO",suffx_CO, sep=" "))
-        vals <-c(vals,c("CO" = "#c6c60f"))
+        vals <-c(vals,c("CO" = input$colorCO_hp))
         gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
           geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
       }
       if ("NO2" %in% input$hourly_data){
         suffx_NO2 = "(ppb)"
         labs <-c(labs,"NO2" = paste("NO2",suffx_NO2, sep=" "))
-        vals <-c(vals,"NO2" = "#13c649")
+        vals <-c(vals,"NO2" = input$colorNO2_hp)
         gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
           geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
       }
       if ("Ozone" %in% input$hourly_data){
         suffx_Ozone = "(ppm)"
         labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
-        vals <-c(vals,"Ozone" = "#0fa2af")
+        vals <-c(vals,"Ozone" = input$colorOzone_hp)
         gl <- gl+geom_line(aes(y = Ozone, color = "Ozone"), size = line_size(), group = 3) +
           geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3)
       }
       if ("SO2" %in% input$hourly_data){
         suffx_SO2 = "(ppb)"
         labs <-c(labs,"SO2"=paste("SO2",suffx_SO2, sep=" "))
-        vals <-c(vals,"SO2" = "#A877E0")
+        vals <-c(vals,"SO2" = input$colorSO2_hp)
         gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
           geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3)
       }
@@ -1730,7 +1759,7 @@ server <- function(input, output, session) {
           suffx_PM2.5 = "(ug/m3)"
         }
         labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
-        vals <-c(vals,"PM2.5" = "#cc8112")
+        vals <-c(vals,"PM2.5" = input$colorPM25_hp)
         
       }
       if ("PM10" %in% input$hourly_data){
@@ -1749,7 +1778,7 @@ server <- function(input, output, session) {
           
         }
         labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
-        vals <-c(vals,"PM10" = "#ba1010")
+        vals <-c(vals,"PM10" = input$colorPM10_hp)
         
       }
       convert_temp_to_imperial <- function(values){
@@ -1770,7 +1799,7 @@ server <- function(input, output, session) {
             geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
         }
         labs <-c(labs,"Temperature"= paste("Temperature",temp_suffx, sep=" "))
-        vals <-c(vals,"Temperature" = "#6B1F13")
+        vals <-c(vals,"Temperature" = input$colorTemp_hp)
         
       }
       convert_wind_to_imperial <- function(values){
@@ -1791,7 +1820,7 @@ server <- function(input, output, session) {
             geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
         }
         labs <-c(labs,"Wind Speed" = paste("Wind Speed",wind_suffx, sep=" "))
-        vals <-c(vals,"Wind Speed" = "#E3446E")
+        vals <-c(vals,"Wind Speed" = input$colorWS_hp)
       }
       gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
                                     values = vals)
