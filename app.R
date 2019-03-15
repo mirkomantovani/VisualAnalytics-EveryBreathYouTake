@@ -1694,7 +1694,7 @@ server <- function(input, output, session) {
       gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.title.y = element_text(color = "#FFFFFF"),
+          axis.title.y = element_text(color = input$textColor_hp),
           axis.title.x = element_blank(),
           panel.border = element_blank(),
           plot.background = element_rect(color = NA, fill = input$backgroundColor_hp),	
