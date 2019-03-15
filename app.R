@@ -1256,8 +1256,12 @@ server <- function(input, output, session) {
     a <- subset(italy_df,city==input$CitySearch)
     a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%y-%d-%m")
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
-    if(length(a$co)==0)
+    if(length(a$date)==0)
+    {
       shinyalert("Oops!", paste("No data for",input$CitySearch," in year "), type = "error")
+      a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
+      a
+    }
     else{
       pollutant_input <- c()
       if ("CO" %in% input$daily_data_italy){
@@ -1280,12 +1284,21 @@ server <- function(input, output, session) {
       }
       names(a) <- c("city","day","month","year","NO2","SO2","CO","PM10","PM2.5","Ozone","date")
       # print(class(pollutant_input))
+      if(length(pollutant_input)==0)
+      {
+        shinyalert("Oops! You need to choose atleast one pollutant!", type = "error")
+        a<-data.frame(date = NaN, value = NaN, pollutant= "No data")
+        a
+      }
+      else
+      {
       b <- gather_(a, "pollutant", "value", pollutant_input)
       is.nan.data.frame <- function(x)
       do.call(cbind, lapply(x, is.nan))
       b$value[is.nan(b$value)] <- 0
       print(b)
       b
+      }
     }
 
   })
