@@ -1227,8 +1227,8 @@ server <- function(input, output, session) {
   observe({
     daily_aqi_line_react %>%
       ggvis(x=~date, y=~aqi,stroke=~pollutant) %>%
-      layer_points(fill= ~pollutant, size := 700) %>%
       layer_lines(stroke= ~pollutant, strokeWidth := 10) %>%
+      layer_points(fill= ~pollutant, size := 700) %>%
       scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       add_tooltip(all_values, "click") %>%
@@ -1296,14 +1296,19 @@ server <- function(input, output, session) {
       is.nan.data.frame <- function(x)
       do.call(cbind, lapply(x, is.nan))
       b$value[is.nan(b$value)] <- 0
-      print(b)
+      if(input$switch_units)
+      {
+        b$value <- convert_to_imperial(b$value)
+      }
+      b$pollutant<-factor(b$pollutant, levels=c("Ozone","CO","NO2","PM2.5","PM10","SO2"))
+      print(b$value[1])
       b
       }
     }
 
   })
   all_values_italy <- function(x) {
-    # print(x)
+    print(x)
     if(is.null(x)) return(NULL)
     if(length(x$value)==0) return(NULL)
     # if(names(x)=="aqi")
@@ -1312,17 +1317,17 @@ server <- function(input, output, session) {
     # paste0("Date: ",as.Date(as.POSIXct(x$date/1000, origin="1970-01-01")),collapse = "<br />")
     # else
     x$date = as.Date(as.POSIXct(x$date/1000, origin="1970-01-01"))
-    names(x) = c("Date","AQI","Major pollutant")
+    names(x) = c("Date","Value","Pollutant name")
     paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
   observe({
     daily_aqi_line_italy_react %>%
       ggvis(x=~date, y=~value, stroke=~pollutant) %>%
+      layer_lines(stroke= ~pollutant, strokeWidth := 10)  %>%
       layer_points(fill= ~pollutant, size := 700) %>%
       scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       add_tooltip(all_values_italy, "click") %>%
-      layer_lines(stroke= ~pollutant, strokeWidth := 10)  %>%
       set_options(width=v$width_daily,height=v$height_daily)  %>%
       add_axis("x", title = "Month", properties = axis_props(
         axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
