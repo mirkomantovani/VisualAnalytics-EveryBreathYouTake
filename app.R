@@ -293,7 +293,7 @@ ui <- dashboardPage(
                                       ),
                                       colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),
                                       checkboxGroupButtons(
-                                        inputId = "textColor", label = h5("Text and Grid color"), # moved in main input panel
+                                        inputId = "textColor_hp", label = h5("Text and Grid color"), # moved in main input panel
                                         choices = c("white", "black"),
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
@@ -420,7 +420,7 @@ ui <- dashboardPage(
                    div(column(12,
                               colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
                               checkboxGroupButtons(
-                                inputId = "textColor", label = h5("Text and Grid color"), # moved in main input panel
+                                inputId = "textColor_hp_italy", label = h5("Text and Grid color"), # moved in main input panel
                                 choices = c("white", "black"),
                                 justified = TRUE, status = "primary", selected = "white",
                                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
