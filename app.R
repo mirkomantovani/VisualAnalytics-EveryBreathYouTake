@@ -73,7 +73,7 @@ states<-unique(dataset$State)
 t<-subset(dataset, State == 'Illinois')
 counties<-unique(t$County)
 top12 <- c("Cook - Illinois","Hawaii - Hawaii","New York - New York","Los Angeles - California", "King - Washington","Harris - Texas","Miami - Dade-Florida",
-           "San Juan - New Mexico","Hennepin - Minnesota","Wake - North Carolina")
+           "San Juan - New Mexico","Hennepin - Minnesota","Wake - North Carolina", "San Francisco - California", "Maricopa - Arizona")
 pollutants <- c("CO","NO2","Ozone","SO2","PM2.5","PM10")
 pollutants_2 <- c("PM2.5","PM10","CO","NO2","Ozone","SO2")
 
