@@ -225,7 +225,7 @@
 
                 <h2>Getting started and main tab</h2>
 
-                The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively.
+                The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively for Year details and Daily AQI panels.
 
 
                 <div class="testimonials__slide">
@@ -262,7 +262,7 @@
                 </div>
 
                 <br>
-                The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with days counts.
+                The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with those percentages.
 
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
@@ -293,15 +293,6 @@
                     <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
                 </div>
 
-                <h2>Monthly AQI levels</h2>
-                Text
-
-                <div class="testimonials__slide">
-                    <div class="testimonials__info">
-                    </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-                </div>
-
                 <h2>Daily AQI</h2>
                 Text
 
@@ -312,12 +303,22 @@
                 </div>
 
                 <h2>Hourly pollutants</h2>
-                Text
+                This panel allows the user to visualize the hourly data for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10 along with
+                wind speed and temperature. The left box allows the user to select a particular county from a list of alphabetically sorted counties in the US.
+                The user can then select any particular day in a year and see hourly trends for the pollutants , wind speed and temperature.
+                The panel allows the user to select the colors for the various pollutants, wind speed ,temperature and background by making use of the color inputs 
+                provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, wind, 
+                and temperature and see them as different lines on the same line chart by using the select checkboxes below. A tick mark shows a 
+                selection for the checkbox.
+                The user can also see the hourly trends for the top 12 counties in the US by making use of the switch button provided in the left box.
+                To change the units for the hourly data, the user can make of the switch to imperial units option in the Inputs section of the main side bar.
+                <h4>Legend and units</h4>The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to 
+                metric units from the sidebar switch in the Inputs tab.
 
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/hourly_trends_us.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Pollutants heatmap</h2>
@@ -358,7 +359,14 @@
                 </div>
 
                 <h2>Italy: hourly trends</h2>
-                Text
+                This panel allows the user to visualize the hourly data of Italy for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows 
+                the user to select a particular city from a list of alphabetically sorted counties in Italy.The user can then select any particular day in 
+                a year and see hourly trends for the pollutants.The panel allows the user to select the colors for the various pollutants and background 
+                by making use of the color inputs provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of 
+                hourly Ozone, SO2, CO, NO2, PM2.5, PM10, and see them as different lines on the same line chart by using the select checkboxes below. 
+                A tick mark shows a selection for the checkbox. To change the units for the hourly data, the user can make of the switch to imperial 
+                units option in the Inputs section of the main side bar.<h4>Legend and units</h4>The legend shows the mapping of data to color 
+                along with the units. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab.
 
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
@@ -419,9 +427,48 @@
 
                 <h2>Problems during the development</h2>
                 Data size and slow loading problem<br><br>
-
-
-
+                One of the challenges we faced while deveoping this application was that the size of the dataset was big (around 7-8 GB) as we were 
+                dealing with yearly,daily and hourly data.
+                <h4>Preprocessing</h4>
+                To make the size of the dataset managable and make our application efficient in terms of memory and response time, we performed preprocessing 
+                on the dataset downloaded from the EPA website.This was done in an automated manner by running a single script before running the application.
+                Please note that as we are dealing with very large file sizes here, the preprocessing could take some considerable time to complete.
+                There are two scripts used for preprocessing. One is used to download the data files for the US(dataRead.R)and the other to perform 
+                preprocessing operation on the downloaded data(preProcess.R). The preprocessing scripts in the application performs the following operations:
+                <ul>
+                    <li>Download the relevant data required for the application from the EPA website. This is done by data read script 
+                    provided in the application</li>
+                    <li>Create three output files one each for Daily AQI data, Daily all pollutants data and Hourly data for pollutants,wind and temperature</li>
+                    <li>To read the various data files provided by the EPA, we make of data read function which can read the data in a fast manner.
+                    We make use of fread() function provided by R to read the very large files and make the reading process more efficient.
+                    </li>
+                    <li>To reduce the size of the dataset we make use of one of R data object (fst) . You can read more about it 
+                    <a href="https://www.fstpackage.org/"><i class="fa fa-facebook" aria-hidden="true"></i>here</a>
+                    .The decision to make use of this package was made after performing experiments with various R data objects like rds,rda,feather,etc
+                    and performing benchmarking on those and checking the performane of the application based on memory usage and response time.</li>
+                    <li>Selection of relevant columns is done from the various data files so that only those columns which are relevant for visualizations 
+                    are provided and read in the application.
+                    </li>
+                    <li>The columns selected for daily AQI data are: "State Name","County Name","AQI","Category","Defining Parameter","Year","Month","Day". </li>
+                    <li>The columns selected for hourly data are: "State Name","County Name","SO2","CO","NO2","Ozone","PM2.5","PM10","Wind Direction",
+                    "Wind Speed","Temperature","Year","Month","Day".</li>
+                    <li>The columns selected for daily pollutants data are "State Name","County Name","SO2","CO","NO2","Ozone","PM2.5","PM10","Year",
+                    "Month","Day".</li>
+                    <li>Aggregation is performed for data which siginify the same values by taking average for such values. For e.g
+                    Values for pollutants are averaged across multiple sites in a county, multiple monitors at the same site,etc.
+                    </li>
+                    <li>To reduce the number of files and have all data for a particular type namely daily AQI, hourly data, daily pollutant data, 
+                    merging of datasets was done for various pollutants, wind, temperature whenever possible. Special attention is paid to not lose data if 
+                    one of the parameter is not available and others are during the merge process.
+                    </li>
+                    <li>The date provided in the dataset is further split in individual components of day, month , year to avoid computations during the 
+                    running of the application.
+                    </li>
+                </ul>
+                <h4>High application start up time</h4>
+                To make the application load time faster, we make use of futures to delay the load of data file like json files for maps. This was 
+                done by making us the futures functionality provided by R and loading the data only when the data is required by the application.
+                This along with making of special R object files(fst) made the application more responsive even for the big dataset used. 
                 <br><br>
 
                 <h1 class="display-2">Interesting Insights</h1>
