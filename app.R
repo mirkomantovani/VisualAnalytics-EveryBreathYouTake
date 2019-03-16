@@ -201,7 +201,7 @@ ui <- dashboardPage(
                                         colourInput("colorCO", h5("Select color CO"), value = "#c6c60f"),
                                         colourInput("colorNO2", h5("Select color NO2"), value = "#13c649"),
                                         colourInput("colorOZONE", h5("Select color Ozone"), value = "#0fa2af"),
-                                        colourInput("colorSO2", h5("Select color SO2"), value = "#5610a8"),
+                                        colourInput("colorSO2", h5("Select color SO2"), value = "#A877E0"),
                                         colourInput("colorPM25", h5("Select color PM2.5"), value = "#cc8112"),
                                         colourInput("colorPM10", h5("Select color PM10"), value = "#ba1010"),
                                         circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
@@ -654,7 +654,7 @@ server <- function(input, output, session) {
 
   observeEvent(priority = 10,input$switch_top12,{
     if(input$switch_top12){
-      updateSelectInput(session, inputId = "CountySearch_hp", choices = top12)
+      updateSelectInput(session, inputId = "CountySearch_hp", choices = sort(top12))
     } else {
       updateSelectInput(session, inputId = "CountySearch_hp", choices =  sort(all_counties))
     }
@@ -663,7 +663,7 @@ server <- function(input, output, session) {
 
   observeEvent(priority = 10,input$switch_top12_yearly,{
     if(input$switch_top12_yearly){
-      updateSelectInput(session, inputId = "CountySearch", choices = top12)
+      updateSelectInput(session, inputId = "CountySearch", choices = sort(top12))
     } else {
       updateSelectInput(session, inputId = "CountySearch", choices =  sort(all_counties))
     }
@@ -1213,12 +1213,17 @@ server <- function(input, output, session) {
   })
   
   # table of pollutants
-  output$pollutants_time_table <- DT::renderDataTable(subset(dataset, State == selected_state() & County == selected_county())[, c('Year','Days.CO', 'Days.NO2',"Days.Ozone", "Days.SO2", "Days.PM2.5", "Days.PM10")],
-                                                      rownames = FALSE,
-                                                      colnames = c('Year','CO', 'NO2', 'Ozone', 'SO2','PM2.5','PM10'),
-                                                      options = list(searching = TRUE,paging = TRUE,lengthMenu = c(5, 10, 40), pageLength = tbl_pagelength()
+  output$pollutants_time_table <- DT::renderDataTable(
+    
+    {s_county <-subset(dataset, State == selected_state() & County == selected_county())
+    s_county[,14:19]<- round(s_county[14:19]/s_county$Days.with.AQI*100)
+    s_county[, c('Year','Days.CO', 'Days.NO2',"Days.Ozone", "Days.SO2", "Days.PM2.5", "Days.PM10")]
+    }, 
+    rownames = FALSE,
+    colnames = c('Year','CO', 'NO2', 'Ozone', 'SO2','PM2.5','PM10'),
+    options = list(searching = TRUE,paging = TRUE,lengthMenu = c(5, 10, 40), pageLength = tbl_pagelength()
                                                                      # dom = 't'
-                                                      ))
+    ))
 
   # County on Leaflet Map
   output$map_county <- renderLeaflet({
@@ -1490,8 +1495,9 @@ server <- function(input, output, session) {
       gl <- ggplot(data = s_county_italy, aes(x = s_county_italy$`Time`)) +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.title.y = element_text(color = "#FFFFFF"),
-          axis.title.x = element_blank(),
+          axis.title.y = element_text(color =  input$textColor_hp_italy),
+          axis.title.x = element_text(color =  input$textColor_hp_italy),
+          plot.title = element_text(color = input$textColor_hp_italy,size = axis_title_size(),face="bold.italic",hjust = 0.5),
           panel.border = element_blank(),
           plot.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),
           legend.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),
@@ -1504,7 +1510,7 @@ server <- function(input, output, session) {
           axis.text = element_text(size = axis_text_size(), color = input$textColor_hp_italy),
           axis.title = element_text(size = axis_title_size()),
           legend.title = element_text(size = legend_title_size(), color = input$textColor_hp_italy)
-        )+labs(x = "Hours", y = "Measurement of Hourly Data")
+        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
 
       labs <-c()
       vals <-c()
@@ -1774,7 +1780,8 @@ server <- function(input, output, session) {
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
           axis.title.y = element_text(color = input$textColor_hp),
-          axis.title.x = element_blank(),
+          axis.title.x = element_text(color = input$textColor_hp),
+          plot.title = element_text(color = input$textColor_hp,size = axis_title_size(),face="bold.italic",hjust = 0.5),
           panel.border = element_blank(),
           plot.background = element_rect(color = NA, fill = input$backgroundColor_hp),
           legend.background = element_rect(color = NA, fill = input$backgroundColor_hp),
@@ -1785,9 +1792,8 @@ server <- function(input, output, session) {
           legend.text = element_text(size = legend_text_size(), color = input$textColor_hp),
           legend.key.size = unit(legend_key_size(), 'line'),
           axis.text = element_text(size = axis_text_size(), color = input$textColor_hp),
-          axis.title = element_text(size = axis_title_size()),
           legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)
-        )+labs(x = "Hours", y = "Measurement of Hourly Data")
+        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
 
       labs <-c()
       vals <-c()
