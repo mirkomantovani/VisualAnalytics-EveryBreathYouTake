@@ -224,7 +224,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
                                       div(id="notforsage",
                                           h3("State:"),
@@ -270,10 +270,10 @@ ui <- dashboardPage(
               column(2,box(title = "County Selection",status = "success", width = NULL,
                            div(column(12,
                                       
-                                      materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
                                       div(id= "dailySeparateInputs",
-                                          selectInput(inputId = "StateD", "Select State", states, selected = 'Illinois',width = "200%"),
-                                          selectInput("CountyD", "Select County", counties, selected = 'Adams',width = "200%")
+                                          selectInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
+                                          selectInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
                                       ),
                                       div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
                                           div(id="nozoom2",sliderInput(inputId = "YearD",
@@ -326,7 +326,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      materialSwitch(inputId = "switch_top12", label = h4("Switch to Top 12 counties"), status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"), style = "font-size: 50%;"),
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
@@ -447,17 +447,18 @@ ui <- dashboardPage(
 
                            div(column(12,
                                       colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
-                                      checkboxGroupButtons(
-                                        inputId = "textColor_hp_italy", label = h5("Text and Grid color"), # moved in main input panel
-                                        choices = c("white", "black"),
-                                        justified = TRUE, status = "primary", selected = "white",
-                                        checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
-                                      ),
+                                      # checkboxGroupButtons(
+                                      #   inputId = "textColor_hp_italy", 
+                                      #   label = h5("Text and Grid color"), # moved in main input panel
+                                      #   choices = c("white", "black"),
+                                      #   justified = TRUE, status = "primary", selected = "white",
+                                      #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+                                      # ),
 
                                       selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_year_italy", label = h4("Select Year"), H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_month_italy", label = h4("Select Month"), H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_day_italy", label = h4("Select Day"), H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),
                                       materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                            ),class = "boxtozoom")
               )),
@@ -742,32 +743,14 @@ server <- function(input, output, session) {
   observeEvent(priority = 10,input$CountySearch_daily,{
     st <- strsplit(input$CountySearch_daily," - ")[[1]][2]
     co <- strsplit(input$CountySearch_daily," - ")[[1]][1]
-    print(st)
-    print(co)
     updateSelectInput(session, inputId = "StateD", selected = st)
-    print("selected st")
-    # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
     selected_state_data <- subset(dataset, State == st)
     counties_in_state <- unique(selected_state_data$County)
     print(counties_in_state)
     updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = co)
-    # county <- input$CountyD
-    # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
 
   })
-  
-  
-  # observeEvent(priority = 5,input$CountySearch_daily,{
-  #   # updateSelectInput(session, inputId = "StateD", selected = strsplit(input$CountySearch_daily," - ")[[1]][2])
-  #   # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
-  #   selected_state_data <- subset(dataset, State == input$StateD)
-  #   counties_in_state <- unique(selected_state_data$County)
-  #   
-  #   updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
-  #   # county <- input$CountyD
-  #   # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
-  #   
-  # })
+
 
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
