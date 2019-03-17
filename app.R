@@ -174,10 +174,12 @@ ui <- dashboardPage(
                                          selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
                                          tags$style("#County {background-color:blue;}"),
                                          selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
-                                         div(id="nozoom",sliderInput(inputId = "Year",
-                                                                     sep = "",
-                                                                     label = "Select Year",
-                                                                     value = 2018, min = 1990, max = 2018,width = "90%")),
+                                         selectInput("Year", "Select Year", years, selected = '2018'),
+                                         
+                                         # div(id="nozoom",sliderInput(inputId = "Year",
+                                         #                             sep = "",
+                                         #                             label = "Select Year",
+                                         #                             value = 2018, min = 1990, max = 2018,width = "90%")),
                                          textOutput("missing_data"))),
                          plotOutput("aqi_bar", height = "30vmin"),
                          div(DT::dataTableOutput("aqi_table"), style = "font-size:80%")
@@ -224,7 +226,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
                                       div(id="notforsage",
                                           h3("State:"),
@@ -270,10 +272,10 @@ ui <- dashboardPage(
               column(2,box(title = "County Selection",status = "success", width = NULL,
                            div(column(12,
                                       
-                                      materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
                                       div(id= "dailySeparateInputs",
-                                          selectInput(inputId = "StateD", "Select State", states, selected = 'Illinois',width = "200%"),
-                                          selectInput("CountyD", "Select County", counties, selected = 'Adams',width = "200%")
+                                          selectInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
+                                          selectInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
                                       ),
                                       div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
                                           div(id="nozoom2",sliderInput(inputId = "YearD",
@@ -326,7 +328,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      materialSwitch(inputId = "switch_top12", label = h4("Switch to Top 12 counties"), status = "primary"),
+                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"), style = "font-size: 50%;"),
                                       selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
@@ -398,8 +400,8 @@ ui <- dashboardPage(
               column(2,box(title = "City selection",status = "success", width = NULL,
                            div(column(12,
                                       h3("City:"),
-                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
-                                      materialSwitch(inputId = "switch_units_italy", label = "Switch to Imperial units", status = "primary")
+                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL)
+                                      # materialSwitch(inputId = "switch_units_italy", label = "Switch to Imperial units", status = "primary")
                                       #h4(textOutput("sel_city")) #can get rid of this line
 
                            ),class = "boxtozoom")
@@ -433,32 +435,33 @@ ui <- dashboardPage(
             fluidRow(
               # Input city with search
               column(2,box(title = "City and date Selection ",status = "success", width = NULL,
-                           dropdownButton(
-                             tags$h3("Other colors"),
-                             colourInput("colorCO_hp_italy", h5("Select color CO"), value = "#c6c60f"),
-                             colourInput("colorNO2_hp_italy", h5("Select color NO2"), value = "#13c649"),
-                             colourInput("colorOZONE_hp_italy", h5("Select color Ozone"), value = "#0fa2af"),
-                             colourInput("colorSO2_hp_italy", h5("Select color SO2"), value = "#A877E0"),
-                             colourInput("colorPM25_hp_italy", h5("Select color PM2.5"), value = "#cc8112"),
-                             colourInput("colorPM10_hp_italy", h5("Select color PM10"), value = "#ba1010"),
-                             circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
-                             tooltip = tooltipOptions(title = "Click to open")
-                           ),
+                           # dropdownButton(
+                           #   tags$h3("Other colors"),
+                           #   colourInput("colorCO_hp_italy", h5("Select color CO"), value = "#c6c60f"),
+                           #   colourInput("colorNO2_hp_italy", h5("Select color NO2"), value = "#13c649"),
+                           #   colourInput("colorOZONE_hp_italy", h5("Select color Ozone"), value = "#0fa2af"),
+                           #   colourInput("colorSO2_hp_italy", h5("Select color SO2"), value = "#A877E0"),
+                           #   colourInput("colorPM25_hp_italy", h5("Select color PM2.5"), value = "#cc8112"),
+                           #   colourInput("colorPM10_hp_italy", h5("Select color PM10"), value = "#ba1010"),
+                           #   circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
+                           #   tooltip = tooltipOptions(title = "Click to open")
+                           # ),
 
                            div(column(12,
-                                      colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
-                                      checkboxGroupButtons(
-                                        inputId = "textColor_hp_italy", label = h5("Text and Grid color"), # moved in main input panel
-                                        choices = c("white", "black"),
-                                        justified = TRUE, status = "primary", selected = "white",
-                                        checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
-                                      ),
+                                      # colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
+                                      # checkboxGroupButtons(
+                                      #   inputId = "textColor_hp_italy", 
+                                      #   label = h5("Text and Grid color"), # moved in main input panel
+                                      #   choices = c("white", "black"),
+                                      #   justified = TRUE, status = "primary", selected = "white",
+                                      #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+                                      # ),
 
                                       selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),
-                                      materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
+                                      selectizeInput(inputId = "H_year_italy", label = h4("Select Year"), H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_month_italy", label = h4("Select Month"), H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
+                                      selectizeInput(inputId = "H_day_italy", label = h4("Select Day"), H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL)
+                                      # materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                            ),class = "boxtozoom")
               )),
               column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
@@ -742,32 +745,14 @@ server <- function(input, output, session) {
   observeEvent(priority = 10,input$CountySearch_daily,{
     st <- strsplit(input$CountySearch_daily," - ")[[1]][2]
     co <- strsplit(input$CountySearch_daily," - ")[[1]][1]
-    print(st)
-    print(co)
     updateSelectInput(session, inputId = "StateD", selected = st)
-    print("selected st")
-    # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
     selected_state_data <- subset(dataset, State == st)
     counties_in_state <- unique(selected_state_data$County)
     print(counties_in_state)
     updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = co)
-    # county <- input$CountyD
-    # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
 
   })
-  
-  
-  # observeEvent(priority = 5,input$CountySearch_daily,{
-  #   # updateSelectInput(session, inputId = "StateD", selected = strsplit(input$CountySearch_daily," - ")[[1]][2])
-  #   # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
-  #   selected_state_data <- subset(dataset, State == input$StateD)
-  #   counties_in_state <- unique(selected_state_data$County)
-  #   
-  #   updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
-  #   # county <- input$CountyD
-  #   # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
-  #   
-  # })
+
 
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
@@ -1463,7 +1448,7 @@ server <- function(input, output, session) {
         is.nan.data.frame <- function(x)
           do.call(cbind, lapply(x, is.nan))
         b$value[is.nan(b$value)] <- 0
-        if(input$switch_units_italy)
+        if(input$switch_units)
         {
           b$value <- convert_to_imperial(b$value)
         }
@@ -1488,7 +1473,7 @@ server <- function(input, output, session) {
     paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
   observe({
-    if(input$switch_units_italy)
+    if(input$switch_units)
     {
       unit = "Measurements (e-12 oz/ft3)"
     }
@@ -1660,7 +1645,7 @@ server <- function(input, output, session) {
       }
 
       if ("PM2.5" %in% input$hourly_data_italy){
-        if(input$switch_units_italy_2){
+        if(input$switch_units){
           s_county_italy$data_conv <-s_county_italy$"PM2.5"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM2.5","conv",sep="_")
@@ -1678,7 +1663,7 @@ server <- function(input, output, session) {
 
       }
       if ("PM10" %in% input$hourly_data_italy){
-        if(input$switch_units_italy_2){
+        if(input$switch_units){
           s_county_italy$data_conv <-s_county_italy$"PM10"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM10","conv",sep="_")
