@@ -370,8 +370,8 @@ ui <- dashboardPage(
               column(2,box(title = "City selection",status = "success", width = NULL,
                            div(column(12,
                                       h3("City:"),
-                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL)
-
+                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL),
+                                      materialSwitch(inputId = "switch_units_italy", label = "Switch to Imperial units", status = "primary")
                                       #h4(textOutput("sel_city")) #can get rid of this line
 
                            ),class = "boxtozoom")
@@ -429,8 +429,9 @@ ui <- dashboardPage(
                               selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
                               selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
                               selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
-                   ),class = "boxtozoom")
+                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL),
+                              materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
+                        ),class = "boxtozoom")
       )),
       column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
         inputId = "hourly_data_italy",
@@ -439,7 +440,27 @@ ui <- dashboardPage(
         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
     ))
     )),
+    tabItem("italy_totals",
+            fluidRow(
+              # Input county with search
+              column(2,box(title = "City selection",status = "success", width = NULL,
+                           div(column(10,
+                                      h3("City:"),
+                                      selectizeInput("CitySearch_totals", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL)
 
+                                      
+                           ),class = "boxtozoom")
+              )
+              ),
+              column(10,plotOutput("totals_italy",height = "80vmin"),checkboxGroupButtons(
+                inputId = "italy_total_choices", # moved in main input panel
+                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),size="lg",
+                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
+                checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+              ))
+              
+            )
+    ),
     # FOURTH MENU TAB
     tabItem("about",
             htmlOutput("about_out")
@@ -1364,7 +1385,7 @@ server <- function(input, output, session) {
       is.nan.data.frame <- function(x)
       do.call(cbind, lapply(x, is.nan))
       b$value[is.nan(b$value)] <- 0
-      if(input$switch_units)
+      if(input$switch_units_italy)
       {
         b$value <- convert_to_imperial(b$value)
       }
@@ -1389,6 +1410,14 @@ server <- function(input, output, session) {
     paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
   observe({
+    if(input$switch_units_italy)
+    {
+      unit = "Measurements (e-12 oz/ft3)"
+    }
+    else
+    {
+      unit = "Measurements (ug/m3)"
+    }
     daily_aqi_line_italy_react %>%
       ggvis(x=~date, y=~value, stroke=~pollutant) %>%
       layer_lines(stroke= ~pollutant, strokeWidth := 10)  %>%
@@ -1409,7 +1438,7 @@ server <- function(input, output, session) {
         title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
       )) %>%
       hide_legend('stroke')  %>%
-      add_legend("fill",title="", properties=legend_props(
+      add_legend("fill",title=unit, properties=legend_props(
         labels=list(fontSize=v$daily_legend_font),symbols=list(size=v$daily_legend_size))) %>%
       bind_shiny("daily_aqi_line_italy", "plot_ui")
   })
@@ -1927,7 +1956,104 @@ server <- function(input, output, session) {
 
   })
 
+  output$totals_italy <- renderPlot({
+    df<-subset(italy_df, city==input$CitySearch_totals)
+    names(df) <- c("city","day","month","year","NO2","SO2","CO","PM10","PM2.5","Ozone")
+    # Time series of AQI statistics
+    pollutant_input <- c()
+    avg <- c()
+    if ("CO" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"CO")
+      avg <- c(avg,mean(df$CO[!is.na(df$CO)]))
+    }
+    if ("NO2" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"NO2")
+      avg <- c(avg,mean(df$NO2[!is.na(df$NO2)]))
+    }
+    if ("Ozone" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"Ozone")
+      avg <- c(avg,mean(df$Ozone[!is.na(df$Ozone)]))
+    }
+    if ("SO2" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"SO2")
+      avg <- c(avg,mean(df$SO2[!is.na(df$SO2)]))
+    }
+    if ("PM2.5" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"PM2.5")
+      avg <- c(avg,mean(df$"PM2.5"[!is.na(df$"PM2.5")]))
+    }
+    if ("PM10" %in% input$italy_total_choices){
+      pollutant_input <- c(pollutant_input,"PM10")
+      avg <- c(avg,mean(df$PM10[!is.na(df$PM10)]))
+    }
+    names(avg) <- pollutant_input
 
+
+    if(length(pollutant_input)==0)
+    {
+      shinyalert("Oops! You need to choose atleast one pollutant!", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+      a<-data.frame(Pollutant = NaN, Value = NaN, pollutant= "No data")
+      ggplot(data = a, aes(x = Pollutant,y=Value)) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(color = input$textColor),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor),
+          legend.position = "none",
+          panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor),
+          panel.grid.minor = element_line(color = input$textColor),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor)
+        ) +
+        geom_line(aes(y = Value, color = "Max"), size = line_size()) +
+        geom_point(aes(y = Value, color = "Max"), size = line_size()*3)+
+        labs(x = "Pollutant", y = "Value") 
+    }
+    else
+    {    df_p = data.frame(Pollutant=character(),Value=double(0))
+    names(df_p) <- c("Pollutant","Value")
+    for(p in 1:length(avg)){
+      df_row = data.frame(pollutant_input[p],avg[p])
+      names(df_row) = c("Pollutant","Value")
+      df_p <- rbind(df_p,df_row)
+    }
+    if(length(df$day)>0){
+      
+      ggplot(data = df_p, aes(x = Pollutant,y=Value)) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(color = input$textColor),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor),
+          legend.position = "none",
+          panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor),
+          panel.grid.minor = element_line(color = input$textColor),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor)
+        ) +
+        geom_line(aes(group="Value",color = "Max"), size = line_size()) +
+        geom_point(aes(color = "Max"), size = line_size()*3)+
+        labs(x = "Pollutant", y = "Value (ug/m3)") 
+    }
+    else{
+      shinyalert("Oops!", "No data for this County for this time", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+    }
+    }
+  })
 
   # About HTML
   output$about_out <- renderUI({
