@@ -63,8 +63,8 @@ $(document).on("shiny:connected", function (e) {
 
         document.body.style.zoom = "250%";  //it was 400 so the 25% should become 40%
 
-        nozoom = document.getElementById("nozoom");
-        nozoom.style.zoom = "40%";
+        // nozoom = document.getElementById("nozoom");
+        // nozoom.style.zoom = "40%";
 
         nozoom = document.getElementById("nozoom2");
         nozoom.style.zoom = "40%";

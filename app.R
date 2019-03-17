@@ -174,10 +174,12 @@ ui <- dashboardPage(
                                          selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
                                          tags$style("#County {background-color:blue;}"),
                                          selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
-                                         div(id="nozoom",sliderInput(inputId = "Year",
-                                                                     sep = "",
-                                                                     label = "Select Year",
-                                                                     value = 2018, min = 1990, max = 2018,width = "90%")),
+                                         selectInput("Year", "Select Year", years, selected = '2018'),
+                                         
+                                         # div(id="nozoom",sliderInput(inputId = "Year",
+                                         #                             sep = "",
+                                         #                             label = "Select Year",
+                                         #                             value = 2018, min = 1990, max = 2018,width = "90%")),
                                          textOutput("missing_data"))),
                          plotOutput("aqi_bar", height = "30vmin"),
                          div(DT::dataTableOutput("aqi_table"), style = "font-size:80%")
@@ -398,8 +400,8 @@ ui <- dashboardPage(
               column(2,box(title = "City selection",status = "success", width = NULL,
                            div(column(12,
                                       h3("City:"),
-                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
-                                      materialSwitch(inputId = "switch_units_italy", label = "Switch to Imperial units", status = "primary")
+                                      selectizeInput("CitySearch", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL)
+                                      # materialSwitch(inputId = "switch_units_italy", label = "Switch to Imperial units", status = "primary")
                                       #h4(textOutput("sel_city")) #can get rid of this line
 
                            ),class = "boxtozoom")
@@ -433,20 +435,20 @@ ui <- dashboardPage(
             fluidRow(
               # Input city with search
               column(2,box(title = "City and date Selection ",status = "success", width = NULL,
-                           dropdownButton(
-                             tags$h3("Other colors"),
-                             colourInput("colorCO_hp_italy", h5("Select color CO"), value = "#c6c60f"),
-                             colourInput("colorNO2_hp_italy", h5("Select color NO2"), value = "#13c649"),
-                             colourInput("colorOZONE_hp_italy", h5("Select color Ozone"), value = "#0fa2af"),
-                             colourInput("colorSO2_hp_italy", h5("Select color SO2"), value = "#A877E0"),
-                             colourInput("colorPM25_hp_italy", h5("Select color PM2.5"), value = "#cc8112"),
-                             colourInput("colorPM10_hp_italy", h5("Select color PM10"), value = "#ba1010"),
-                             circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
-                             tooltip = tooltipOptions(title = "Click to open")
-                           ),
+                           # dropdownButton(
+                           #   tags$h3("Other colors"),
+                           #   colourInput("colorCO_hp_italy", h5("Select color CO"), value = "#c6c60f"),
+                           #   colourInput("colorNO2_hp_italy", h5("Select color NO2"), value = "#13c649"),
+                           #   colourInput("colorOZONE_hp_italy", h5("Select color Ozone"), value = "#0fa2af"),
+                           #   colourInput("colorSO2_hp_italy", h5("Select color SO2"), value = "#A877E0"),
+                           #   colourInput("colorPM25_hp_italy", h5("Select color PM2.5"), value = "#cc8112"),
+                           #   colourInput("colorPM10_hp_italy", h5("Select color PM10"), value = "#ba1010"),
+                           #   circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
+                           #   tooltip = tooltipOptions(title = "Click to open")
+                           # ),
 
                            div(column(12,
-                                      colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
+                                      # colourInput("backgroundColor_hp_italy", h3("Select color"), value = "#005669"),
                                       # checkboxGroupButtons(
                                       #   inputId = "textColor_hp_italy", 
                                       #   label = h5("Text and Grid color"), # moved in main input panel
@@ -458,8 +460,8 @@ ui <- dashboardPage(
                                       selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_year_italy", label = h4("Select Year"), H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
                                       selectizeInput(inputId = "H_month_italy", label = h4("Select Month"), H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day_italy", label = h4("Select Day"), H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),
-                                      materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
+                                      selectizeInput(inputId = "H_day_italy", label = h4("Select Day"), H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL)
+                                      # materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                            ),class = "boxtozoom")
               )),
               column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
@@ -1446,7 +1448,7 @@ server <- function(input, output, session) {
         is.nan.data.frame <- function(x)
           do.call(cbind, lapply(x, is.nan))
         b$value[is.nan(b$value)] <- 0
-        if(input$switch_units_italy)
+        if(input$switch_units)
         {
           b$value <- convert_to_imperial(b$value)
         }
@@ -1471,7 +1473,7 @@ server <- function(input, output, session) {
     paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
   observe({
-    if(input$switch_units_italy)
+    if(input$switch_units)
     {
       unit = "Measurements (e-12 oz/ft3)"
     }
@@ -1643,7 +1645,7 @@ server <- function(input, output, session) {
       }
 
       if ("PM2.5" %in% input$hourly_data_italy){
-        if(input$switch_units_italy_2){
+        if(input$switch_units){
           s_county_italy$data_conv <-s_county_italy$"PM2.5"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM2.5","conv",sep="_")
@@ -1661,7 +1663,7 @@ server <- function(input, output, session) {
 
       }
       if ("PM10" %in% input$hourly_data_italy){
-        if(input$switch_units_italy_2){
+        if(input$switch_units){
           s_county_italy$data_conv <-s_county_italy$"PM10"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM10","conv",sep="_")
