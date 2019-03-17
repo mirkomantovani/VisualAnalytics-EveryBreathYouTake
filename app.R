@@ -99,6 +99,8 @@ hourly_df_italy <- read_fst("italy/hourly_italy.fst")
 
 cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
 
+hourly_cities_italy <- levels(unique(hourly_df_italy$City)) #preprocess data such that capitalization is proper
+
 print("done reading data")
 ############################################### UI ################################################
 
@@ -426,16 +428,16 @@ ui <- dashboardPage(
                                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                               ),
 
-                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL)
+                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL)
                    ),class = "boxtozoom")
       )),
       column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
         inputId = "hourly_data_italy",
         choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
-        justified = TRUE, status = "primary", selected = c("NO2","Ozone","SO2"),size = "lg",
+        justified = TRUE, status = "primary", selected = c("CO","NO2","Ozone","SO2"),size = "lg",
         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
     ))
     )),
