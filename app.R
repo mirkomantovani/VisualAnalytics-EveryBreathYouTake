@@ -2085,7 +2085,12 @@ server <- function(input, output, session) {
     <li>plotly</li>
     <li>RColorBrewer</li>
     <li>reshape2</li>
-
+    <li>future</li>
+    <li>ggvis</li>
+    <li>dplyr</li>
+    <li>tidyr</li>
+    <li>fst<li>
+    <li>rvest<li>
     </ul>"
     data <- "<b>Dataset Source:</b></br> <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
     <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>"
