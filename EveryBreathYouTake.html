@@ -192,7 +192,8 @@
                     <a href="https://github.com/mirkomantovani/VisualAnalytics-EveryBreathYouTake" style="text-decoration: underline">Go to Github Repository</a>
 
                     <br>
-                    <a href="http://shiny.evl.uic.edu:3838/g4/EveryBreathYouTake/" style="text-decoration: underline">Access the Shiny application on a local Shiny server</a>
+                    <a href="http://shiny.evl.uic.edu:3838/g4/EveryBreathYouTake/" style="text-decoration: underline">Access the Shiny application on a 
+                    local Shiny server</a>
                 </p>
             </div>
         </div> <!-- end about-desc -->
@@ -218,7 +219,22 @@
                 </p>
                 <h2>Hosting the web application locally</h2>
 
-                Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
+                Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. The application needs the data from the EPA website to be converted in to R data object for better performance. Please follow the below steps to do the required preprocessing before running the application.
+                <ul>
+                  <li>There are 4 preprocessing required to generate the necessary data files for the application:<h4> dataRead.R,preProcess.R,
+                  preprocess_hourly_italy.R, preprocess_daily_italy.R </h4></li>
+                  <li>The first two files dataRead.R and preProcess.R are used to download the data from the US EPA website and convert the data files into fst.
+                  The dataRead.R needs to be run to download the files first. This will download all the files and unzip them into a "data" folder.
+                  Run this script from the root directory of the project.
+                  </li>
+                  <li>Now, run the preProcess.R script from the root directory to convert the data files into fst format. These files would be generated 
+                  in a new folder "fst" in the project folder. This script might take some time to complete</li>           
+                  <li> To get the data files for Italy, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory 
+                  and this will generate the fst files inside the italy folder. Note the fst files for italy are already provided in the project folder.
+                  </li>
+                </ul>
+                  Once we have all the neceessary data/fst files , we can now proceed with running of the application.
+                Run the application via RStudio by clicking Run App at the top right on the main RStudio panel. Access it using a browser and with the local machine address and port 6676. (<a href="http://127.0.0.1:6676/" style="text-decoration: underline">http://127.0.0.1:6676/</a>)
                 <br><br>
 
                 <h1 class="display-2">Functionalities</h1>
@@ -371,18 +387,24 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/hourly_trends_italy.png" alt="Screen" class="responsive">
                 </div>
 
 
 
                 <h1 class="display-2">Data, libraries and implementation</h1>
-
+                
                 <h2>Data</h2>
+                The data for the application was downloaded from the following sources:<br>
                 <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
                 <a href='https://openaq.org/'>OpenAQ</a><br>
                 <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>
+                <br>
+                <br>
 
+                More information about how to download data and preprocessing is present in <h4>"How to run the application" tab and "Preprocessing" tab under
+                "Problems during the development"</h4>
+                
                 <h2>Missing data</h2>
                 The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
 
