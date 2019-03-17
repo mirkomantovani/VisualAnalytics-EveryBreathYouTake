@@ -121,6 +121,7 @@ ui <- dashboardPage(
     width = 250,
     sidebarMenu(
       useShinyalert(),
+      span(h2("  Main Menu", style = "margin-left: 10px;")),
       menuItem("Yearly visualizations",
                menuItem("Yearly trends", tabName = "time"),
                menuItem("Year details for County", tabName = "pie")),
@@ -134,15 +135,15 @@ ui <- dashboardPage(
       menuItem("Italy",
                menuItem("Daily trends", tabName = "italy_daily"),
                menuItem("Hourly trends", tabName = "italy_hourly"),
-               menuItem("Totals over 90 days?", tabName = "italy_totals")),
+               menuItem("Totals over 90 days", tabName = "italy_totals")),
       menuItem("Inputs",
-               selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
-               tags$style("#County {background-color:blue;}"),
-               selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
-               div(id="nozoom",sliderInput(inputId = "Year",
-                                           sep = "",
-                                           label = "Select Year",
-                                           value = 2018, min = 1990, max = 2018,width = "90%")),
+               # selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
+               # tags$style("#County {background-color:blue;}"),
+               # selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
+               # div(id="nozoom",sliderInput(inputId = "Year",
+               #                             sep = "",
+               #                             label = "Select Year",
+               #                             value = 2018, min = 1990, max = 2018,width = "90%")),
                materialSwitch(inputId = "switch_units", label = "Switch to Imperial units", status = "primary"),
                startExpanded = TRUE),
       menuItem("About", tabName = "about")
@@ -170,6 +171,13 @@ ui <- dashboardPage(
                          fluidRow(column(8,
                                          box(title = "Percentage of AQI level", width = NULL,status = "primary",div(plotOutput("aqi_pie", height = "40vmin")))),
                                   column(4,
+                                         selectInput(inputId = "State", "Select State", states, selected = 'Illinois',width = "200%"),
+                                         tags$style("#County {background-color:blue;}"),
+                                         selectInput("County", "Select County", counties, selected = 'Adams',width = "200%"),
+                                         div(id="nozoom",sliderInput(inputId = "Year",
+                                                                     sep = "",
+                                                                     label = "Select Year",
+                                                                     value = 2018, min = 1990, max = 2018,width = "90%")),
                                          textOutput("missing_data"))),
                          plotOutput("aqi_bar", height = "30vmin"),
                          div(DT::dataTableOutput("aqi_table"), style = "font-size:80%")
@@ -216,7 +224,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      materialSwitch(inputId = "switch_top12_yearly", label = h4("Switch to Top 12 counties"), status = "primary"),
+                                      materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
                                       div(id="notforsage",
                                           h3("State:"),
@@ -258,8 +266,26 @@ ui <- dashboardPage(
     ),
     tabItem("daily_aqi",
             fluidRow(
-              # 2 tabs, (line plot, bar chart, table)
-              column(12,
+              # Input county with search
+              column(2,box(title = "County Selection",status = "success", width = NULL,
+                           div(column(12,
+                                      
+                                      materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),
+                                      div(id= "dailySeparateInputs",
+                                          selectInput(inputId = "StateD", "Select State", states, selected = 'Illinois',width = "200%"),
+                                          selectInput("CountyD", "Select County", counties, selected = 'Adams',width = "200%")
+                                      ),
+                                      div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
+                                          div(id="nozoom2",sliderInput(inputId = "YearD",
+                                                                       sep = "",
+                                                                       label = "Select Year",
+                                                                       value = 2018, min = 1990, max = 2018,width = "90%"))
+                                      
+                           ),class = "boxtozoom")
+              )
+              ),
+              # 2 tabs, (line plots and table, map)
+              column(10,
                      tabsetPanel(
                        tabPanel("AQI Time Series",
                                 ggvisOutput("daily_aqi_line")
@@ -606,6 +632,17 @@ server <- function(input, output, session) {
     county <- input$County
 
   })
+  
+  observeEvent(priority = 10,input$StateD,{
+  if(!input$switch_top12_daily){
+  selected_state_data <- subset(dataset, State == input$StateD)
+  counties_in_state <- unique(selected_state_data$County)
+
+  updateSelectInput(session, inputId = "CountyD", choices = counties_in_state)
+  county <- input$CountyD
+  }
+
+  })
 
 
   ###NEEDS MODIFICATION
@@ -692,6 +729,45 @@ server <- function(input, output, session) {
     }
 
   })
+  
+  observeEvent(priority = 10,input$switch_top12_daily,{
+    if(input$switch_top12_daily){
+      updateSelectInput(session, inputId = "CountySearch_daily", choices = sort(top12))
+    } else {
+      # updateSelectInput(session, inputId = "CountySearch_daily", choices =  sort(all_counties))
+    }
+    
+  })
+  
+  observeEvent(priority = 10,input$CountySearch_daily,{
+    st <- strsplit(input$CountySearch_daily," - ")[[1]][2]
+    co <- strsplit(input$CountySearch_daily," - ")[[1]][1]
+    print(st)
+    print(co)
+    updateSelectInput(session, inputId = "StateD", selected = st)
+    print("selected st")
+    # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
+    selected_state_data <- subset(dataset, State == st)
+    counties_in_state <- unique(selected_state_data$County)
+    print(counties_in_state)
+    updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = co)
+    # county <- input$CountyD
+    # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
+
+  })
+  
+  
+  # observeEvent(priority = 5,input$CountySearch_daily,{
+  #   # updateSelectInput(session, inputId = "StateD", selected = strsplit(input$CountySearch_daily," - ")[[1]][2])
+  #   # print(strsplit(input$CountySearch_daily," - ")[[1]][2])
+  #   selected_state_data <- subset(dataset, State == input$StateD)
+  #   counties_in_state <- unique(selected_state_data$County)
+  #   
+  #   updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
+  #   # county <- input$CountyD
+  #   # updateSelectInput(session, inputId = "CountyD", selected = strsplit(input$CountySearch_daily," - ")[[1]][1])
+  #   
+  # })
 
   selected_state <- reactive({
     strsplit(input$CountySearch," - ")[[1]][2]
@@ -1282,13 +1358,13 @@ server <- function(input, output, session) {
   daily_aqi_line_react <- reactive({
 
     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
-    a <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
+    a <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
     a$month <- match(a$month,months)
     a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%Y-%d-%m")
     a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
     if(length(a$category)==0)
     {
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
       a
     }
@@ -1448,10 +1524,10 @@ server <- function(input, output, session) {
   # Stacked bar chart for PART C
   output$daily_bar <- renderPlot({
 
-    p1 <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
+    p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
     if(length(p1$category)==0)
     {
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       emp <- data.frame()
       ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -1636,9 +1712,9 @@ server <- function(input, output, session) {
 
   # table of daily aqi
   output$daily_aqi_table <- DT::renderDataTable({
-    p1 <- subset(daily_df,year== input$Year & county==input$County & state==input$State)
+    p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
     if(length(p1$category)==0)
-      shinyalert("Oops!", paste("No data for",input$County," in year ",input$Year), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
     else{
       df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
       names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
