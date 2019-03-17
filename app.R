@@ -421,7 +421,7 @@ ui <- dashboardPage(
               # ),
               column(10,ggvisOutput("daily_aqi_line_italy"),checkboxGroupButtons(
                 inputId = "daily_data_italy", # moved in main input panel
-                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
+                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),size="lg",
                 justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
               ))
@@ -483,7 +483,7 @@ ui <- dashboardPage(
               column(10,plotOutput("totals_italy",height = "80vmin"),checkboxGroupButtons(
                 inputId = "italy_total_choices", # moved in main input panel
                 choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),size="lg",
-                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
+                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2","Ozone"),
                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
               ))
 
@@ -1706,6 +1706,27 @@ server <- function(input, output, session) {
     # Signaling missing data
     else {
       shinyalert("Oops!", "No data for this County for this day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+      emp <- data.frame()
+      ggplot(emp) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.y = element_text(color =  input$textColor_hp_italy),
+          axis.title.x = element_text(color =  input$textColor_hp_italy),
+          plot.title = element_text(color = input$textColor_hp_italy,size = axis_title_size(),face="bold.italic",hjust = 0.5),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor_hp_italy),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor_hp_italy),
+          panel.background = element_rect(fill = input$backgroundColor_hp_italy, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor_hp_italy),
+          panel.grid.minor = element_line(color = input$textColor_hp_italy),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor_hp_italy),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor_hp_italy),
+          axis.title = element_text(size = axis_title_size()),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor_hp_italy)
+        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
+      
     }
 
   })
@@ -2030,7 +2051,29 @@ server <- function(input, output, session) {
     # Signaling missing data
     else {
       shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
-    }
+      emp <- data.frame()
+      ggplot(emp) +
+        theme(
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          axis.title.y = element_text(color = input$textColor_hp),
+          axis.title.x = element_text(color = input$textColor_hp),
+          plot.title = element_text(color = input$textColor_hp,size = axis_title_size(),face="bold.italic",hjust = 0.5),
+          panel.border = element_blank(),
+          plot.background = element_rect(color = NA, fill = input$backgroundColor_hp),
+          legend.background = element_rect(color = NA, fill = input$backgroundColor_hp),
+          legend.key = element_rect(color = NA, fill = input$backgroundColor_hp),
+          panel.background = element_rect(fill = input$backgroundColor_hp, color  =  NA),
+          panel.grid.major = element_line(color = input$textColor_hp),
+          panel.grid.minor = element_line(color = input$textColor_hp),
+          legend.text = element_text(size = legend_text_size(), color = input$textColor_hp),
+          legend.key.size = unit(legend_key_size(), 'line'),
+          axis.text = element_text(size = axis_text_size(), color = input$textColor_hp),
+          legend.title = element_text(size = legend_title_size(), color = input$textColor_hp)
+        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
+      
+        
+      }
+    
 
   })
 
