@@ -99,6 +99,8 @@ hourly_df_italy <- read_fst("italy/hourly_italy.fst")
 
 cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capitalization is proper
 
+hourly_cities_italy <- levels(unique(hourly_df_italy$City)) #preprocess data such that capitalization is proper
+
 print("done reading data")
 ############################################### UI ################################################
 
@@ -426,17 +428,17 @@ ui <- dashboardPage(
                                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                               ),
 
-                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2019',width = "200%",multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '1',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_year_italy", "Select Year", H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_month_italy", "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
+                              selectizeInput(inputId = "H_day_italy", "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),
                               materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                         ),class = "boxtozoom")
       )),
       column(10,plotOutput("hourly_data_italy",height = "85vmin"),checkboxGroupButtons(
         inputId = "hourly_data_italy",
         choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10"),
-        justified = TRUE, status = "primary", selected = c("NO2","Ozone","SO2"),size = "lg",
+        justified = TRUE, status = "primary", selected = c("CO","NO2","Ozone","SO2"),size = "lg",
         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
     ))
     )),
@@ -448,7 +450,7 @@ ui <- dashboardPage(
                                       h3("City:"),
                                       selectizeInput("CitySearch_totals", label = h4("Search City"), sort(cities_italy), selected = NULL, multiple = FALSE, options = NULL)
 
-                                      
+
                            ),class = "boxtozoom")
               )
               ),
@@ -458,7 +460,7 @@ ui <- dashboardPage(
                 justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
                 checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
               ))
-              
+
             )
     ),
     # FOURTH MENU TAB
@@ -1524,7 +1526,7 @@ server <- function(input, output, session) {
 
   # Time series of Hourly Data -- ITALY GRAD PART
   output$hourly_data_italy <- renderPlot({
-    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Year == "2018" & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
+    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Year == input$H_year_italy & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
 
     if(length(s_county_italy$`Time`) > 0 ){
       gl <- ggplot(data = s_county_italy, aes(x = s_county_italy$`Time`)) +
@@ -2014,7 +2016,7 @@ server <- function(input, output, session) {
         ) +
         geom_line(aes(y = Value, color = "Max"), size = line_size()) +
         geom_point(aes(y = Value, color = "Max"), size = line_size()*3)+
-        labs(x = "Pollutant", y = "Value") 
+        labs(x = "Pollutant", y = "Value")
     }
     else
     {    df_p = data.frame(Pollutant=character(),Value=double(0))
@@ -2025,7 +2027,7 @@ server <- function(input, output, session) {
       df_p <- rbind(df_p,df_row)
     }
     if(length(df$day)>0){
-      
+
       ggplot(data = df_p, aes(x = Pollutant,y=Value)) +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -2047,7 +2049,7 @@ server <- function(input, output, session) {
         ) +
         geom_line(aes(group="Value",color = "Max"), size = line_size()) +
         geom_point(aes(color = "Max"), size = line_size()*3)+
-        labs(x = "Pollutant", y = "Value (ug/m3)") 
+        labs(x = "Pollutant", y = "Value (ug/m3)")
     }
     else{
       shinyalert("Oops!", "No data for this County for this time", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
