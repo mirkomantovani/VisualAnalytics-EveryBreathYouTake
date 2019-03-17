@@ -1584,7 +1584,7 @@ server <- function(input, output, session) {
       }
 
       if ("PM2.5" %in% input$hourly_data_italy){
-        if(input$switch_units){
+        if(input$switch_units_italy_2){
           s_county_italy$data_conv <-s_county_italy$"PM2.5"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM2.5","conv",sep="_")
@@ -1602,7 +1602,7 @@ server <- function(input, output, session) {
 
       }
       if ("PM10" %in% input$hourly_data_italy){
-        if(input$switch_units){
+        if(input$switch_units_italy_2){
           s_county_italy$data_conv <-s_county_italy$"PM10"
           s_county_italy$data_conv <- convert_to_imperial(s_county_italy$data_conv)
           names(s_county_italy)[names(s_county_italy)=="data_conv"] <- paste("PM10","conv",sep="_")
