@@ -1497,7 +1497,7 @@ server <- function(input, output, session) {
 
   # Time series of Hourly Data -- ITALY GRAD PART
   output$hourly_data_italy <- renderPlot({
-    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Year == "2018" & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
+    s_county_italy<-subset(hourly_df_italy, hourly_df_italy$`City` == selected_city_hp_italy() & hourly_df_italy$Year == input$H_year_italy & hourly_df_italy$Month == input$H_month_italy & hourly_df_italy$Day == input$H_day_italy)
 
     if(length(s_county_italy$`Time`) > 0 ){
       gl <- ggplot(data = s_county_italy, aes(x = s_county_italy$`Time`)) +
