@@ -1779,11 +1779,14 @@ server <- function(input, output, session) {
       if(feature !="Median.AQI"){
         sub$sel_feat<-sub[[feature]]/sub$Days.with.AQI*100
         suffx = "%"
+        pref = "Pollutant: "
       } else {
         sub$sel_feat<-sub[[feature]]
         suffx = ""
+        pref = "AQI: "
       }
     } else { # Daily
+      pref = "Pollutant: "
       sub<-subset(daily_all, Month == input$D_month & Day == input$D_day)
       sub$sel_feat<-sub[[input$pollutant_map]]
       if(input$switch_units){
@@ -1826,9 +1829,9 @@ server <- function(input, output, session) {
                                           paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
                                           value(f_xy)$NAME,
                                           value(f_xy)$STATENAME,
-                                          paste("Confidence level:",temp$Days.with.AQI/365*100, "%"),
+                                          paste("Confidence level:",signif(temp$Days.with.AQI/365*100,3), "%"),
                                           paste("Days with data:",temp$Days.with.AQI),
-                                          paste(signif(temp$sel_feat,3),suffx)
+                                          paste(pref,signif(temp$sel_feat,3),suffx)
     )
     else
       ~paste(sep = "<br/>",
