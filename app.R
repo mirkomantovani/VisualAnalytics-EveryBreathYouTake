@@ -2192,7 +2192,7 @@ server <- function(input, output, session) {
     if(length(df$day)>0){
       #Create a custom color scale
       library(RColorBrewer)
-      myColors <- brewer.pal(6,"Set3")
+      myColors <- c("#13c649","#5610a8","#c6c60f","#ba1010","#cc8112","#0fa2af")
       names(myColors) <- c("NO2","SO2","CO","PM10","PM2.5","Ozone")
       colScale <- scale_colour_manual(name = "Pollutant",values = myColors)
       ggplot(data = df_p, aes(x = Pollutant,y=Value, fill = Pollutant)) + geom_bar(stat="identity") +
