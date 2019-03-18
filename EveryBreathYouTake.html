@@ -192,7 +192,7 @@
                     <a href="https://github.com/mirkomantovani/VisualAnalytics-EveryBreathYouTake" style="text-decoration: underline">Go to Github Repository</a>
 
                     <br>
-                    <a href="http://shiny.evl.uic.edu:3838/g4/EveryBreathYouTake/" style="text-decoration: underline">Access the Shiny application on a 
+                    <a href="http://shiny.evl.uic.edu:3838/g4/EveryBreathYouTake/" style="text-decoration: underline">Access the Shiny application on a
                     local Shiny server</a>
                 </p>
             </div>
@@ -227,9 +227,9 @@
                   The dataRead.R needs to be run to download the files first. This will download all the files and unzip them into a "data" folder.
                   Run this script from the root directory of the project.
                   </li>
-                  <li>Now, run the preProcess.R script from the root directory to convert the data files into fst format. These files would be generated 
-                  in a new folder "fst" in the project folder. This script might take some time to complete</li>           
-                  <li> To get the data files for Italy, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory 
+                  <li>Now, run the preProcess.R script from the root directory to convert the data files into fst format. These files would be generated
+                  in a new folder "fst" in the project folder. This script might take some time to complete</li>
+                  <li> To get the data files for Italy, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory
                   and this will generate the fst files inside the italy folder. Note the fst files for italy are already provided in the project folder.
                   </li>
                 </ul>
@@ -300,13 +300,13 @@
                 This panel allows the user to visualize the hourly data for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10 along with
                 wind speed and temperature. The left box allows the user to select a particular county from a list of alphabetically sorted counties in the US.
                 The user can then select any particular day in a year and see hourly trends for the pollutants , wind speed and temperature.
-                The panel allows the user to select the colors for the various pollutants, wind speed ,temperature and background by making use of the color inputs 
-                provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, wind, 
-                and temperature and see them as different lines on the same line chart by using the select checkboxes below. A tick mark shows a 
+                The panel allows the user to select the colors for the various pollutants, wind speed ,temperature and background by making use of the color inputs
+                provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, wind,
+                and temperature and see them as different lines on the same line chart by using the select checkboxes below. A tick mark shows a
                 selection for the checkbox.
                 The user can also see the hourly trends for the top 12 counties in the US by making use of the switch button provided in the left box.
                 To change the units for the hourly data, the user can make of the switch to imperial units option in the Inputs section of the main side bar.
-                <h4>Legend and units</h4>The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to 
+                <h4>Legend and units</h4>The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to
                 metric units from the sidebar switch in the Inputs tab.
 
                 <div class="testimonials__slide">
@@ -328,22 +328,22 @@
                 As the rest of the application, this map is responsive and particularly, it was created for the big wall of display that we have in the classroom (11520 by 3240 pixels). In order to allow a practical user experience in terms of the touch screen wall present in the classroom, the UI has been designed to work best in this configuration that is the one applied to this version of the application:
                 <h4>Shown counties panel</h4>
                 the shown counties panel is static and positioned in the bottom right corner together with the legend. This type of circular input slider was implemented thinking about a functional touch screen use. This is why the whole panel is static and the shiny input variable behind the scene is only updated after approximately half a second since the user started interacting with it. The user can also type in a number by clicking in the displayed number using a HW keyboard. An additional input is present in this panel: a confidence level slider which allows the user to control if showing the counties with less data, thus less confidence in the computed percentages, with less opacity (towards 0) or to show all with the same opacity (towards 1).
-                
+
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
                     <img src="/images/p2viz/countiespanel.png" alt="Screen" class="responsive">
                 </div>
-                
+
                 <h4>Time and Pollutant panel</h4>
                 The second panel that controls the Time and Pollutant inputs is dynamic, users can drag and drop it wherever they want in the map. This is useful when the screen is very large and the users would have to move by a few steps just to reach this panel and change the input. The inputs present in this panel are: Pollutant and AQI (if yearly data), switch to yearly/daily data, choose year for yearly data, choose month and day for daily data (only the year 2018 is available).
-                
+
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
                     <img src="/images/p2viz/timepanel.png" alt="Screen" class="responsive">
                 </div>
-                
+
                 <h4>Legend, units and colors</h4>The legend shows the mapping of data range to color. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab. The color scale is continuous, the palette used is Viridis, which uses a range of colors distinguishable by all types of color blind people.
                 <h4>Map interactions</h4>
 
@@ -367,13 +367,13 @@
                 </div>
 
                 <h2>Italy: hourly trends</h2>
-                This panel allows the user to visualize the hourly data of Italy for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows 
-                the user to select a particular city from a list of alphabetically sorted counties in Italy.The user can then select any particular day in 
-                a year and see hourly trends for the pollutants.The panel allows the user to select the colors for the various pollutants and background 
-                by making use of the color inputs provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of 
-                hourly Ozone, SO2, CO, NO2, PM2.5, PM10, and see them as different lines on the same line chart by using the select checkboxes below. 
-                A tick mark shows a selection for the checkbox. To change the units for the hourly data, the user can make of the switch to imperial 
-                units option in the Inputs section of the main side bar.<h4>Legend and units</h4>The legend shows the mapping of data to color 
+                This panel allows the user to visualize the hourly data of Italy for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows
+                the user to select a particular city from a list of alphabetically sorted counties in Italy.The user can then select any particular day in
+                a year and see hourly trends for the pollutants.The panel allows the user to select the colors for the various pollutants and background
+                by making use of the color inputs provided in the box.<h4>Data Selection Panel</h4>The user can now pick any subset or all of
+                hourly Ozone, SO2, CO, NO2, PM2.5, PM10, and see them as different lines on the same line chart by using the select checkboxes below.
+                A tick mark shows a selection for the checkbox. To change the units for the hourly data, the user can make of the switch to imperial
+                units option in the Inputs section of the main side bar.<h4>Legend and units</h4>The legend shows the mapping of data to color
                 along with the units. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab.
 
                 <div class="testimonials__slide">
@@ -385,7 +385,7 @@
 
 
                 <h1 class="display-2">Data, libraries and implementation</h1>
-                
+
                 <h2>Data</h2>
                 The data for the application was downloaded from the following sources:<br>
                 <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
@@ -396,7 +396,7 @@
 
                 More information about how to download data and preprocessing is present in <h4>"How to run the application" tab and "Preprocessing" tab under
                 "Problems during the development"</h4>
-                
+
                 <h2>Missing data</h2>
                 The missing dataset presents some missing data for some specific years and counties, this was handled by warning the user with an alert message whenever he selects this type of data.
 
@@ -405,7 +405,7 @@
                     </div>
                     <img src="/images/p2viz/alert.png" alt="Screen" class="responsive">
                 </div>
-                
+
                 <h2>Units of measure</h2>
                 To allow users from both the United States and the rest of the world to give a meaning to all of this data we provided a practical switch on the sidebar under the inputs tabs so that the User can choose to convert data from Metric to Imperial and viceversa.
 
@@ -450,26 +450,26 @@
 
                 <h2>Problems during the development</h2>
                 Data size and slow loading problem<br><br>
-                One of the challenges we faced while deveoping this application was that the size of the dataset was big (around 7-8 GB) as we were 
+                One of the challenges we faced while deveoping this application was that the size of the dataset was big (around 7-8 GB) as we were
                 dealing with yearly,daily and hourly data.
                 <h4>Preprocessing</h4>
-                To make the size of the dataset managable and make our application efficient in terms of memory and response time, we performed preprocessing 
+                To make the size of the dataset managable and make our application efficient in terms of memory and response time, we performed preprocessing
                 on the dataset downloaded from the EPA website.This was done in an automated manner by running a single script before running the application.
                 Please note that as we are dealing with very large file sizes here, the preprocessing could take some considerable time to complete.
-                There are two scripts used for preprocessing. One is used to download the data files for the US(dataRead.R)and the other to perform 
+                There are two scripts used for preprocessing. One is used to download the data files for the US(dataRead.R)and the other to perform
                 preprocessing operation on the downloaded data(preProcess.R). The preprocessing scripts in the application performs the following operations:
                 <ul>
-                    <li>Download the relevant data required for the application from the EPA website. This is done by data read script 
+                    <li>Download the relevant data required for the application from the EPA website. This is done by data read script
                     provided in the application</li>
                     <li>Create three output files one each for Daily AQI data, Daily all pollutants data and Hourly data for pollutants,wind and temperature</li>
                     <li>To read the various data files provided by the EPA, we make of data read function which can read the data in a fast manner.
                     We make use of fread() function provided by R to read the very large files and make the reading process more efficient.
                     </li>
-                    <li>To reduce the size of the dataset we make use of one of R data object (fst) . You can read more about it 
+                    <li>To reduce the size of the dataset we make use of one of R data object (fst) . You can read more about it
                     <a href="https://www.fstpackage.org/"><i class="fa fa-facebook" aria-hidden="true"></i>here</a>
                     .The decision to make use of this package was made after performing experiments with various R data objects like rds,rda,feather,etc
                     and performing benchmarking on those and checking the performane of the application based on memory usage and response time.</li>
-                    <li>Selection of relevant columns is done from the various data files so that only those columns which are relevant for visualizations 
+                    <li>Selection of relevant columns is done from the various data files so that only those columns which are relevant for visualizations
                     are provided and read in the application.
                     </li>
                     <li>The columns selected for daily AQI data are: "State Name","County Name","AQI","Category","Defining Parameter","Year","Month","Day". </li>
@@ -480,18 +480,18 @@
                     <li>Aggregation is performed for data which siginify the same values by taking average for such values. For e.g
                     Values for pollutants are averaged across multiple sites in a county, multiple monitors at the same site,etc.
                     </li>
-                    <li>To reduce the number of files and have all data for a particular type namely daily AQI, hourly data, daily pollutant data, 
-                    merging of datasets was done for various pollutants, wind, temperature whenever possible. Special attention is paid to not lose data if 
+                    <li>To reduce the number of files and have all data for a particular type namely daily AQI, hourly data, daily pollutant data,
+                    merging of datasets was done for various pollutants, wind, temperature whenever possible. Special attention is paid to not lose data if
                     one of the parameter is not available and others are during the merge process.
                     </li>
-                    <li>The date provided in the dataset is further split in individual components of day, month , year to avoid computations during the 
+                    <li>The date provided in the dataset is further split in individual components of day, month , year to avoid computations during the
                     running of the application.
                     </li>
                 </ul>
                 <h4>High application start up time</h4>
-                To make the application load time faster, we make use of futures to delay the load of data file like json files for maps. This was 
+                To make the application load time faster, we make use of futures to delay the load of data file like json files for maps. This was
                 done by making us the futures functionality provided by R and loading the data only when the data is required by the application.
-                This along with making of special R object files(fst) made the application more responsive even for the big dataset used. 
+                This along with making of special R object files(fst) made the application more responsive even for the big dataset used.
                 <br><br>
 
                 <h1 class="display-2">Interesting Insights</h1>
@@ -638,9 +638,9 @@
                     No scrolling is possible in the application. Modified panels for map. Added confidence input in map and modified color opacity based on days with data in map. Minor fixes to colors and sizes for Yearly plots.
 
                     <h2>Abhishek</h2>
-
+                    Completed the daily and totals for italy. Made several minor bug fixes. Added imperial conversion for daily AQI for both USA and italy. Implemented touch feature for ggvis plots.
                     <h2>Ashwani</h2>
-                    Metric to imperial conversion for hourly plots for US. Worked on creation of hourly charts for one more country Italy.Added switch for 
+                    Metric to imperial conversion for hourly plots for US. Worked on creation of hourly charts for one more country Italy.Added switch for
                     top 12 counties in US. Updated the hourly preprocessing script for italy for performance. Minor fixes for yearly plots.
 
                 </div>
