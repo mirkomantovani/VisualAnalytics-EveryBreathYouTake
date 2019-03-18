@@ -74,7 +74,7 @@ $(document).on("shiny:connected", function (e) {
 
         map = document.getElementById("map_county");
         //map.style.zoom = "200%"; //messes with the height and hover over markers
-        map.style.height = "2600px";
+        map.style.height = "1350px";
 
         // LEAFLET MAP TEXT size
         // leafletcont = document.getElementsByClassName("leaflet-container");

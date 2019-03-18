@@ -101,7 +101,7 @@ cities_italy <- levels(unique(italy_df$city)) #preprocess data such that capital
 
 hourly_cities_italy <- levels(unique(hourly_df_italy$City)) #preprocess data such that capitalization is proper
 
-print("done reading data")
+# print("done reading data")
 ############################################### UI ################################################
 
 ui <- dashboardPage(
@@ -121,7 +121,7 @@ ui <- dashboardPage(
     width = 250,
     sidebarMenu(
       useShinyalert(),
-      span(h2("  Main Menu", style = "margin-left: 10px;")),
+      span(h2("  Main Menu", style = "margin-left: 10px; font-size: 20px;")),
       menuItem("Yearly visualizations",
                menuItem("Yearly trends", tabName = "time"),
                menuItem("Year details for County", tabName = "pie")),
@@ -478,8 +478,11 @@ ui <- dashboardPage(
               column(2,box(title = "City selection",status = "success", width = NULL,
                            div(column(10,
                                       h3("City:"),
-                                      selectizeInput("CitySearch_totals", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL)
-
+                                      selectizeInput("CitySearch_totals", label = h4("Search City"), sort(cities_italy), selected = "roma", multiple = FALSE, options = NULL),
+                                      p("This plot can be used to have a general idea of the pollutants level in Italy for a comparison with the United States.
+                                        The values of each pollutants are an average over 90 days (9 December - 8 March 2019), and over all locations. 
+                                        The locations are mainly in the center of Italy and not too far from one another, therefore, this solution can have a certain validity
+                                        given the goal of identifying and comparing the main pollutants.", style = "font-size: 14px;")
 
                            ),class = "boxtozoom")
               )
@@ -749,7 +752,7 @@ server <- function(input, output, session) {
     updateSelectInput(session, inputId = "StateD", selected = st)
     selected_state_data <- subset(dataset, State == st)
     counties_in_state <- unique(selected_state_data$County)
-    print(counties_in_state)
+    # print(counties_in_state)
     updateSelectInput(session, inputId = "CountyD", choices = counties_in_state, selected = co)
 
   })
@@ -1454,14 +1457,14 @@ server <- function(input, output, session) {
           b$value <- convert_to_imperial(b$value)
         }
         b$pollutant<-factor(b$pollutant, levels=c("CO","NO2","Ozone","SO2","PM2.5","PM10"))
-        print(b$value[1])
+        # print(b$value[1])
         b
       }
     }
 
   })
   all_values_italy <- function(x) {
-    print(x)
+    # print(x)
     if(is.null(x)) return(NULL)
     if(length(x$value)==0) return(NULL)
     # if(names(x)=="aqi")
@@ -2154,7 +2157,7 @@ server <- function(input, output, session) {
     {
       shinyalert("Oops! You need to choose atleast one pollutant!", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
       a<-data.frame(Pollutant = NaN, Value = NaN, pollutant= "No data")
-      ggplot(data = a, aes(x = Pollutant,y=Value)) +
+      ggplot(data = a, aes(x = Pollutant,y=Value)) + geom_bar(stat="identity")+
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
           axis.title.x = element_blank(),
@@ -2185,10 +2188,10 @@ server <- function(input, output, session) {
       names(df_row) = c("Pollutant","Value")
       df_p <- rbind(df_p,df_row)
     }
-    print(df_p)
+    # print(df_p)
     if(length(df$day)>0){
 
-      ggplot(data = df_p, aes(x = Pollutant,y=Value)) +
+      ggplot(data = df_p, aes(x = Pollutant,y=Value, fill = Pollutant)) + geom_bar(stat="identity") +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
           axis.title.x = element_blank(),
@@ -2206,9 +2209,10 @@ server <- function(input, output, session) {
           axis.text = element_text(size = axis_text_size(), color = input$textColor),
           axis.title = element_text(size = axis_title_size()),
           legend.title = element_text(size = legend_title_size(), color = input$textColor)
-        ) +
-        geom_point(aes(color = "Max"), size = line_size()*3)+
-        labs(x = "Pollutant", y = "Value (ug/m3)")
+        ) + scale_fill_brewer(palette="Set3") + labs(x = "Pollutant", y = "Value (ug/m3)")
+        
+        # geom_point(aes(color = "Max"), size = line_size()*3)+
+        # labs(x = "Pollutant", y = "Value (ug/m3)")
     }
     else{
       shinyalert("Oops!", "No data for this County for this time", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
@@ -2226,26 +2230,16 @@ server <- function(input, output, session) {
     libraries <- "<b>Used R libraries: </b> <br>
     <ul>
     <li>shiny</li>
-    <li>shinydashboard</li>
-    <li>ggplot2</li>
+    <li>shinydashboard, dashboardthemes, shinythemes, ggthemes</li>
+    <li>ggplot2, plotly, ggvis, leaflet</li>
+    <li>colourpicker, viridis, RColorBrewer</li>
+    <li>geojson, geojsonio</li>
+    <li>cdlTools, htmltools</li>
     <li>scales</li>
-    <li>shinythemes</li>
-    <li>dashboardthemes</li>
-    <li>ggthemes</li>
     <li>shinyalert</li>
-    <li>leaflet</li>
     <li>rgdal</li>
-    <li>geojson</li>
-    <li>geojsonio</li>
-    <li>colourpicker</li>
-    <li>viridis</li>
-    <li>cdlTools</li>
-    <li>htmltools</li>
-    <li>plotly</li>
-    <li>RColorBrewer</li>
     <li>reshape2</li>
     <li>future</li>
-    <li>ggvis</li>
     <li>dplyr</li>
     <li>tidyr</li>
     <li>fst<li>
