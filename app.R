@@ -1382,11 +1382,11 @@ server <- function(input, output, session) {
 
   observe({
     daily_aqi_line_react %>%
-      ggvis(x=~date, y=~aqi,stroke=~pollutant) %>%
-      layer_lines(stroke= ~pollutant, strokeWidth := 10) %>%
+      ggvis(x=~date, y=~aqi) %>%
+      layer_lines(strokeWidth := 10) %>%
       layer_points(fill= ~pollutant, size := 700) %>%
       scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
-      scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
+      #scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
       add_tooltip(all_values, "click") %>%
       #layer_paths(stroke= ~pollutant, strokeWidth := 10) %>%
       set_options(width=v$width_daily,height=v$height_daily)  %>%
