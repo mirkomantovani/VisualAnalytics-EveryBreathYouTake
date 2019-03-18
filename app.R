@@ -356,12 +356,12 @@ ui <- dashboardPage(
                               width = 330, height = "auto",
 
                               h2("Time and Pollutant"),
-                              selectInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants_2,"AQI"), selected = 'PM2.5',width = "100%"),
+                              selectizeInput(inputId = "pollutant_map", "Select Pollutant", c(pollutants_2,"AQI"), selected = 'PM2.5',width = "100%"),
                               materialSwitch(inputId = "switch_daily", label = "Switch to Daily Data (for 2018)", status = "primary"),
                               numericInput("year_map", "Select Year", min=1990, max=2018, value=2018),
                               div( id="yearly_inputs",
-                                   selectInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "100%"),
-                                   selectInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "100%")
+                                   selectizeInput(inputId = "D_month", "Select Month", H_months, selected = 'January',width = "100%"),
+                                   selectizeInput(inputId = "D_day", "Select Day", H_days, selected = '1',width = "100%")
                               )
                 ),
 
@@ -723,7 +723,7 @@ server <- function(input, output, session) {
     if(input$switch_top12){
       updateSelectInput(session, inputId = "CountySearch_hp", choices = sort(top12))
     } else {
-      updateSelectInput(session, inputId = "CountySearch_hp", choices =  sort(all_counties))
+      updateSelectInput(session, inputId = "CountySearch_hp", choices =  sort(all_counties), selected = "Cook - Illinois")
     }
 
   })
@@ -2246,8 +2246,8 @@ server <- function(input, output, session) {
     <li>future</li>
     <li>dplyr</li>
     <li>tidyr</li>
-    <li>fst<li>
-    <li>rvest<li>
+    <li>fst</li>
+    <li>rvest</li>
     </ul>"
     data <- "<b>Dataset Source:</b></br> <a href='https://aqs.epa.gov/aqsweb/airdata/download_files.html'>United States Environmental Protection Agency</a><br>
     <a href='http://eric.clst.org/tech/usgeojson/e'>United States Counties shape in GeoJSON</a>"
