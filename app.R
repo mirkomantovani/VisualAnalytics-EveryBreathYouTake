@@ -2190,7 +2190,11 @@ server <- function(input, output, session) {
     }
     # print(df_p)
     if(length(df$day)>0){
-
+      #Create a custom color scale
+      library(RColorBrewer)
+      myColors <- brewer.pal(6,"Set3")
+      names(myColors) <- c("NO2","SO2","CO","PM10","PM2.5","Ozone")
+      colScale <- scale_colour_manual(name = "Pollutant",values = myColors)
       ggplot(data = df_p, aes(x = Pollutant,y=Value, fill = Pollutant)) + geom_bar(stat="identity") +
         theme(
           axis.text.x = element_text(angle = 45, hjust = 1),
@@ -2209,7 +2213,7 @@ server <- function(input, output, session) {
           axis.text = element_text(size = axis_text_size(), color = input$textColor),
           axis.title = element_text(size = axis_title_size()),
           legend.title = element_text(size = legend_title_size(), color = input$textColor)
-        ) + scale_fill_brewer(palette="Set3") + labs(x = "Pollutant", y = "Value (ug/m3)")
+        ) + scale_fill_manual(values=myColors) + labs(x = "Pollutant", y = "Value (ug/m3)") + geom_text(aes(label=round(Value,digits=2)),size = legend_text_size(),position = position_stack(vjust = 0.5))
         
         # geom_point(aes(color = "Max"), size = line_size()*3)+
         # labs(x = "Pollutant", y = "Value (ug/m3)")
