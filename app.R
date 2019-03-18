@@ -274,8 +274,8 @@ ui <- dashboardPage(
                                       
                                       div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
                                       div(id= "dailySeparateInputs",
-                                          selectInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
-                                          selectInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
+                                          selectizeInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
+                                          selectizeInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
                                       ),
                                       div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
                                           div(id="nozoom2",sliderInput(inputId = "YearD",
@@ -1537,6 +1537,12 @@ server <- function(input, output, session) {
       df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
       names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
       months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+      years_leap = c(1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+      if(input$YearD %in% years_leap)
+      {
+        month_days = c(31,29,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
+      }
+      else
       month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
       for(i in 1:12)
       {
