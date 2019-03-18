@@ -239,16 +239,9 @@
 
                 <h1 class="display-2">Functionalities</h1>
 
-                <h2>Getting started and main tab</h2>
+                <h2>Getting started and Sidebar</h2>
 
                 The application starts in full screen. You can open the menu icon at the top next to the title, to open the sidebar where you can select the State, the County and the year, as well as switch between metric or imperial units for the whole application. The main panel on the right will reload the data and recreate the graphs interactively for Year details and Daily AQI panels.
-
-
-                <div class="testimonials__slide">
-                    <div class="testimonials__info">
-                    </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-                </div>
 
 
                 <h2>Yearly visualizations: Yearly trends</h2>
@@ -260,7 +253,7 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/1.png" alt="Screen" class="responsive">
                 </div>
 
                 By clicking on the settings button you can also change the grid and text colors in the plots to black, if the background color is too bright. In addition, you can change the colors for the pollutants for the second plot.
@@ -268,31 +261,19 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/2.png" alt="Screen" class="responsive">
                 </div>
 
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/3.png" alt="Screen" class="responsive">
                 </div>
 
                 <br>
                 The first plot in the first tab shows AQI statistics over time. The second tabs contains a time series plot of the percentages of days as main pollutant and a table with those percentages.
 
-                <div class="testimonials__slide">
-                    <div class="testimonials__info">
-                    </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-                </div>
-
                 The third tab is a map showing the location of the selected county on the map, and showing all the counties in the US that highlights in white when you hover over them.
-
-                <div class="testimonials__slide">
-                    <div class="testimonials__info">
-                    </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
-                </div>
 
                 <h2>Yearly visualizations: Year details for County</h2>
 
@@ -300,13 +281,10 @@
                 <br>
                 The right box, instead, shows detected pollutants data. The first tab in this box shows a pie chart for each pollutant with the percentage of days in which that pollutant was the main cause of problems. The second tab shows a bar chart with the number of days in which they were the main pollutant in that year. Again, the table at the bottom shows the same thing as the bar chart but in a different way.
 
-                <br><br>
-                From the sidebar you can also access other tabs with different functionalities and plots.
-
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/4.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Daily AQI</h2>
@@ -349,14 +327,28 @@
                 <br>
                 As the rest of the application, this map is responsive and particularly, it was created for the big wall of display that we have in the classroom (11520 by 3240 pixels). In order to allow a practical user experience in terms of the touch screen wall present in the classroom, the UI has been designed to work best in this configuration that is the one applied to this version of the application:
                 <h4>Shown counties panel</h4>
-                the shown counties panel is static and positioned in the bottom right corner together with the legend. This type of circular input slider was implemented thinking about a functional touch screen use. This is why the whole panel is static and the shiny input variable behind the scene is only updated after approximately half a second since the user started interacting with it. The user can also type in a number by clicking in the displayed number using a HW keyboard.
+                the shown counties panel is static and positioned in the bottom right corner together with the legend. This type of circular input slider was implemented thinking about a functional touch screen use. This is why the whole panel is static and the shiny input variable behind the scene is only updated after approximately half a second since the user started interacting with it. The user can also type in a number by clicking in the displayed number using a HW keyboard. An additional input is present in this panel: a confidence level slider which allows the user to control if showing the counties with less data, thus less confidence in the computed percentages, with less opacity (towards 0) or to show all with the same opacity (towards 1).
+                
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/countiespanel.png" alt="Screen" class="responsive">
+                </div>
+                
                 <h4>Time and Pollutant panel</h4>
                 The second panel that controls the Time and Pollutant inputs is dynamic, users can drag and drop it wherever they want in the map. This is useful when the screen is very large and the users would have to move by a few steps just to reach this panel and change the input. The inputs present in this panel are: Pollutant and AQI (if yearly data), switch to yearly/daily data, choose year for yearly data, choose month and day for daily data (only the year 2018 is available).
-                <h4>Legend and units</h4>The legend shows the mapping of data range to color. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab.
+                
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/timepanel.png" alt="Screen" class="responsive">
+                </div>
+                
+                <h4>Legend, units and colors</h4>The legend shows the mapping of data range to color. Notice that you can change from imperial to metric units from the sidebar switch in the Inputs tab. The color scale is continuous, the palette used is Viridis, which uses a range of colors distinguishable by all types of color blind people.
                 <h4>Map interactions</h4>
 
                 The user can visualize the name of the County by hovering over any County.
-                The user can visualize the name of the State and County, as well as the precise pollutant value and a link to the wikipedia page of that County by clicking on any County.
+                The user can visualize the name of the State and County, as well as the precise pollutant value, the percentage of available days (confidence level), the total days available and a link to the wikipedia page of that County by clicking on any County.
                 <br>
 
                 <div class="testimonials__slide">
@@ -411,7 +403,16 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/alert.png" alt="Screen" class="responsive">
+                </div>
+                
+                <h2>Units of measure</h2>
+                To allow users from both the United States and the rest of the world to give a meaning to all of this data we provided a practical switch on the sidebar under the inputs tabs so that the User can choose to convert data from Metric to Imperial and viceversa.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/convert.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Used R libraries</h2>
