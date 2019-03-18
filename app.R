@@ -328,12 +328,12 @@ ui <- dashboardPage(
                                       #   justified = TRUE, status = "primary", selected = "white",
                                       #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       # ),
-                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"), style = "font-size: 50%;"),
-                                      selectizeInput("CountySearch_hp", label = h4("Search County"), sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year", label = h4("Select Year"), H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month", label = h4("Select Month"), H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day", label = h4("Select Day"), H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL)
-                           ),class = "boxtozoom")
+                                      div(selectizeInput("CountySearch_hp", label = "Search County", sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_year", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_month", label = "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_day", label = "Select Day", H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"), style = "font-size: 50%;")
+                                      ),class = "boxtozoom")
               ))
               ,
               column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
@@ -457,10 +457,11 @@ ui <- dashboardPage(
                                       #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       # ),
 
-                                      selectizeInput("CitySearch_hp_italy", label = h4("Search City"), sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_year_italy", label = h4("Select Year"), H_years_italy, selected = '2018',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_month_italy", label = h4("Select Month"), H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),
-                                      selectizeInput(inputId = "H_day_italy", label = h4("Select Day"), H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL)
+                                      div(selectizeInput("CitySearch_hp_italy", label = "Search City", sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_year_italy", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_month_italy", label = "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
+                                      div(selectizeInput(inputId = "H_day_italy", label = "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;")
+                                      
                                       # materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                            ),class = "boxtozoom")
               )),
