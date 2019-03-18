@@ -2178,7 +2178,7 @@ server <- function(input, output, session) {
         ) +
         geom_line(aes(y = Value, color = "Max"), size = line_size()) +
         geom_point(aes(y = Value, color = "Max"), size = line_size()*3)+
-        labs(x = "Pollutant", y = "Value")
+        labs(x = "Pollutant", y = "Average Value (ug/m3)")
     }
     else
     {    df_p = data.frame(Pollutant=character(),Value=double(0))

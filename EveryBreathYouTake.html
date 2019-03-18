@@ -288,13 +288,25 @@
                 </div>
 
                 <h2>Daily AQI</h2>
-                Text
-
+                This panel allows the user to visualize daily AQI trends for the selected year for all six pollutants : Ozone, SO2, CO, NO2, PM2.5, PM10. The left box allows the user to select a particular county from a list of alphabetically sorted counties in the US. The user can also choose the year for which the AQI data is to be displayed using the slider in the left panel. There are three visualizations available for daily AQI: One is the line graph which shows the AQI values over all days for selected year. The color of the points shows which pollutant had the highest value for that day. The user can click on any point on the line graph which would display a tooltip showing the date for that point, AQI value and major pollutant for that date.
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/daily_line.png" alt="Screen" class="responsive">
                 </div>
+                 The second visualization is the stacked bar chart which shows the number of days of each AQI category for all 12 months in the selected year. Different shades of grayscale indicate the AQI category as shown in the legend.
+                 <div class="testimonials__slide">
+                     <div class="testimonials__info">
+                     </div>
+                     <img src="/images/daily_bar.png" alt="Screen" class="responsive">
+                 </div>
+                The third visualization is the table which similar to the bar chart shows the number of days of each AQI category for all 12 months in the selected year. The user can also see the daily trends for the top 12 counties in the US by making use of the switch button provided in the left box.
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/daily_table.png" alt="Screen" class="responsive">
+                </div>
+                The conversion to imperial units can be made by using the inputs tab in the main panel. By default, the dataset contains all pollutants in the ug/m3 unit. By switching to imperial, the units are converted to the (e-12 oz/ft3) unit.
 
                 <h2>Hourly pollutants</h2>
                 This panel allows the user to visualize the hourly data for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10 along with
@@ -358,14 +370,14 @@
                 </div>
 
                 <h2>Italy: daily trends</h2>
-                Text
+                This panel allows the user to visualize the daily AQI line graph for italy for the six pollutants: Ozone, SO2, CO, NO2, PM2.5, PM10. The left panel allows the user to choose any italian city for which data is available. The line graph shows a different colored line for each pollutant. The x-axis denotes the date and the y-axis is the pollutant value. The user can visualize select pollutants by turning off the other pollutants in the checkboxes given below the graph. The user can also click on points which would display a tooltip showing the exact date for that point.
 
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/p2viz/picname.png" alt="Screen" class="responsive">
+                    <img src="/images/daily_line_italy.png" alt="Screen" class="responsive">
                 </div>
-
+                The conversion to imperial units can be made by using the inputs tab in the main panel. By default, the dataset contains all pollutants in the ug/m3 unit. By switching to imperial, the units are converted to the (e-12 oz/ft3) unit.
                 <h2>Italy: hourly trends</h2>
                 This panel allows the user to visualize the hourly data of Italy for the six pollutants Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows
                 the user to select a particular city from a list of alphabetically sorted counties in Italy.The user can then select any particular day in
@@ -382,6 +394,14 @@
                     <img src="/images/p2viz/hourly_trends_italy.png" alt="Screen" class="responsive">
                 </div>
 
+                <h2>Italy: Totals over 90 days</h2>
+                This panel allows the user to visualize the average value of pollutants of any selected city in Italy in the date range between December 8,2018 to March 9, 2019. The left panel allows the user to choose any city in Italy. The bar chart shows the average values of each of the 6 pollutants. A switchbox given at the bottom can be used to deselect pollutants from being displayed on the bar chart. The way the average was calculated is as follows: For a given pollutant, its values for all days was added and divided by the total number of days. If the pollutant has values only for 30 days, its summed value over 30 days is divided by 30. In this way, the user is able to understand which pollutant is more rampant in a particular city.
+
+                <div class="testimonials__slide">
+                    <div class="testimonials__info">
+                    </div>
+                    <img src="/images/p2viz/italy_totals.png" alt="Screen" class="responsive">
+                </div>
 
 
                 <h1 class="display-2">Data, libraries and implementation</h1>
