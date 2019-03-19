@@ -229,7 +229,7 @@
                   </li>
                   <li>Now, run the preProcess.R script from the root directory to convert the data files into fst format. These files would be generated
                   in a new folder "fst" in the project folder. This script might take some time to complete</li>
-                  <li> To get the data files for Italy, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory
+                  <li> The CSV files containing pollutant data for italy are already available in the GitHub repository. We need to convert this to the fst format for the app to run. To achieve this, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory
                   and this will generate the fst files inside the italy folder. Note the fst files for italy are already provided in the project folder.
                   </li>
                 </ul>
@@ -292,19 +292,19 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_line.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_line.png" alt="Screen" class="responsive">
                 </div>
                  The second visualization is the stacked bar chart which shows the number of days of each AQI category for all 12 months in the selected year. Different shades of grayscale indicate the AQI category as shown in the legend.
                  <div class="testimonials__slide">
                      <div class="testimonials__info">
                      </div>
-                     <img src="/images/daily_bar.png" alt="Screen" class="responsive">
+                     <img src="/images/p2viz/daily_bar.png" alt="Screen" class="responsive">
                  </div>
                 The third visualization is the table which similar to the bar chart shows the number of days of each AQI category for all 12 months in the selected year. The user can also see the daily trends for the top 12 counties in the US by making use of the switch button provided in the left box.
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_table.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_table.png" alt="Screen" class="responsive">
                 </div>
                 The conversion to imperial units can be made by using the inputs tab in the main panel.
 
@@ -375,7 +375,7 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_line_italy.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_line_italy.png" alt="Screen" class="responsive">
                 </div>
                 The conversion to imperial units can be made by using the inputs tab in the main panel. By default, the dataset contains all pollutants in the ug/m3 unit. By switching to imperial, the units are converted to the (e-12 oz/ft3) unit.
                 <h2>Italy: hourly trends</h2>
@@ -509,6 +509,15 @@
                     running of the application.
                     </li>
                 </ul>
+                <h4>Preprocessing for Italy pollutant files</h4>
+                The preprocessing for Italy is straightforward compared to the USA.
+                <ul>
+                    <li>Download the CSV data (already available in github repository) for past 90 days for each of Italy's cities using the API provided by EPA.</li>
+                    <li>Two preprocessing scripts are used to generate fst files for italy: one is the daily data script and other is the hourly data script.</li>
+                    <li>The CSV files contain hourly data. The hourly preprocessing script gets rid of unwanted columns in the data and converts the data frames into fst format.</li>
+                    <li>The daily preprocessing script creates a new dataframe containing data of each pollutant for each day. Since the CSV files contain only hourly data, the pollutant value for a particular day is found by averaging the pollutant values over 24 hours for that day.</li>
+                    <li>There are 45 Italian cities in total. Each city has several locations from which data is obtained for the same day. The pollutant value for a particular city is found by averaging the pollutant values for all locations of that city.</li>
+                </ul>
                 <h4>High application start up time</h4>
                 To make the application load time faster, we make use of futures to delay the load of data file like json files for maps. This was
                 done by making us the futures functionality provided by R and loading the data only when the data is required by the application.
@@ -612,7 +621,7 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/hawaii_so2_trend.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/hawaii_so2_trend.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Cleanest air in the USA</h2>
@@ -620,7 +629,7 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/chittenden.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/chittenden.png" alt="Screen" class="responsive">
                 </div>
 
 
