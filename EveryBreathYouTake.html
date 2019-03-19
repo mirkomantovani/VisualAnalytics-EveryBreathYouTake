@@ -220,7 +220,7 @@
 
                 Clone the project repository. Open app.R with RStudio, download <a href="https://www.rstudio.com/" style="text-decoration: underline">RStudio</a> and <a href="https://www.r-project.org/" style="text-decoration: underline">R</a> if you don't have them installed on your machine. Download all the R libraries used in the project executing the command install.packages("library") in the RStudio console. The application needs the data from the EPA website to be converted in to R data objects for better performance. The data required for the application can be downloaded from the data link provided at the start of the page. Please follow the below steps to do the required preprocessing before running the application to generate the data again.
                 <ul>
-                  <li>There are 4 preprocessing required to generate the necessary data files for the application:<h4> dataRead.R, preProcess.R, 
+                  <li>There are 4 preprocessing required to generate the necessary data files for the application:<h4> dataRead.R, preProcess.R,
                   preprocess_hourly_italy.R, preprocess_daily_italy.R </h4></li>
                   <li>The first two files dataRead.R and preProcess.R are used to download the data from the US EPA website and convert the data files into fst.
                   The dataRead.R needs to be run to download the files first. This will download all the files and unzip them into a "data" folder.
@@ -228,8 +228,8 @@
                   </li>
                   <li>Now, run the preProcess.R script from the root directory to convert the data files into fst format. These files would be generated
                   in a new folder "fst" in the project folder. This script might take some time to complete</li>
-                  <li> To get the data files for Italy, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory
-                  and this will generate the fst files inside the italy folder. Note the fst along with the original csv files for italy are already provided in the project italy folder.
+                  <li> The CSV files containing pollutant data for italy are already available in the GitHub repository in the project folder. We need to convert this to the fst format for the app to run. To achieve this, run the preprocess_daily_italy.R and preprocess_hourly_italy.R scripts from the root directory
+                  and this will generate the fst files inside the italy folder. Note the fst files for italy are also already provided in the project italy folder.
                   </li>
                 </ul>
                   Once we have all the neceessary data/fst files , we can now proceed with running of the application.
@@ -240,7 +240,7 @@
 
                 <h2>Getting started and Sidebar</h2>
 
-                The application starts in full screen. You can open the menu items for different categories in the sidebar to see more options. The inputs item helps the user to switch between metric or imperial units for the whole application. 
+                The application starts in full screen. You can open the menu items for different categories in the sidebar to see more options. The inputs item helps the user to switch between metric or imperial units for the whole application.
 
                 <h2>Yearly visualizations: Yearly trends</h2>
                 This first tab shows AQI and pollutants time series.
@@ -290,19 +290,19 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_line.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_line.png" alt="Screen" class="responsive">
                 </div>
                  The second visualization is the stacked bar chart which shows the number of days of each AQI category for all 12 months in the selected year. Different shades of grayscale indicate the AQI category as shown in the legend.
                  <div class="testimonials__slide">
                      <div class="testimonials__info">
                      </div>
-                     <img src="/images/daily_bar.png" alt="Screen" class="responsive">
+                     <img src="/images/p2viz/daily_bar.png" alt="Screen" class="responsive">
                  </div>
                 The third visualization is the table which similar to the bar chart shows the number of days of each AQI category for all 12 months in the selected year. The user can also see the daily trends for the top 12 counties in the US by making use of the switch button provided in the left box.
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_table.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_table.png" alt="Screen" class="responsive">
                 </div>
                 The conversion to imperial units can be made by using the inputs tab in the main panel.
 
@@ -312,8 +312,8 @@
                 The user can then select any particular day in a year 2018 and see hourly trends for the pollutants , wind speed and temperature.
                 <h4>Data Selection Panel</h4>The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, wind,
                 and temperature and see them as different lines on the same line chart by using the select checkboxes below. A tick mark shows a
-                selection for the checkbox.The user can also see the hourly trends for the top 12 counties in the US by making use of the switch 
-                button provided in the left box.To change the units for the hourly data, the user can make of the switch to imperial units option in 
+                selection for the checkbox.The user can also see the hourly trends for the top 12 counties in the US by making use of the switch
+                button provided in the left box.To change the units for the hourly data, the user can make of the switch to imperial units option in
                 the Inputs section of the main sidebar.
                 <h4>Legend and units</h4>The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to
                 metric units from the sidebar switch in the Inputs tab.
@@ -372,20 +372,20 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/daily_line_italy.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/daily_line_italy.png" alt="Screen" class="responsive">
                 </div>
                 The conversion to imperial units can be made by using the inputs tab in the main panel. By default, the dataset contains all pollutants in the ug/m3 unit. By switching to imperial, the units are converted to the (e-12 oz/ft3) unit.
                 <h2>Italy: hourly trends</h2>
-                This panel allows the user to visualize the hourly data of Italy over the period of 90 days (9 December - 8 March 2019) for the six pollutants 
-                Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows the user to select a particular city from a list of alphabetically sorted counties 
+                This panel allows the user to visualize the hourly data of Italy over the period of 90 days (9 December - 8 March 2019) for the six pollutants
+                Ozone, SO2, CO, NO2, PM2.5, PM10.The left box allows the user to select a particular city from a list of alphabetically sorted counties
                 in Italy.The user can then select any particular day for the given period and see hourly trends for the pollutants.
                 <h4>Data Selection Panel</h4>
-                The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, and see them as different lines on the same 
+                The user can now pick any subset or all of hourly Ozone, SO2, CO, NO2, PM2.5, PM10, and see them as different lines on the same
                 line chart by using the select checkboxes below.
                 A tick mark shows a selection for the checkbox. To change the units for the hourly data, the user can make of the switch to imperial
                 units option in the Inputs section of the main side bar.
                 <h4>Legend and units</h4>
-                The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to metric units 
+                The legend shows the mapping of data to color along with the units. Notice that you can change from imperial to metric units
                 from the sidebar switch in the Inputs tab.
 
                 <div class="testimonials__slide">
@@ -509,6 +509,15 @@
                     running of the application.
                     </li>
                 </ul>
+                <h4>Preprocessing for Italy pollutant files</h4>
+                The preprocessing for Italy is straightforward compared to the USA.
+                <ul>
+                    <li>Download the CSV data (already available in github repository) for past 90 days for each of Italy's cities using the API provided by EPA.</li>
+                    <li>Two preprocessing scripts are used to generate fst files for italy: one is the daily data script and other is the hourly data script.</li>
+                    <li>The CSV files contain hourly data. The hourly preprocessing script gets rid of unwanted columns in the data and converts the data frames into fst format.</li>
+                    <li>The daily preprocessing script creates a new dataframe containing data of each pollutant for each day. Since the CSV files contain only hourly data, the pollutant value for a particular day is found by averaging the pollutant values over 24 hours for that day.</li>
+                    <li>There are 45 Italian cities in total. Each city has several locations from which data is obtained for the same day. The pollutant value for a particular city is found by averaging the pollutant values for all locations of that city.</li>
+                </ul>
                 <h4>High application start up time</h4>
                 To make the application load time faster, we make use of futures to delay the load of data file like json files for maps. This was
                 done by making us the futures functionality provided by R and loading the data only when the data is required by the application.
@@ -612,7 +621,7 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/hawaii_so2_trend.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/hawaii_so2_trend.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Cleanest air in the USA</h2>
@@ -620,15 +629,15 @@
                 <div class="testimonials__slide">
                     <div class="testimonials__info">
                     </div>
-                    <img src="/images/chittenden.png" alt="Screen" class="responsive">
+                    <img src="/images/p2viz/chittenden.png" alt="Screen" class="responsive">
                 </div>
 
                 <h2>Hourly Data - US </h2>
-                The particulate matter values(PM10/PM2.5) and Ozone are usually high during the day time or late night 
-                as compared to evening.Carbon monoxide (CO) 
-                and Nitrogen Ozide (NO2) have compartively high values in the evening as compared to afternoon. The temperature are low during 
-                the night and early morning hours and peak around during the afternoon and gradually decreasing in the evening. 
-                The temperatures follow seasonal trends, are high in summer months as compared to fall and winter. 
+                The particulate matter values(PM10/PM2.5) and Ozone are usually high during the day time or late night
+                as compared to evening.Carbon monoxide (CO)
+                and Nitrogen Ozide (NO2) have compartively high values in the evening as compared to afternoon. The temperature are low during
+                the night and early morning hours and peak around during the afternoon and gradually decreasing in the evening.
+                The temperatures follow seasonal trends, are high in summer months as compared to fall and winter.
                 The wind speed is generally more during the day time as compared to night and early morning hours.
                 <div class="row clients-testimonials" data-aos="fade-up">
                     <div class="col-full">
