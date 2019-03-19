@@ -1,5 +1,5 @@
-#setwd("/Users/abhishekv/Desktop/p2/VisualAnalytics-EveryBreathYouTake/italy/")
-daily_files <- list.files(path="./", pattern="*.csv", full.names=TRUE, recursive=FALSE)
+#setwd("~/VisualAnalytics-EveryBreathYouTake/italy/")
+daily_files <- list.files(path="./italy", pattern="*.csv", full.names=TRUE, recursive=FALSE)
 daily_aqi = lapply(daily_files, read.csv)
 a <- do.call(rbind, daily_aqi)
 
@@ -80,5 +80,5 @@ for(city_i in cities_italy)
 }
 print(df)
 library(fst)
-fileName = "./daily_italy.fst"
+fileName = "./italy/daily_italy.fst"
 write.fst(df, fileName)
