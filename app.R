@@ -226,7 +226,7 @@ ui <- dashboardPage(
                                         justified = TRUE, status = "primary", selected = "white",
                                         checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       ),
-                                      div(materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
+                                      div(materialSwitch(inputId = "switch_top12_yearly", "Switch to Top 12 counties", status = "primary")),
                                       selectizeInput("CountySearch", label = h4("Search County"), sort(all_counties), selected = NULL, multiple = FALSE, options = NULL),
                                       div(id="notforsage",
                                           h3("State:"),
@@ -272,7 +272,7 @@ ui <- dashboardPage(
               column(2,box(title = "County Selection",status = "success", width = NULL,
                            div(column(12,
                                       
-                                      div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary"),style = "font-size: 50%;"),
+                                      div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary")),
                                       div(id= "dailySeparateInputs",
                                           selectizeInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
                                           selectizeInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
@@ -328,11 +328,11 @@ ui <- dashboardPage(
                                       #   justified = TRUE, status = "primary", selected = "white",
                                       #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       # ),
-                                      div(selectizeInput("CountySearch_hp", label = "Search County", sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_year", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_month", label = "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_day", label = "Select Day", H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"), style = "font-size: 50%;")
+                                      div(selectizeInput("CountySearch_hp", label = "Search County", sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_year", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_month", label = "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_day", label = "Select Day", H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL)),
+                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"))
                                       ),class = "boxtozoom")
               ))
               ,
@@ -457,10 +457,10 @@ ui <- dashboardPage(
                                       #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
                                       # ),
 
-                                      div(selectizeInput("CitySearch_hp_italy", label = "Search City", sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_year_italy", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_month_italy", label = "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;"),
-                                      div(selectizeInput(inputId = "H_day_italy", label = "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL),style = "font-size: 50%;")
+                                      div(selectizeInput("CitySearch_hp_italy", label = "Search City", sort(hourly_cities_italy), selected = "Roma", multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_year_italy", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_month_italy", label = "Select Month", H_months, selected = 'December',width = "200%",multiple = FALSE, options = NULL)),
+                                      div(selectizeInput(inputId = "H_day_italy", label = "Select Day", H_days, selected = '31',width = "200%",multiple = FALSE, options = NULL))
                                       
                                       # materialSwitch(inputId = "switch_units_italy_2", label = "Switch to Imperial units", status = "primary")
                            ),class = "boxtozoom")
