@@ -1,0 +1,13 @@
+name: EveryBreathYouTake
+title: EveryBreathYouTake
+username:
+account: mirkomantovani
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 825835
+bundleId: 1974967
+url: https://mirkomantovani.shinyapps.io/EveryBreathYouTake/
+when: 1553927667.16309
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: fst/daily_all_aqi_by_county.fst|fst/hourly_all_data_2018.fst

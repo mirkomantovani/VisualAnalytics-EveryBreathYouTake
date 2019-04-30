@@ -23,11 +23,14 @@ library(plotly)
 library(RColorBrewer)
 library(reshape2)
 library(fst)
-library(future)
+# library(future)
 library(data.table)
 library(ggvis)
 library(dplyr)
 library(tidyr)
+# library(selectr)
+# library(xml2)
+library(rvest)
 
 # importing datasets
 setwd("./csv/")
@@ -36,26 +39,31 @@ datasets = lapply(temp, read.csv)
 dataset <- do.call(rbind, datasets)
 setwd("../")
 
-daily_df <- read_fst("fst/daily_all_aqi_by_county.fst")
-names(daily_df) <- c("state","county","aqi","category","pollutant","year","month","day")
+# daily_df <- read_fst("fst/daily_all_aqi_by_county.fst")
+# names(daily_df) <- c("state","county","aqi","category","pollutant","year","month","day")
 
 daily_all <- read_fst("fst/daily_all_pollutants_2018.fst")
 
-hourly_df <- read_fst("fst/hourly_all_data_2018.fst")
+# hourly_df <- read_fst("fst/hourly_all_data_2018.fst")
 
 # needed for counties coordinates
 sites <- fread(file = "sites/aqs_sites.csv", sep=",",header = TRUE)
 # geojson file for counties shape
 
-f_xy <- future({
-  xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
-  # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
-  # getting the names
-  converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
-  xy$STATENAME<-converted_states_names
-  xy
-}) %plan% multiprocess
-
+# f_xy <- future({
+#   xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+#   # Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+#   # getting the names
+#   converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+#   xy$STATENAME<-converted_states_names
+#   xy
+# }) %plan% multiprocess
+xy <- geojsonio::geojson_read("gz_2010_us_050_00_20m.json", what = "sp")
+# Since the xy has factored FIPS code for state instead of names, converting them in numeric and then
+# getting the names
+converted_states_names <- fips(as.numeric(levels(xy$STATE))[xy$STATE],to="name")
+xy$STATENAME<-converted_states_names
+xy
 
 
 
@@ -66,8 +74,8 @@ H_years<-c(2018) #years available for hourly data
 H_years_italy<-c(2018,2019)
 H_months<-c("January","February","March","April","May","June","July","August","September","October","November","December")
 
-H_days<-unique(hourly_df$Day)
-
+# H_days<-unique(hourly_df$Day)
+H_days <- c(1:28)
 
 states<-unique(dataset$State)
 t<-subset(dataset, State == 'Illinois')
@@ -129,8 +137,8 @@ ui <- dashboardPage(
       # menuItem("Year details for County", tabName = "pie"),
       # menuItem("Compare Counties", tabName = "compare"),
       # menuItem("Monthly AQI levels", tabName = "monthly_aqi"),
-      menuItem("Daily AQI", tabName = "daily_aqi"),
-      menuItem("Hourly Pollutants", tabName = "hourly_pollutants"),
+      # menuItem("Daily AQI", tabName = "daily_aqi"),
+      # menuItem("Hourly Pollutants", tabName = "hourly_pollutants"),
       menuItem("Pollutants Heatmap", tabName = "pollutants_map"),
       menuItem("Italy",
                menuItem("Daily trends", tabName = "italy_daily"),
@@ -266,85 +274,85 @@ ui <- dashboardPage(
               )
             )
     ),
-    tabItem("daily_aqi",
-            fluidRow(
-              # Input county with search
-              column(2,box(title = "County Selection",status = "success", width = NULL,
-                           div(column(12,
-                                      
-                                      div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary")),
-                                      div(id= "dailySeparateInputs",
-                                          selectizeInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
-                                          selectizeInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
-                                      ),
-                                      div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
-                                          div(id="nozoom2",sliderInput(inputId = "YearD",
-                                                                       sep = "",
-                                                                       label = "Select Year",
-                                                                       value = 2018, min = 1990, max = 2018,width = "90%"))
-                                      
-                           ),class = "boxtozoom")
-              )
-              ),
-              # 2 tabs, (line plots and table, map)
-              column(10,
-                     tabsetPanel(
-                       tabPanel("AQI Time Series",
-                                ggvisOutput("daily_aqi_line")
-                       ),
-                       tabPanel("Bar chart",
-                                plotOutput("daily_bar", height = "80vmin")
-                       ),
-                       tabPanel("Table",
-                                div(DT::dataTableOutput("daily_aqi_table"), style = "font-size:130%")
-                       )
-                     )
-              )
-            )
-    ),
-    tabItem("hourly_pollutants",
-            fluidRow(
-              # Input county with search
-              column(2,box(title = "County and date Selection ",status = "success", width = NULL,
-                           div(column(12,
-                                      # dropdownButton(
-                                      #   tags$h3("Other colors"),
-                                      #   colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),
-                                      #   colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),
-                                      #   colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),
-                                      #   colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),
-                                      #   colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),
-                                      #   colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),
-                                      #   colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),
-                                      #   colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),
-                                      # 
-                                      #   circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
-                                      #   tooltip = tooltipOptions(title = "Click to open")
-                                      # ),
-                                      # colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),
-                                      # checkboxGroupButtons(
-                                      #   inputId = "textColor_hp", label = h5("Text and Grid color"), # moved in main input panel
-                                      #   choices = c("white", "black"),
-                                      #   justified = TRUE, status = "primary", selected = "white",
-                                      #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
-                                      # ),
-                                      div(selectizeInput("CountySearch_hp", label = "Search County", sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
-                                      div(selectizeInput(inputId = "H_year", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL)),
-                                      div(selectizeInput(inputId = "H_month", label = "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL)),
-                                      div(selectizeInput(inputId = "H_day", label = "Select Day", H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL)),
-                                      div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"))
-                                      ),class = "boxtozoom")
-              ))
-              ,
-              column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
-                inputId = "hourly_data", # moved in main input panel
-                choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Temperature"),size="lg",
-                justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
-                checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
-              ))
-
-
-            )),
+    # tabItem("daily_aqi",
+    #         fluidRow(
+    #           # Input county with search
+    #           column(2,box(title = "County Selection",status = "success", width = NULL,
+    #                        div(column(12,
+    #                                   
+    #                                   div(materialSwitch(inputId = "switch_top12_daily", "Switch to Top 12 counties", status = "primary")),
+    #                                   div(id= "dailySeparateInputs",
+    #                                       selectizeInput(inputId = "StateD", label = h4("Select State"), states, selected = 'Illinois',width = "200%"),
+    #                                       selectizeInput("CountyD", label = h4("Select County"), counties, selected = 'Adams',width = "200%")
+    #                                   ),
+    #                                   div(id="dailyUniqueInputs", selectizeInput("CountySearch_daily", label = h4("Search County"), sort(top12), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
+    #                                       div(id="nozoom2",sliderInput(inputId = "YearD",
+    #                                                                    sep = "",
+    #                                                                    label = "Select Year",
+    #                                                                    value = 2018, min = 1990, max = 2018,width = "90%"))
+    #                                   
+    #                        ),class = "boxtozoom")
+    #           )
+    #           ),
+    #           # 2 tabs, (line plots and table, map)
+    #           column(10,
+    #                  tabsetPanel(
+    #                    tabPanel("AQI Time Series",
+    #                             ggvisOutput("daily_aqi_line")
+    #                    ),
+    #                    tabPanel("Bar chart",
+    #                             plotOutput("daily_bar", height = "80vmin")
+    #                    ),
+    #                    tabPanel("Table",
+    #                             div(DT::dataTableOutput("daily_aqi_table"), style = "font-size:130%")
+    #                    )
+    #                  )
+    #           )
+    #         )
+    # ),
+    # tabItem("hourly_pollutants",
+    #         fluidRow(
+    #           # Input county with search
+    #           column(2,box(title = "County and date Selection ",status = "success", width = NULL,
+    #                        div(column(12,
+    #                                   # dropdownButton(
+    #                                   #   tags$h3("Other colors"),
+    #                                   #   colourInput("colorCO_hp", h5("Select color CO"), value = "#c6c60f"),
+    #                                   #   colourInput("colorNO2_hp", h5("Select color NO2"), value = "#13c649"),
+    #                                   #   colourInput("colorOZONE_hp", h5("Select color Ozone"), value = "#0fa2af"),
+    #                                   #   colourInput("colorSO2_hp", h5("Select color SO2"), value = "#A877E0"),
+    #                                   #   colourInput("colorPM25_hp", h5("Select color PM2.5"), value = "#cc8112"),
+    #                                   #   colourInput("colorPM10_hp", h5("Select color PM10"), value = "#ba1010"),
+    #                                   #   colourInput("colorWS_hp", h5("Select color Wind Speed"), value = "#E3446E"),
+    #                                   #   colourInput("colorTemp_hp", h5("Select color Temperature"), value = "#6B1F13"),
+    #                                   # 
+    #                                   #   circle = TRUE, status = "danger", icon = icon("gear"), width = "300px",
+    #                                   #   tooltip = tooltipOptions(title = "Click to open")
+    #                                   # ),
+    #                                   # colourInput("backgroundColor_hp", h3("Select color"), value = "#005669"),
+    #                                   # checkboxGroupButtons(
+    #                                   #   inputId = "textColor_hp", label = h5("Text and Grid color"), # moved in main input panel
+    #                                   #   choices = c("white", "black"),
+    #                                   #   justified = TRUE, status = "primary", selected = "white",
+    #                                   #   checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+    #                                   # ),
+    #                                   div(selectizeInput("CountySearch_hp", label = "Search County", sort(all_counties), selected = "Cook - Illinois", multiple = FALSE, options = NULL)),
+    #                                   div(selectizeInput(inputId = "H_year", label = "Select Year", H_years, selected = '2018',width = "200%",multiple = FALSE, options = NULL)),
+    #                                   div(selectizeInput(inputId = "H_month", label = "Select Month", H_months, selected = 'January',width = "200%",multiple = FALSE, options = NULL)),
+    #                                   div(selectizeInput(inputId = "H_day", label = "Select Day", H_days, selected = '01',width = "200%",multiple = FALSE, options = NULL)),
+    #                                   div(materialSwitch(inputId = "switch_top12", label = "Switch to Top 12 counties", status = "primary"))
+    #                                   ),class = "boxtozoom")
+    #           ))
+    #           ,
+    #           column(10,plotOutput("hourly_data",height = "85vmin"),checkboxGroupButtons(
+    #             inputId = "hourly_data", # moved in main input panel
+    #             choices = c("NO2","CO", "SO2","Ozone","PM2.5","PM10","Wind Speed","Temperature"),size="lg",
+    #             justified = TRUE, status = "primary", selected = c("NO2","PM2.5","PM10","SO2"),
+    #             checkIcon = list(yes = icon("ok-sign", lib = "glyphicon"), no = icon("remove-sign", lib = "glyphicon"))
+    #           ))
+    # 
+    # 
+    #         )),
     tabItem("pollutants_map",
             div(class="outer",
                 # If not using custom CSS, set height of leafletOutput to a number instead of percent
@@ -1328,7 +1336,7 @@ server <- function(input, output, session) {
     longit <- longit[!is.na(longit)] # Eliminating NAs
     computed_lng <- mean(longit)
 
-    leaflet(value(f_xy)) %>%
+    leaflet(xy) %>%
       addTiles() %>%
       addPolygons(color = "#962121", weight = 0.8, smoothFactor = 0.2,
                   opacity = 1.0, fillOpacity = 0.1,
@@ -1344,28 +1352,28 @@ server <- function(input, output, session) {
 
 
   # Daily AQI for selected year - PART C
-  daily_aqi_line_react <- reactive({
-
-    months = c("January","February","March","April","May","June","July","August","September","October","November","December")
-    a <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
-    a$month <- match(a$month,months)
-    a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%Y-%d-%m")
-    a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
-    if(length(a$category)==0)
-    {
-      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
-      a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
-      a
-    }
-    else{
-      # a$color <- ifelse(a$pollutant == "CO", "#c6c60f",
-      #                        ifelse(a$pollutant == "NO2", "#13c649",
-      #                               ifelse(a$pollutant == "Ozone", "#0fa2af",ifelse(a$pollutant == "SO2", "#5610a8",ifelse(a$pollutant == "PM2.5", "#cc8112",ifelse(a$pollutant == "PM10", "#ba1010",""))))))
-      a$pollutant<-factor(a$pollutant, levels=c("CO","NO2","Ozone","SO2","PM2.5","PM10"))
-      a
-    }
-
-  })
+  # daily_aqi_line_react <- reactive({
+  # 
+  #   months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+  #   a <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
+  #   a$month <- match(a$month,months)
+  #   a$date <- as.Date(with(a, paste(year, day, month,sep="-")), "%Y-%d-%m")
+  #   a = a[order(as.Date(a$date, format="%Y-%m-%d")),]
+  #   if(length(a$category)==0)
+  #   {
+  #     shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+  #     a<-data.frame(date = NaN, aqi = NaN, pollutant= "No data")
+  #     a
+  #   }
+  #   else{
+  #     # a$color <- ifelse(a$pollutant == "CO", "#c6c60f",
+  #     #                        ifelse(a$pollutant == "NO2", "#13c649",
+  #     #                               ifelse(a$pollutant == "Ozone", "#0fa2af",ifelse(a$pollutant == "SO2", "#5610a8",ifelse(a$pollutant == "PM2.5", "#cc8112",ifelse(a$pollutant == "PM10", "#ba1010",""))))))
+  #     a$pollutant<-factor(a$pollutant, levels=c("CO","NO2","Ozone","SO2","PM2.5","PM10"))
+  #     a
+  #   }
+  # 
+  # })
   all_values <- function(x) {
     # print(x)
     if(is.null(x)) return(NULL)
@@ -1380,31 +1388,31 @@ server <- function(input, output, session) {
     paste0("<h4>",names(x), ": ", format(x), collapse = "</h4><br />")
   }
 
-  observe({
-    daily_aqi_line_react %>%
-      ggvis(x=~date, y=~aqi) %>%
-      layer_lines(strokeWidth := 10) %>%
-      layer_points(fill= ~pollutant, size := 700) %>%
-      scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
-      #scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
-      add_tooltip(all_values, "click") %>%
-      #layer_paths(stroke= ~pollutant, strokeWidth := 10) %>%
-      set_options(width=v$width_daily,height=v$height_daily)  %>%
-      add_axis("x", title = "Month", properties = axis_props(
-        axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
-        labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
-        title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
-      )) %>%
-      add_axis("y", title_offset = 50,offset=0,title = "AQI value", properties = axis_props(
-        axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
-        labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
-        title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
-      )) %>%
-      hide_legend('stroke')  %>%
-      add_legend("fill",title="", properties=legend_props(
-        labels=list(fontSize=v$daily_legend_font),symbols=list(size=v$daily_legend_size))) %>%
-      bind_shiny("daily_aqi_line", "plot_ui")
-  })
+  # observe({
+  #   daily_aqi_line_react %>%
+  #     ggvis(x=~date, y=~aqi) %>%
+  #     layer_lines(strokeWidth := 10) %>%
+  #     layer_points(fill= ~pollutant, size := 700) %>%
+  #     scale_nominal("fill", range = c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
+  #     #scale_nominal("stroke",range=c("#c6c60f","#13c649","#0fa2af","#5610a8","#cc8112","#ba1010")) %>%
+  #     add_tooltip(all_values, "click") %>%
+  #     #layer_paths(stroke= ~pollutant, strokeWidth := 10) %>%
+  #     set_options(width=v$width_daily,height=v$height_daily)  %>%
+  #     add_axis("x", title = "Month", properties = axis_props(
+  #       axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
+  #       labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
+  #       title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
+  #     )) %>%
+  #     add_axis("y", title_offset = 50,offset=0,title = "AQI value", properties = axis_props(
+  #       axis = list(stroke = "white",strokeWidth = v$daily_axis_stroke),
+  #       labels = list(stroke = "white",fill="white",align = "left", fontSize = v$axis_text_size),
+  #       title = list(stroke = "white",fill="white",fontSize = v$axis_title_size)
+  #     )) %>%
+  #     hide_legend('stroke')  %>%
+  #     add_legend("fill",title="", properties=legend_props(
+  #       labels=list(fontSize=v$daily_legend_font),symbols=list(size=v$daily_legend_size))) %>%
+  #     bind_shiny("daily_aqi_line", "plot_ui")
+  # })
 
   # Daily AQI for ITALY - GRAD PART
   daily_aqi_line_italy_react <- reactive({
@@ -1511,89 +1519,89 @@ server <- function(input, output, session) {
   })
 
   # Stacked bar chart for PART C
-  output$daily_bar <- renderPlot({
-
-    p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
-    if(length(p1$category)==0)
-    {
-      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
-      emp <- data.frame()
-      ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        axis.title.x = element_blank(),
-        axis.title.y = element_text(color = input$textColor),
-        panel.border = element_blank(),
-        plot.background = element_rect(color = NA, fill = input$backgroundColor),
-        legend.background = element_rect(color = NA, fill = input$backgroundColor),
-        legend.key = element_rect(color = NA, fill = input$backgroundColor),
-        panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
-        panel.grid.major = element_line(color = input$textColor),
-        panel.grid.minor = element_line(color = input$textColor),
-        legend.text = element_text(size = legend_text_size(), color = input$textColor),
-        legend.key.size = unit(legend_key_size(), 'line'),
-        axis.text = element_text(size = axis_text_size(), color = input$textColor),
-        axis.title = element_text(size = axis_title_size()),
-        legend.title = element_text(size = legend_title_size(), color = input$textColor)
-      )
-    }
-    else{
-
-      df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
-      names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
-      months = c("January","February","March","April","May","June","July","August","September","October","November","December")
-      years_leap = c(1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
-      if(input$YearD %in% years_leap)
-      {
-        month_days = c(31,29,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
-      }
-      else
-      month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
-      for(i in 1:12)
-      {
-        month1 = months[i]
-
-        p2 <- subset(p1,month==month1)
-        df_row = c(months[i],0,0,0,0,0,0,0)
-
-        t1 <- nrow(subset(p2,category=="Good"))
-        t2 <- nrow(subset(p2,category=="Moderate"))
-
-        t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
-        t4 <- nrow(subset(p2,category=="Unhealthy"))
-        t5 <- nrow(subset(p2,category=="Very Unhealthy"))
-        t6 <- nrow(subset(p2,category=="Hazardous"))
-        t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
-
-        df_row = data.frame(months[i],t7,t6,t5,t4,t3,t2,t1)
-        names(df_row) = c("Month","Unknown","Hazardous","Very Unhealthy","Unhealthy","Unhealthy for Sensitive Groups","Moderate","Good")
-        df <- rbind(df,df_row)
-      }
-
-      DF1 <- melt(df, id.var="Month")
-      # print(DF1)
-      p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + scale_fill_manual("AQI Category", values = c("#8c510a","#252525","#636363","#969696","#bdbdbd","#d9d9d9","#f7f7f7"))+
-        theme(
-          text = element_text(size=12)
-        ) + labs(x = "Month", y = "Number of days") +
-        theme(
-          axis.title.x = element_text(color = "black"),
-          axis.title.y = element_text(color = "black"),
-          panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#bcdae0"),
-          legend.background = element_rect(color = NA, fill = "#bcdae0"),
-          panel.background = element_rect(fill = "#bcdae0", color  =  NA),
-          panel.grid.major = element_line(color = "black"),
-          panel.grid.minor = element_line(color = "black"),
-          legend.text = element_text(size = legend_text_size()),
-          legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(),color = "black"),
-          axis.title = element_text(size = axis_title_size()),
-          legend.title = element_text(size = legend_title_size())
-        ) + geom_bar(stat="identity") + geom_text(data=subset(DF1,value != 0),aes(label=value), size = legend_text_size(),position = position_stack(vjust = 0.5))
-      p
-    }
-
-  })
+  # output$daily_bar <- renderPlot({
+  # 
+  #   p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
+  #   if(length(p1$category)==0)
+  #   {
+  #     shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+  #     emp <- data.frame()
+  #     ggplot(emp)+annotate("text", x=0, y=0, label= "",size=20) +theme(
+  #       axis.text.x = element_text(angle = 45, hjust = 1),
+  #       axis.title.x = element_blank(),
+  #       axis.title.y = element_text(color = input$textColor),
+  #       panel.border = element_blank(),
+  #       plot.background = element_rect(color = NA, fill = input$backgroundColor),
+  #       legend.background = element_rect(color = NA, fill = input$backgroundColor),
+  #       legend.key = element_rect(color = NA, fill = input$backgroundColor),
+  #       panel.background = element_rect(fill = input$backgroundColor, color  =  NA),
+  #       panel.grid.major = element_line(color = input$textColor),
+  #       panel.grid.minor = element_line(color = input$textColor),
+  #       legend.text = element_text(size = legend_text_size(), color = input$textColor),
+  #       legend.key.size = unit(legend_key_size(), 'line'),
+  #       axis.text = element_text(size = axis_text_size(), color = input$textColor),
+  #       axis.title = element_text(size = axis_title_size()),
+  #       legend.title = element_text(size = legend_title_size(), color = input$textColor)
+  #     )
+  #   }
+  #   else{
+  # 
+  #     df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
+  #     names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+  #     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+  #     years_leap = c(1980,1984,1988,1992,1996,2000,2004,2008,2012,2016)
+  #     if(input$YearD %in% years_leap)
+  #     {
+  #       month_days = c(31,29,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
+  #     }
+  #     else
+  #     month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
+  #     for(i in 1:12)
+  #     {
+  #       month1 = months[i]
+  # 
+  #       p2 <- subset(p1,month==month1)
+  #       df_row = c(months[i],0,0,0,0,0,0,0)
+  # 
+  #       t1 <- nrow(subset(p2,category=="Good"))
+  #       t2 <- nrow(subset(p2,category=="Moderate"))
+  # 
+  #       t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
+  #       t4 <- nrow(subset(p2,category=="Unhealthy"))
+  #       t5 <- nrow(subset(p2,category=="Very Unhealthy"))
+  #       t6 <- nrow(subset(p2,category=="Hazardous"))
+  #       t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
+  # 
+  #       df_row = data.frame(months[i],t7,t6,t5,t4,t3,t2,t1)
+  #       names(df_row) = c("Month","Unknown","Hazardous","Very Unhealthy","Unhealthy","Unhealthy for Sensitive Groups","Moderate","Good")
+  #       df <- rbind(df,df_row)
+  #     }
+  # 
+  #     DF1 <- melt(df, id.var="Month")
+  #     # print(DF1)
+  #     p <- ggplot(data = DF1, aes(x = Month, y = value, fill=variable)) + scale_fill_manual("AQI Category", values = c("#8c510a","#252525","#636363","#969696","#bdbdbd","#d9d9d9","#f7f7f7"))+
+  #       theme(
+  #         text = element_text(size=12)
+  #       ) + labs(x = "Month", y = "Number of days") +
+  #       theme(
+  #         axis.title.x = element_text(color = "black"),
+  #         axis.title.y = element_text(color = "black"),
+  #         panel.border = element_blank(),
+  #         plot.background = element_rect(color = NA, fill = "#bcdae0"),
+  #         legend.background = element_rect(color = NA, fill = "#bcdae0"),
+  #         panel.background = element_rect(fill = "#bcdae0", color  =  NA),
+  #         panel.grid.major = element_line(color = "black"),
+  #         panel.grid.minor = element_line(color = "black"),
+  #         legend.text = element_text(size = legend_text_size()),
+  #         legend.key.size = unit(legend_key_size(), 'line'),
+  #         axis.text = element_text(size = axis_text_size(),color = "black"),
+  #         axis.title = element_text(size = axis_title_size()),
+  #         legend.title = element_text(size = legend_title_size())
+  #       ) + geom_bar(stat="identity") + geom_text(data=subset(DF1,value != 0),aes(label=value), size = legend_text_size(),position = position_stack(vjust = 0.5))
+  #     p
+  #   }
+  # 
+  # })
 
   # Time series of Hourly Data -- ITALY GRAD PART
   output$hourly_data_italy <- renderPlot({
@@ -1769,39 +1777,39 @@ server <- function(input, output, session) {
   })
 
   # table of daily aqi
-  output$daily_aqi_table <- DT::renderDataTable({
-    p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
-    if(length(p1$category)==0)
-      shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
-    else{
-      df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
-      names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
-      months = c("January","February","March","April","May","June","July","August","September","October","November","December")
-      month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
-      for(i in 1:12)
-      {
-        #get monthly data
-        month1 = months[i]
-        p2 <- subset(p1,month==month1)
-        df_row = c(months[i],0,0,0,0,0,0,0)
-
-        t1 <- nrow(subset(p2,category=="Good"))
-        t2 <- nrow(subset(p2,category=="Moderate"))
-
-        t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
-        t4 <- nrow(subset(p2,category=="Unhealthy"))
-        t5 <- nrow(subset(p2,category=="Very Unhealthy"))
-        t6 <- nrow(subset(p2,category=="Hazardous"))
-        t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
-
-        df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
-        # print(df_row)
-        names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
-        df <- rbind(df,df_row)
-      }
-      df}
-  },options = list(searching = FALSE,paging = FALSE,
-                   dom = 't'))
+  # output$daily_aqi_table <- DT::renderDataTable({
+  #   p1 <- subset(daily_df,year== input$YearD & county==input$CountyD & state==isolate(input$StateD))
+  #   if(length(p1$category)==0)
+  #     shinyalert("Oops!", paste("No data for",input$CountyD," in year ",input$YearD), type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+  #   else{
+  #     df = data.frame(Month=character(),good=integer(0),mod=integer(0),uhs=integer(0),uh=integer(0),vu=integer(0),haz=integer(0),unknown=integer(0))
+  #     names(df) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+  #     months = c("January","February","March","April","May","June","July","August","September","October","November","December")
+  #     month_days = c(31,28,31,30,31,30,31,31,30,31,30,31) #HORRIBLE hardcoding but hey as long as it works
+  #     for(i in 1:12)
+  #     {
+  #       #get monthly data
+  #       month1 = months[i]
+  #       p2 <- subset(p1,month==month1)
+  #       df_row = c(months[i],0,0,0,0,0,0,0)
+  # 
+  #       t1 <- nrow(subset(p2,category=="Good"))
+  #       t2 <- nrow(subset(p2,category=="Moderate"))
+  # 
+  #       t3 <- nrow(subset(p2,category=="Unhealthy for Sensitive Groups"))
+  #       t4 <- nrow(subset(p2,category=="Unhealthy"))
+  #       t5 <- nrow(subset(p2,category=="Very Unhealthy"))
+  #       t6 <- nrow(subset(p2,category=="Hazardous"))
+  #       t7 <- month_days[i] - (t1+t2+t3+t4+t5+t6)
+  # 
+  #       df_row = data.frame(months[i],t1,t2,t3,t4,t5,t6,t7)
+  #       # print(df_row)
+  #       names(df_row) = c("Month","Good","Moderate","Unhealthy for Sensitive Groups","Unhealthy","Very Unhealthy","Hazardous","Unknown")
+  #       df <- rbind(df,df_row)
+  #     }
+  #     df}
+  # },options = list(searching = FALSE,paging = FALSE,
+  #                  dom = 't'))
 
 
   translate_to_column_name <- function(pollutant) {
@@ -1883,11 +1891,11 @@ server <- function(input, output, session) {
     df <- head(sub,delayes_num_counties_debounced())
 
     if(!input$switch_daily){ # Yearly
-      temp <- merge(value(f_xy), df,
+      temp <- merge(xy, df,
                     by.x = c("STATENAME","NAME"), by.y = c("State","County"),
                     all.x = TRUE)
     } else { # Daily
-      temp <- merge(value(f_xy), df,
+      temp <- merge(xy, df,
                     by.x = c("STATENAME","NAME"), by.y = c("State Name","County Name"),
                     all.x = TRUE)
     }
@@ -1899,18 +1907,18 @@ server <- function(input, output, session) {
     )
 
     pop <- if(!input$switch_daily) ~paste(sep = "<br/>",
-                                          paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
-                                          value(f_xy)$NAME,
-                                          value(f_xy)$STATENAME,
+                                          paste("<b><a href='https://en.wikipedia.org/wiki/",xy$NAME,"_County,_",xy$STATENAME,"' target='_blank'>",xy$NAME," on Wikipedia</a></b>"),
+                                          xy$NAME,
+                                          xy$STATENAME,
                                           paste("Confidence level:",signif(temp$Days.with.AQI/365*100,3), "%"),
                                           paste("Days with data:",temp$Days.with.AQI),
                                           paste(pref,signif(temp$sel_feat,3),suffx)
     )
     else
       ~paste(sep = "<br/>",
-             paste("<b><a href='https://en.wikipedia.org/wiki/",value(f_xy)$NAME,"_County,_",value(f_xy)$STATENAME,"' target='_blank'>",value(f_xy)$NAME," on Wikipedia</a></b>"),
-             value(f_xy)$NAME,
-             value(f_xy)$STATENAME,
+             paste("<b><a href='https://en.wikipedia.org/wiki/",xy$NAME,"_County,_",xy$STATENAME,"' target='_blank'>",xy$NAME," on Wikipedia</a></b>"),
+             xy$NAME,
+             xy$STATENAME,
              paste(signif(temp$sel_feat,3),suffx)
       )
 
@@ -1925,9 +1933,9 @@ server <- function(input, output, session) {
     # year_map, pollutant_map
     leaflet() %>%
       # addPolygons(data = USA, color = ~factpal(ccc), weight = 0.8, smoothFactor = 0.2,
-      addPolygons(data = value(f_xy), color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
+      addPolygons(data = xy, color = ~mypal(temp$sel_feat), weight = 0.8, smoothFactor = 0.2,
                   opacity = spread(temp$Days.with.AQI/365+0.2), fillOpacity = spread(temp$Days.with.AQI/365+0.2),#opacity will be a param
-                  label = ~htmlEscape(value(f_xy)$NAME),
+                  label = ~htmlEscape(xy$NAME),
                   popup = pop,
                   # fillColor = ~colorQuantile("YlOrRd"),
                   highlightOptions = highlightOptions(color = "white", weight = 3,
@@ -1946,176 +1954,176 @@ server <- function(input, output, session) {
   })
 
   # Time series of Hourly Data
-  output$hourly_data <- renderPlot({
-    s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Year== selected_year_hp() & hourly_df$Month == selected_month_hp() & hourly_df$Day == selected_day_hp())
-
-    if(length(s_county$`Time Local`) > 0 ){
-      gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
-        theme(
-          axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.title.y = element_text(size = axis_title_size(),color = "#FFFFFF"),
-          axis.title.x = element_text(size = axis_title_size(),color = "#FFFFFF"),
-          plot.title = element_text(color = "#FFFFFF",size = axis_title_size(),face="bold.italic",hjust = 0.5),
-          panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#005669"),
-          legend.background = element_rect(color = NA, fill = "#005669"),
-          legend.key = element_rect(color = NA, fill = "#005669"),
-          panel.background = element_rect(fill = "#005669", color  =  NA),
-          panel.grid.major = element_line(color = "#FFFFFF"),
-          panel.grid.minor = element_line(color = "#FFFFFF"),
-          legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
-          legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
-          legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
-        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
-
-      labs <-c()
-      vals <-c()
-      if ("CO" %in% input$hourly_data){
-        suffx_CO = "(ppm)"
-        labs <-c(labs,"CO" = paste("CO",suffx_CO, sep=" "))
-        vals <-c(vals,c("CO" = "#c6c60f"))
-        gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
-          geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
-      }
-      if ("NO2" %in% input$hourly_data){
-        suffx_NO2 = "(ppb)"
-        labs <-c(labs,"NO2" = paste("NO2",suffx_NO2, sep=" "))
-        vals <-c(vals,"NO2" = "#13c649")
-        gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
-          geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
-      }
-      if ("Ozone" %in% input$hourly_data){
-        suffx_Ozone = "(ppm)"
-        labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
-        vals <-c(vals,"Ozone" = "#0fa2af")
-        gl <- gl+geom_line(aes(y = Ozone, color = "Ozone"), size = line_size(), group = 3) +
-          geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3)
-      }
-      if ("SO2" %in% input$hourly_data){
-        suffx_SO2 = "(ppb)"
-        labs <-c(labs,"SO2"=paste("SO2",suffx_SO2, sep=" "))
-        vals <-c(vals,"SO2" = "#A877E0")
-        gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
-          geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3)
-      }
-      convert_to_imperial <- function(values){
-        return(values*1000000000000* 0.000000035274/35315)
-      }
-
-      if ("PM2.5" %in% input$hourly_data){
-        if(input$switch_units){
-          s_county$data_conv <-s_county$"PM2.5"
-          s_county$data_conv <- convert_to_imperial(s_county$data_conv)
-          names(s_county)[names(s_county)=="data_conv"] <- paste("PM2.5","conv",sep="_")
-          suffx_PM2.5 = "(e-12 oz/ft3)"
-          gl <- gl + geom_line(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size(), group = 5)+
-            geom_point(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size()*3)
-        }
-        else{
-          gl <- gl + geom_line(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
-            geom_point(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size()*3)
-          suffx_PM2.5 = "(ug/m3)"
-        }
-        labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
-        vals <-c(vals,"PM2.5" = "#cc8112")
-
-      }
-      if ("PM10" %in% input$hourly_data){
-        if(input$switch_units){
-          s_county$data_conv <-s_county$"PM10"
-          s_county$data_conv <- convert_to_imperial(s_county$data_conv)
-          names(s_county)[names(s_county)=="data_conv"] <- paste("PM10","conv",sep="_")
-          suffx_PM10 = "(e-12 oz/ft3)"
-          gl <- gl + geom_line(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size(), group = 6) +
-            geom_point(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size()*3)
-        }
-        else{
-          suffx_PM10 = "(ug/m3)"
-          gl <- gl + geom_line(aes(y = s_county$PM10, color = "PM10"), size = line_size(), group = 6) +
-            geom_point(aes(y = s_county$PM10, color = "PM10"), size = line_size()*3)
-
-        }
-        labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
-        vals <-c(vals,"PM10" = "#ba1010")
-
-      }
-      convert_temp_to_metric <- function(values){
-        return((values-32)/1.8)
-      }
-      if ("Temperature" %in% input$hourly_data){
-        if(input$switch_units){
-          temp_suffx = "(Degrees Fahrenheit)"
-          gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
-            geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
-        }
-        else{
-          s_county$data_conv <-s_county$"Temperature"
-          s_county$data_conv <- convert_temp_to_metric(s_county$data_conv)
-          names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
-          temp_suffx = "(Degrees Celsius)"
-          gl <- gl + geom_line(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size(), group = 7) +
-            geom_point(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size()*3)
-        }
-        labs <-c(labs,"Temperature"= paste("Temperature",temp_suffx, sep=" "))
-        vals <-c(vals,"Temperature" = "#6B1F13")
-
-      }
-      convert_wind_to_metric <- function(values){
-        return(values*0.51)
-      }
-      if ("Wind Speed" %in% input$hourly_data){
-        if(input$switch_units){
-          wind_suffx = "(knots)"
-          gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 8) +
-            geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
-        }
-        else{
-          wind_suffx = "(m/s)"
-          s_county$data_conv <-s_county$"Wind Speed"
-          s_county$data_conv <- convert_wind_to_metric(s_county$data_conv)
-          names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
-          gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
-            geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
-        }
-        labs <-c(labs,"Wind Speed" = paste("Wind Speed",wind_suffx, sep=" "))
-        vals <-c(vals,"Wind Speed" = "#E3446E")
-      }
-      gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
-                                    values = vals)
-      gl
-      # scale_x_continuous(breaks = round(seq(max(min(s_county$`Time Local`),1), min(max(s_county$`Time Local`),24), by = 1),1)) +
-      # scale_y_continuous(breaks = round(seq(min(s_county[4:9]), max(s_county[4:9]), by = 10),1))
-
-    }
-    # Signaling missing data
-    else {
-      shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
-      emp <- data.frame()
-      ggplot(emp) +
-        theme(
-          axis.text.x = element_text(angle = 45, hjust = 1),
-          axis.title.y = element_text(color = "#FFFFFF"),
-          axis.title.x = element_text(color = "#FFFFFF"),
-          plot.title = element_text(color = "#FFFFFF",size = axis_title_size(),face="bold.italic",hjust = 0.5),
-          panel.border = element_blank(),
-          plot.background = element_rect(color = NA, fill = "#005669"),
-          legend.background = element_rect(color = NA, fill = "#005669"),
-          legend.key = element_rect(color = NA, fill = "#005669"),
-          panel.background = element_rect(fill = "#005669", color  =  NA),
-          panel.grid.major = element_line(color = "#FFFFFF"),
-          panel.grid.minor = element_line(color = "#FFFFFF"),
-          legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
-          legend.key.size = unit(legend_key_size(), 'line'),
-          axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
-          legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
-        )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
-      
-        
-      }
-    
-
-  })
+  # output$hourly_data <- renderPlot({
+  #   s_county<-subset(hourly_df, hourly_df$`State Name` == selected_state_hp() & hourly_df$`County Name` == selected_county_hp() & hourly_df$Year== selected_year_hp() & hourly_df$Month == selected_month_hp() & hourly_df$Day == selected_day_hp())
+  # 
+  #   if(length(s_county$`Time Local`) > 0 ){
+  #     gl <- ggplot(data = s_county, aes(x = s_county$`Time Local`)) +
+  #       theme(
+  #         axis.text.x = element_text(angle = 45, hjust = 1),
+  #         axis.title.y = element_text(size = axis_title_size(),color = "#FFFFFF"),
+  #         axis.title.x = element_text(size = axis_title_size(),color = "#FFFFFF"),
+  #         plot.title = element_text(color = "#FFFFFF",size = axis_title_size(),face="bold.italic",hjust = 0.5),
+  #         panel.border = element_blank(),
+  #         plot.background = element_rect(color = NA, fill = "#005669"),
+  #         legend.background = element_rect(color = NA, fill = "#005669"),
+  #         legend.key = element_rect(color = NA, fill = "#005669"),
+  #         panel.background = element_rect(fill = "#005669", color  =  NA),
+  #         panel.grid.major = element_line(color = "#FFFFFF"),
+  #         panel.grid.minor = element_line(color = "#FFFFFF"),
+  #         legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
+  #         legend.key.size = unit(legend_key_size(), 'line'),
+  #         axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
+  #         legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
+  #       )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
+  # 
+  #     labs <-c()
+  #     vals <-c()
+  #     if ("CO" %in% input$hourly_data){
+  #       suffx_CO = "(ppm)"
+  #       labs <-c(labs,"CO" = paste("CO",suffx_CO, sep=" "))
+  #       vals <-c(vals,c("CO" = "#c6c60f"))
+  #       gl <- gl + geom_line(aes(y = CO, color = "CO"), size = line_size(), group = 1) +
+  #         geom_point(aes(y = CO, color = "CO"), size = line_size()*3)
+  #     }
+  #     if ("NO2" %in% input$hourly_data){
+  #       suffx_NO2 = "(ppb)"
+  #       labs <-c(labs,"NO2" = paste("NO2",suffx_NO2, sep=" "))
+  #       vals <-c(vals,"NO2" = "#13c649")
+  #       gl <- gl + geom_line(aes(y = NO2, color = "NO2"), size = line_size(), group = 2) +
+  #         geom_point(aes(y = NO2, color = "NO2"), size = line_size()*3)
+  #     }
+  #     if ("Ozone" %in% input$hourly_data){
+  #       suffx_Ozone = "(ppm)"
+  #       labs <-c(labs,"Ozone" = paste("Ozone",suffx_Ozone, sep=" "))
+  #       vals <-c(vals,"Ozone" = "#0fa2af")
+  #       gl <- gl+geom_line(aes(y = Ozone, color = "Ozone"), size = line_size(), group = 3) +
+  #         geom_point(aes(y = Ozone, color = "Ozone"), size = line_size()*3)
+  #     }
+  #     if ("SO2" %in% input$hourly_data){
+  #       suffx_SO2 = "(ppb)"
+  #       labs <-c(labs,"SO2"=paste("SO2",suffx_SO2, sep=" "))
+  #       vals <-c(vals,"SO2" = "#A877E0")
+  #       gl <- gl +geom_line(aes(y = SO2, color = "SO2"), size = line_size(), group = 4) +
+  #         geom_point(aes(y = SO2, color = "SO2"), size = line_size()*3)
+  #     }
+  #     convert_to_imperial <- function(values){
+  #       return(values*1000000000000* 0.000000035274/35315)
+  #     }
+  # 
+  #     if ("PM2.5" %in% input$hourly_data){
+  #       if(input$switch_units){
+  #         s_county$data_conv <-s_county$"PM2.5"
+  #         s_county$data_conv <- convert_to_imperial(s_county$data_conv)
+  #         names(s_county)[names(s_county)=="data_conv"] <- paste("PM2.5","conv",sep="_")
+  #         suffx_PM2.5 = "(e-12 oz/ft3)"
+  #         gl <- gl + geom_line(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size(), group = 5)+
+  #           geom_point(aes(y = s_county$PM2.5_conv, color = "PM2.5"), size = line_size()*3)
+  #       }
+  #       else{
+  #         gl <- gl + geom_line(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size(), group = 5)+
+  #           geom_point(aes(y = s_county$PM2.5, color = "PM2.5"), size = line_size()*3)
+  #         suffx_PM2.5 = "(ug/m3)"
+  #       }
+  #       labs <-c(labs,"PM2.5"=paste("PM2.5",suffx_PM2.5, sep=" "))
+  #       vals <-c(vals,"PM2.5" = "#cc8112")
+  # 
+  #     }
+  #     if ("PM10" %in% input$hourly_data){
+  #       if(input$switch_units){
+  #         s_county$data_conv <-s_county$"PM10"
+  #         s_county$data_conv <- convert_to_imperial(s_county$data_conv)
+  #         names(s_county)[names(s_county)=="data_conv"] <- paste("PM10","conv",sep="_")
+  #         suffx_PM10 = "(e-12 oz/ft3)"
+  #         gl <- gl + geom_line(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size(), group = 6) +
+  #           geom_point(aes(y = s_county$PM10_conv, color = "PM10"), size = line_size()*3)
+  #       }
+  #       else{
+  #         suffx_PM10 = "(ug/m3)"
+  #         gl <- gl + geom_line(aes(y = s_county$PM10, color = "PM10"), size = line_size(), group = 6) +
+  #           geom_point(aes(y = s_county$PM10, color = "PM10"), size = line_size()*3)
+  # 
+  #       }
+  #       labs <-c(labs,"PM10"= paste("PM10",suffx_PM10, sep=" "))
+  #       vals <-c(vals,"PM10" = "#ba1010")
+  # 
+  #     }
+  #     convert_temp_to_metric <- function(values){
+  #       return((values-32)/1.8)
+  #     }
+  #     if ("Temperature" %in% input$hourly_data){
+  #       if(input$switch_units){
+  #         temp_suffx = "(Degrees Fahrenheit)"
+  #         gl <- gl + geom_line(aes(y = Temperature, color = "Temperature"), size = line_size(), group = 7) +
+  #           geom_point(aes(y = Temperature, color = "Temperature"), size = line_size()*3)
+  #       }
+  #       else{
+  #         s_county$data_conv <-s_county$"Temperature"
+  #         s_county$data_conv <- convert_temp_to_metric(s_county$data_conv)
+  #         names(s_county)[names(s_county)=="data_conv"] <- paste("Temperature","conv",sep="_")
+  #         temp_suffx = "(Degrees Celsius)"
+  #         gl <- gl + geom_line(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size(), group = 7) +
+  #           geom_point(aes(y = s_county$Temperature_conv, color = "Temperature"), size = line_size()*3)
+  #       }
+  #       labs <-c(labs,"Temperature"= paste("Temperature",temp_suffx, sep=" "))
+  #       vals <-c(vals,"Temperature" = "#6B1F13")
+  # 
+  #     }
+  #     convert_wind_to_metric <- function(values){
+  #       return(values*0.51)
+  #     }
+  #     if ("Wind Speed" %in% input$hourly_data){
+  #       if(input$switch_units){
+  #         wind_suffx = "(knots)"
+  #         gl <- gl + geom_line(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size(), group = 8) +
+  #           geom_point(aes(y = s_county$`Wind Speed`, color = "Wind Speed"), size = line_size()*3)
+  #       }
+  #       else{
+  #         wind_suffx = "(m/s)"
+  #         s_county$data_conv <-s_county$"Wind Speed"
+  #         s_county$data_conv <- convert_wind_to_metric(s_county$data_conv)
+  #         names(s_county)[names(s_county)=="data_conv"] <- paste("Wind","conv",sep="_")
+  #         gl <- gl + geom_line(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size(), group = 8) +
+  #           geom_point(aes(y = s_county$Wind_conv, color = "Wind Speed"), size = line_size()*3)
+  #       }
+  #       labs <-c(labs,"Wind Speed" = paste("Wind Speed",wind_suffx, sep=" "))
+  #       vals <-c(vals,"Wind Speed" = "#E3446E")
+  #     }
+  #     gl <- gl + scale_color_manual(name = "Measurements",labels=labs,
+  #                                   values = vals)
+  #     gl
+  #     # scale_x_continuous(breaks = round(seq(max(min(s_county$`Time Local`),1), min(max(s_county$`Time Local`),24), by = 1),1)) +
+  #     # scale_y_continuous(breaks = round(seq(min(s_county[4:9]), max(s_county[4:9]), by = 10),1))
+  # 
+  #   }
+  #   # Signaling missing data
+  #   else {
+  #     shinyalert("Oops!", "No data for this County for this day . Select a valid day", type = "error",closeOnEsc = TRUE,closeOnClickOutside = TRUE)
+  #     emp <- data.frame()
+  #     ggplot(emp) +
+  #       theme(
+  #         axis.text.x = element_text(angle = 45, hjust = 1),
+  #         axis.title.y = element_text(color = "#FFFFFF"),
+  #         axis.title.x = element_text(color = "#FFFFFF"),
+  #         plot.title = element_text(color = "#FFFFFF",size = axis_title_size(),face="bold.italic",hjust = 0.5),
+  #         panel.border = element_blank(),
+  #         plot.background = element_rect(color = NA, fill = "#005669"),
+  #         legend.background = element_rect(color = NA, fill = "#005669"),
+  #         legend.key = element_rect(color = NA, fill = "#005669"),
+  #         panel.background = element_rect(fill = "#005669", color  =  NA),
+  #         panel.grid.major = element_line(color = "#FFFFFF"),
+  #         panel.grid.minor = element_line(color = "#FFFFFF"),
+  #         legend.text = element_text(size = legend_text_size(), color = "#FFFFFF"),
+  #         legend.key.size = unit(legend_key_size(), 'line'),
+  #         axis.text = element_text(size = axis_text_size(), color = "#FFFFFF"),
+  #         legend.title = element_text(size = legend_title_size(), color = "#FFFFFF")
+  #       )+labs(title="Hourly Line Chart for Pollutants",x = "Hours", y = "Measurement of Hourly Data")
+  #     
+  #       
+  #     }
+  #   
+  # 
+  # })
 
   output$totals_italy <- renderPlot({
     df<-subset(italy_df, city==input$CitySearch_totals)

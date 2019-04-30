@@ -38,17 +38,17 @@ $(document).on("shiny:connected", function (e) {
 
     switch_top12_daily = document.getElementById("switch_top12_daily");
 
-    document.getElementById("dailyUniqueInputs").hidden = true;
+    // document.getElementById("dailyUniqueInputs").hidden = true;
 
-    switch_top12_daily.onclick = function() {
-        if(switch_top12_daily.checked){
-            document.getElementById("dailySeparateInputs").hidden = true;
-            document.getElementById("dailyUniqueInputs").hidden = false;
-        } else {
-            document.getElementById("dailySeparateInputs").hidden = false;
-            document.getElementById("dailyUniqueInputs").hidden = true;
-        }
-    };
+    // switch_top12_daily.onclick = function() {
+    //     if(switch_top12_daily.checked){
+    //         document.getElementById("dailySeparateInputs").hidden = true;
+    //         document.getElementById("dailyUniqueInputs").hidden = false;
+    //     } else {
+    //         document.getElementById("dailySeparateInputs").hidden = false;
+    //         document.getElementById("dailyUniqueInputs").hidden = true;
+    //     }
+    // };
 
 
     //delete leaflet "ad" and move legend
